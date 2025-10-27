@@ -1,0 +1,164 @@
+Project: EasyMeal
+Context: Next.js (App Router, TS), Tailwind, TanStack Query, TheMealDB. Mobile-first.
+Deliverable: Create 20 backlog tasks with title, description, acceptance criteria, estimate, priority, dependencies, assignee placeholder.
+
+Tasks:
+1) Scaffold Next.js + TS + Tailwind
+- Description: Create Next.js app with TypeScript, Tailwind, App Router, strict mode.
+- Acceptance: `npm run dev` boots; Tailwind classes render; App Router enabled.
+- Estimate: S
+- Priority: P0
+- Dependencies: —
+- Assignee: Student
+
+2) ESLint + Prettier strict config
+- Description: Add Prettier, ESLint rules (a11y, hooks, import), format scripts.
+- Acceptance: `npm run lint` passes; Prettier formats on save/CI.
+- Estimate: S
+- Priority: P0
+- Dependencies: 1
+- Assignee: Student
+
+3) Layout + responsive shell
+- Description: `app/layout.tsx` with header/nav/footer, 3 breakpoints, focus styles.
+- Acceptance: Mobile/tablet/desktop verified; keyboard focus visible.
+- Estimate: S
+- Priority: P0
+- Dependencies: 1,2
+- Assignee: Student
+
+4) TanStack Query provider wiring
+- Description: Add `QueryClientProvider` in root, devtools enabled in dev.
+- Acceptance: Provider wraps app; devtools visible in dev.
+- Estimate: XS
+- Priority: P0
+- Dependencies: 1
+- Assignee: Student
+
+5) IngredientInput (tags + keyboard)
+- Description: Accessible input for adding/removing ingredient tags; chip UI; suggestions.
+- Acceptance: Add via Enter/comma; remove via Backspace; tab/arrow keys work; labels present.
+- Estimate: M
+- Priority: P0
+- Dependencies: 3
+- Assignee: Student
+
+6) TheMealDB client (fetch helpers)
+- Description: Helpers for filter by ingredient, lookup by id; typed; abortable.
+- Acceptance: AbortController used; types validated; 200/4xx/5xx handled.
+- Estimate: M
+- Priority: P0
+- Dependencies: 4
+- Assignee: Student
+
+7) Multi-ingredient search orchestrator
+- Description: Fan-out calls per ingredient; intersection/relaxed union; debounce.
+- Acceptance: Rank by match score; debounce 300ms; cancellations work.
+- Estimate: M
+- Priority: P0
+- Dependencies: 6
+- Assignee: Student
+
+8) Client-side caching layer
+- Description: Cache by tag-set key; TTL; hydrate; SWR behavior.
+- Acceptance: Repeats within TTL avoid network; stale-while-revalidate.
+- Estimate: M
+- Priority: P1
+- Dependencies: 7
+- Assignee: Student
+
+9) ResultsGrid + Card
+- Description: Responsive grid; card shows image, name, match score; skeletons.
+- Acceptance: 1–4 columns; skeletons during loading; alt text.
+- Estimate: M
+- Priority: P0
+- Dependencies: 3,7
+- Assignee: Student
+
+10) Recipe detail route/modal
+- Description: `app/recipe/[id]`; image, ingredients, steps; actions.
+- Acceptance: Deep-linkable; back restores scroll.
+- Estimate: M
+- Priority: P0
+- Dependencies: 6,9
+- Assignee: Student
+
+11) Shopping list (localStorage) + export/print
+- Description: Add ingredients with checkboxes; persist; export/print-friendly.
+- Acceptance: Items persist; print layout clean; clear all works.
+- Estimate: M
+- Priority: P1
+- Dependencies: 10
+- Assignee: Student
+
+12) Favorites (localStorage)
+- Description: Toggle favorite from card/detail; favorites page.
+- Acceptance: Persisted; favorites grid renders.
+- Estimate: S
+- Priority: P1
+- Dependencies: 9,10
+- Assignee: Student
+
+13) Settings (units/dietary toggle)
+- Description: Settings page; unit display; vegetarian heuristic.
+- Acceptance: Persisted; filters applied; accessible form.
+- Estimate: S
+- Priority: P2
+- Dependencies: 7,9
+- Assignee: Student
+
+14) Error/empty states + random suggestions
+- Description: Friendly errors; retry; random suggestions when no match.
+- Acceptance: Error state with retry; empty state shows suggestions.
+- Estimate: S
+- Priority: P0
+- Dependencies: 7,9
+- Assignee: Student
+
+15) Accessibility pass
+- Description: ARIA roles, labels, keyboard traversal, skip links.
+- Acceptance: Axe: no serious/critical; keyboard-only usable.
+- Estimate: S
+- Priority: P0
+- Dependencies: 5,9,10
+- Assignee: Student
+
+16) Performance tuning
+- Description: Next/Image, lazy load, code-splitting, memoization.
+- Acceptance: Lighthouse Perf ≥ 90; no major CLS/LCP.
+- Estimate: S
+- Priority: P1
+- Dependencies: 9,10
+- Assignee: Student
+
+17) SEO & shareable pages
+- Description: Metadata per recipe; OG image fallbacks.
+- Acceptance: Correct previews on share.
+- Estimate: S
+- Priority: P2
+- Dependencies: 10
+- Assignee: Student
+
+18) Testing baseline (Jest/RTL + Cypress)
+- Description: Configure tests; 3 unit + 2 e2e.
+- Acceptance: `npm test` and `npx cypress run` pass.
+- Estimate: M
+- Priority: P0
+- Dependencies: 5,7,9,10
+- Assignee: Student
+
+19) CI workflow (lint/build/test)
+- Description: GitHub Actions pipeline.
+- Acceptance: CI green on PR.
+- Estimate: S
+- Priority: P0
+- Dependencies: 1,2,18
+- Assignee: Student
+
+20) Deploy to Vercel + README/screenshots
+- Description: Connect repo; prod build; README/screenshot/demo URL.
+- Acceptance: Live URL; README updated; Lighthouse ≥ 85; EcoIndex noted.
+- Estimate: S
+- Priority: P0
+- Dependencies: 9,10,14,16
+- Assignee: Student

@@ -107,19 +107,45 @@ class MealApiService {
   // Search meals by name
   async searchMeals(query: string): Promise<Meal[]> {
     const data = await this.fetchData<ApiResponse<Meal>>(`/search.php?s=${encodeURIComponent(query)}`);
-    return data.meals || [];
+    const basicMeals = data.meals || [];
+    
+    // Enrich basic meals with full details (tags, ingredients, etc.)
+    return this.enrichMealsWithDetails(basicMeals);
   }
 
   // Search meals by first letter
   async searchMealsByLetter(letter: string): Promise<Meal[]> {
     const data = await this.fetchData<ApiResponse<Meal>>(`/search.php?f=${letter}`);
-    return data.meals || [];
+    const basicMeals = data.meals || [];
+    
+    // Enrich basic meals with full details (tags, ingredients, etc.)
+    return this.enrichMealsWithDetails(basicMeals);
   }
 
   // Get meal details by ID
   async getMealById(id: string): Promise<Meal | null> {
     const data = await this.fetchData<ApiResponse<Meal>>(`/lookup.php?i=${id}`);
     return data.meals?.[0] || null;
+  }
+
+  // Helper method to enrich basic meal data with full details
+  private async enrichMealsWithDetails(basicMeals: Meal[]): Promise<Meal[]> {
+    if (basicMeals.length === 0) return [];
+    
+    // Fetch full details for each meal in parallel (with rate limiting)
+    const enrichedMeals = await Promise.all(
+      basicMeals.map(async (meal) => {
+        try {
+          const fullMeal = await this.getMealById(meal.idMeal);
+          return fullMeal || meal; // Fallback to basic meal if full details fail
+        } catch (error) {
+          console.warn(`Failed to enrich meal ${meal.idMeal}:`, error);
+          return meal; // Fallback to basic meal
+        }
+      })
+    );
+    
+    return enrichedMeals;
   }
 
   // Get random meal
@@ -170,13 +196,19 @@ class MealApiService {
   // Filter meals by category
   async filterByCategory(category: string): Promise<Meal[]> {
     const data = await this.fetchData<ApiResponse<Meal>>(`/filter.php?c=${encodeURIComponent(category)}`);
-    return data.meals || [];
+    const basicMeals = data.meals || [];
+    
+    // Enrich basic meals with full details (tags, ingredients, etc.)
+    return this.enrichMealsWithDetails(basicMeals);
   }
 
   // Filter meals by area
   async filterByArea(area: string): Promise<Meal[]> {
     const data = await this.fetchData<ApiResponse<Meal>>(`/filter.php?a=${encodeURIComponent(area)}`);
-    return data.meals || [];
+    const basicMeals = data.meals || [];
+    
+    // Enrich basic meals with full details (tags, ingredients, etc.)
+    return this.enrichMealsWithDetails(basicMeals);
   }
 
   // Filter meals by ingredient
@@ -184,7 +216,10 @@ class MealApiService {
     // Convert spaces to underscores as required by the API
     const formattedIngredient = ingredient.toLowerCase().replace(/\s+/g, '_');
     const data = await this.fetchData<ApiResponse<Meal>>(`/filter.php?i=${encodeURIComponent(formattedIngredient)}`);
-    return data.meals || [];
+    const basicMeals = data.meals || [];
+    
+    // Enrich basic meals with full details (tags, ingredients, etc.)
+    return this.enrichMealsWithDetails(basicMeals);
   }
 
   // Filter meals by multiple ingredients (find meals that contain any of the provided ingredients)

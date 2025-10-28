@@ -1,0 +1,119 @@
+'use client';
+
+import Image from 'next/image';
+import { Clock, Users, ChefHat } from 'lucide-react';
+import { Meal } from '@/types/meal';
+import { mealApiService } from '@/lib/api';
+import { cn } from '@/lib/utils';
+
+interface MealCardProps {
+  meal: Meal;
+  onClick?: (meal: Meal) => void;
+  className?: string;
+}
+
+export function MealCard({ meal, onClick, className }: MealCardProps) {
+  const handleClick = () => {
+    if (onClick) {
+      onClick(meal);
+    }
+  };
+
+  const ingredients = mealApiService.getMealIngredients(meal);
+  const tags = meal.strTags ? meal.strTags.split(',').map(tag => tag.trim()) : [];
+
+  return (
+    <div
+      onClick={handleClick}
+      className={cn(
+        "group cursor-pointer rounded-lg border border-gray-200 bg-white shadow-sm transition-all hover:shadow-md hover:scale-[1.02] dark:border-gray-700 dark:bg-gray-800",
+        className
+      )}
+    >
+      <div className="relative aspect-[4/3] overflow-hidden rounded-t-lg">
+        <Image
+          src={mealApiService.getMealThumbnailUrl(meal, 'medium')}
+          alt={meal.strMeal}
+          fill
+          className="object-cover transition-transform group-hover:scale-105"
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
+        
+        {/* Category Badge */}
+        <div className="absolute top-3 left-3">
+          <span className="rounded-full bg-white/90 px-2 py-1 text-xs font-medium text-gray-700 backdrop-blur-sm">
+            {meal.strCategory}
+          </span>
+        </div>
+
+        {/* Area Badge */}
+        <div className="absolute top-3 right-3">
+          <span className="rounded-full bg-white/90 px-2 py-1 text-xs font-medium text-gray-700 backdrop-blur-sm">
+            {meal.strArea}
+          </span>
+        </div>
+      </div>
+
+      <div className="p-4">
+        <h3 className="mb-2 text-lg font-semibold text-gray-900 dark:text-white line-clamp-2">
+          {meal.strMeal}
+        </h3>
+
+        {/* Tags */}
+        {tags.length > 0 && (
+          <div className="mb-3 flex flex-wrap gap-1">
+            {tags.slice(0, 3).map((tag, index) => (
+              <span
+                key={index}
+                className="rounded-full bg-gray-100 px-2 py-1 text-xs text-gray-600 dark:bg-gray-700 dark:text-gray-300"
+              >
+                {tag}
+              </span>
+            ))}
+            {tags.length > 3 && (
+              <span className="rounded-full bg-gray-100 px-2 py-1 text-xs text-gray-600 dark:bg-gray-700 dark:text-gray-300">
+                +{tags.length - 3}
+              </span>
+            )}
+          </div>
+        )}
+
+        {/* Ingredients Preview */}
+        <div className="mb-3">
+          <div className="flex items-center gap-1 text-sm text-gray-600 dark:text-gray-400">
+            <ChefHat className="h-4 w-4" />
+            <span className="font-medium">Ingredients:</span>
+          </div>
+          <p className="text-sm text-gray-500 dark:text-gray-400 line-clamp-2">
+            {ingredients.slice(0, 3).map(ing => ing.ingredient).join(', ')}
+            {ingredients.length > 3 && ` +${ingredients.length - 3} more`}
+          </p>
+        </div>
+
+        {/* Instructions Preview */}
+        <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-3">
+          {meal.strInstructions}
+        </p>
+
+        {/* Action Button */}
+        <div className="mt-4 flex items-center justify-between">
+          <div className="flex items-center gap-4 text-xs text-gray-500 dark:text-gray-400">
+            <div className="flex items-center gap-1">
+              <Clock className="h-3 w-3" />
+              <span>Recipe</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <Users className="h-3 w-3" />
+              <span>Serves 4-6</span>
+            </div>
+          </div>
+          
+          <button className="rounded-full bg-blue-500 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-600">
+            View Recipe
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}

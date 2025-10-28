@@ -126,6 +126,17 @@ export default function Home() {
     }
   };
 
+  const loadRandomMeal = async () => {
+    try {
+      const randomMeal = await mealApiService.getRandomMeal();
+      if (randomMeal) {
+        setSelectedMeal(randomMeal);
+      }
+    } catch (err) {
+      console.error('Error loading random meal:', err);
+    }
+  };
+
 
   const handleSearch = async (query: string) => {
     if (!query.trim()) {
@@ -308,11 +319,11 @@ export default function Home() {
                 TheMealDB
               </a>
               <button
-                onClick={() => loadRandomMeals(true)}
+                onClick={() => loadRandomMeal()}
                 className="flex items-center gap-2 rounded-lg bg-[#262523] px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-[#3a3a3a] dark:bg-white dark:text-[#262523] dark:hover:bg-[#f5f5f5]"
               >
                 <Sparkles className="h-4 w-4" />
-                Random Meals
+                Random Meal
               </button>
             </div>
           </div>

@@ -6,8 +6,8 @@
 ✔ Replace "test api" button with a TheMealDB button that redirects to https://www.themealdb.com @done(25-10-28 11:14)
 ✔ Implement the logo made in canva @done(25-10-28 11:30)
 ✔ Make the first loading faster by loading only a few items then more when scrolling to optimize for google lighthouse and ecoindex score @done(25-10-28 11:48)
-☐ Make the watch on youtube button red
-☐ Change random meals button to random meal button and it opens up a random meal modal card 
+✔ Make the watch on youtube button red @done(25-10-28 20:46)
+✔ Change random meals button to random meal button and it opens up a random meal modal card @done(25-10-28 21:15)
 ☐ Optimize loading the api calls for the website to be optimized and fast
 ☐ Sujet prof optimisations et clean code
 ☐ Make sure the code is super clean formated with linter prettier eslint strict config and run

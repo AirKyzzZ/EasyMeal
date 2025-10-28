@@ -424,8 +424,11 @@ export default function Home() {
           </div>
         )}
 
-        {/* No Results */}
+        {/* No Results - Only show when a search has been performed */}
         {!isLoading && !error && meals.length === 0 && (
+          (searchMode === 'search' && (searchQuery || Object.values(filters).some(filter => filter))) ||
+          (searchMode === 'ingredients' && availableIngredients.length > 0)
+        ) && (
           <div className="flex justify-center py-12">
             <div className="text-center">
               <ChefHat className="mx-auto h-12 w-12 text-[#6b6b6b] dark:text-[#a0a0a0]" />

@@ -5,9 +5,10 @@ import { SearchBar } from '@/components/SearchBar';
 import { MealCard } from '@/components/MealCard';
 import { MealDetailModal } from '@/components/MealDetailModal';
 import { Filters } from '@/components/Filters';
+import { IngredientList } from '@/components/IngredientList';
 import { mealApiService } from '@/lib/api';
 import { Meal } from '@/types/meal';
-import { ChefHat, Sparkles } from 'lucide-react';
+import { ChefHat, Sparkles, Apple } from 'lucide-react';
 
 export default function Home() {
   const [meals, setMeals] = useState<Meal[]>([]);
@@ -16,6 +17,33 @@ export default function Home() {
   const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [filters, setFilters] = useState({ category: '', area: '', ingredient: '' });
+  const [availableIngredients, setAvailableIngredients] = useState<string[]>([]);
+  const [searchMode, setSearchMode] = useState<'search' | 'ingredients'>('search');
+  const [isOnline, setIsOnline] = useState(true);
+
+  // Monitor network status
+  useEffect(() => {
+    const handleOnline = () => setIsOnline(true);
+    const handleOffline = () => setIsOnline(false);
+    
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+    
+    // Check initial status
+    setIsOnline(navigator.onLine);
+    
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, []);
+
+  // Utility function to deduplicate meals by idMeal
+  const deduplicateMeals = (meals: Meal[]): Meal[] => {
+    return meals.filter((meal, index, self) => 
+      index === self.findIndex(m => m.idMeal === meal.idMeal)
+    );
+  };
 
   // Load random meals on initial load
   useEffect(() => {
@@ -29,12 +57,26 @@ export default function Home() {
       const randomMeals = await Promise.all(
         Array.from({ length: 12 }, () => mealApiService.getRandomMeal())
       );
-      setMeals(randomMeals.filter(meal => meal !== null) as Meal[]);
+      const validMeals = randomMeals.filter(meal => meal !== null) as Meal[];
+      setMeals(deduplicateMeals(validMeals));
     } catch (err) {
-      setError('Failed to load meals. Please try again.');
+      const errorMessage = err instanceof Error ? err.message : 'Failed to load meals. Please try again.';
+      setError(errorMessage);
       console.error('Error loading random meals:', err);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const testApiConnection = async () => {
+    console.log('Testing API connection...');
+    const result = await mealApiService.testApiConnection();
+    if (result.success) {
+      console.log('✅ API connection successful!');
+      alert('✅ API connection successful! Check console for details.');
+    } else {
+      console.error('❌ API connection failed:', result.error);
+      alert(`❌ API connection failed: ${result.error}`);
     }
   };
 
@@ -50,7 +92,7 @@ export default function Home() {
 
     try {
       const results = await mealApiService.searchMeals(query);
-      setMeals(results);
+      setMeals(deduplicateMeals(results));
     } catch (err) {
       setError('Search failed. Please try again.');
       console.error('Search error:', err);
@@ -85,7 +127,7 @@ export default function Home() {
         results = await mealApiService.filterByIngredient(newFilters.ingredient);
       }
 
-      setMeals(results);
+      setMeals(deduplicateMeals(results));
     } catch (err) {
       setError('Failed to apply filters. Please try again.');
       console.error('Filter error:', err);
@@ -102,6 +144,30 @@ export default function Home() {
     setSelectedMeal(null);
   };
 
+  const handleIngredientsChange = async (ingredients: string[]) => {
+    setAvailableIngredients(ingredients);
+    
+    if (ingredients.length === 0) {
+      if (!searchQuery && !Object.values(filters).some(filter => filter)) {
+        loadRandomMeals();
+      }
+      return;
+    }
+
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const results = await mealApiService.findMealsWithAvailableIngredients(ingredients);
+      setMeals(deduplicateMeals(results));
+    } catch (err) {
+      setError('Failed to find meals with available ingredients. Please try again.');
+      console.error('Ingredient search error:', err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       {/* Header */}
@@ -112,48 +178,112 @@ export default function Home() {
               <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-500">
                 <ChefHat className="h-6 w-6 text-white" />
               </div>
-              <div>
-                <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-                  EasyMeal
-                </h1>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  Discover amazing recipes
-                </p>
-              </div>
+            <div>
+              <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+                EasyMeal
+              </h1>
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                Discover amazing recipes
+                {!isOnline && (
+                  <span className="ml-2 text-orange-600 dark:text-orange-400">
+                    (Offline Mode)
+                  </span>
+                )}
+              </p>
+            </div>
             </div>
             
-            <button
-              onClick={loadRandomMeals}
-              className="flex items-center gap-2 rounded-lg bg-gray-100 px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
-            >
-              <Sparkles className="h-4 w-4" />
-              Random Meals
-            </button>
+            <div className="flex gap-2">
+              <button
+                onClick={testApiConnection}
+                className="flex items-center gap-2 rounded-lg bg-orange-100 px-4 py-2 text-sm font-medium text-orange-700 transition-colors hover:bg-orange-200 dark:bg-orange-900/20 dark:text-orange-300 dark:hover:bg-orange-900/30"
+              >
+                🔧 Test API
+              </button>
+              <button
+                onClick={loadRandomMeals}
+                className="flex items-center gap-2 rounded-lg bg-gray-100 px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
+              >
+                <Sparkles className="h-4 w-4" />
+                Random Meals
+              </button>
+            </div>
           </div>
         </div>
       </header>
 
       {/* Main Content */}
       <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+        {/* Search Mode Toggle */}
+        <div className="mb-8">
+          <div className="flex justify-center">
+            <div className="flex rounded-lg bg-gray-100 p-1 dark:bg-gray-700">
+              <button
+                onClick={() => setSearchMode('search')}
+                className={`flex items-center gap-2 rounded-md px-4 py-2 text-sm font-medium transition-colors ${
+                  searchMode === 'search'
+                    ? 'bg-white text-gray-900 shadow-sm dark:bg-gray-600 dark:text-white'
+                    : 'text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white'
+                }`}
+              >
+                <ChefHat className="h-4 w-4" />
+                Search Recipes
+              </button>
+              <button
+                onClick={() => setSearchMode('ingredients')}
+                className={`flex items-center gap-2 rounded-md px-4 py-2 text-sm font-medium transition-colors ${
+                  searchMode === 'ingredients'
+                    ? 'bg-white text-gray-900 shadow-sm dark:bg-gray-600 dark:text-white'
+                    : 'text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white'
+                }`}
+              >
+                <Apple className="h-4 w-4" />
+                Find by Ingredients
+              </button>
+            </div>
+          </div>
+        </div>
+
         {/* Search Section */}
         <div className="mb-8">
-          <div className="mb-6 flex justify-center">
-            <SearchBar
-              onSearch={handleSearch}
-              onMealSelect={handleMealSelect}
-              placeholder="Search for meals, ingredients, or cuisines..."
-              className="w-full max-w-2xl"
-            />
-          </div>
-          
-          <div className="flex justify-center">
-            <Filters onFiltersChange={handleFiltersChange} />
-          </div>
+          {searchMode === 'search' ? (
+            <>
+              <div className="mb-6 flex justify-center">
+                <SearchBar
+                  onSearch={handleSearch}
+                  onMealSelect={handleMealSelect}
+                  placeholder="Search for meals, ingredients, or cuisines..."
+                  className="w-full max-w-2xl"
+                />
+              </div>
+              
+              <div className="flex justify-center">
+                <Filters onFiltersChange={handleFiltersChange} />
+              </div>
+            </>
+          ) : (
+            <div className="mb-6">
+              <div className="mx-auto max-w-2xl">
+                <IngredientList onIngredientsChange={handleIngredientsChange} />
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Results Section */}
         <div className="mb-6">
-          {searchQuery && (
+          {searchMode === 'ingredients' && availableIngredients.length > 0 && (
+            <div className="mb-4 text-center">
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+                🍎 Recipes you can make with your ingredients
+              </h2>
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                {meals.length} recipe{meals.length !== 1 ? 's' : ''} found using your {availableIngredients.length} ingredient{availableIngredients.length !== 1 ? 's' : ''}
+              </p>
+            </div>
+          )}
+          
+          {searchMode === 'search' && searchQuery && (
             <div className="mb-4 text-center">
               <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
                 Search results for "{searchQuery}"
@@ -164,7 +294,7 @@ export default function Home() {
             </div>
           )}
           
-          {Object.values(filters).some(filter => filter) && (
+          {searchMode === 'search' && Object.values(filters).some(filter => filter) && (
             <div className="mb-4 text-center">
               <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
                 Filtered Results
@@ -225,11 +355,12 @@ export default function Home() {
         {/* Meals Grid */}
         {!isLoading && !error && meals.length > 0 && (
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {meals.map((meal) => (
+            {meals.map((meal, index) => (
               <MealCard
-                key={meal.idMeal}
+                key={`${meal.idMeal}-${index}`}
                 meal={meal}
                 onClick={handleMealSelect}
+                availableIngredients={availableIngredients}
               />
             ))}
           </div>

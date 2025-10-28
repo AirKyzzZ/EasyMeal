@@ -1,14 +1,72 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { ChevronDown, X } from 'lucide-react';
+import { ChevronDown, X, Apple } from 'lucide-react';
 import { mealApiService } from '@/lib/api';
 import { Category, Area, Ingredient } from '@/types/meal';
 import { cn } from '@/lib/utils';
 
+// Apple emojis for different categories
+const getCategoryEmoji = (category: string): string => {
+  const lowerCategory = category.toLowerCase();
+  
+  if (lowerCategory.includes('beef')) return '🥩';
+  if (lowerCategory.includes('chicken')) return '🐔';
+  if (lowerCategory.includes('dessert')) return '🍰';
+  if (lowerCategory.includes('lamb')) return '🐑';
+  if (lowerCategory.includes('miscellaneous')) return '🍎';
+  if (lowerCategory.includes('pasta')) return '🍝';
+  if (lowerCategory.includes('pork')) return '🐷';
+  if (lowerCategory.includes('seafood')) return '🐟';
+  if (lowerCategory.includes('side')) return '🥗';
+  if (lowerCategory.includes('starter')) return '🥘';
+  if (lowerCategory.includes('vegan')) return '🌱';
+  if (lowerCategory.includes('vegetarian')) return '🥕';
+  if (lowerCategory.includes('breakfast')) return '🥞';
+  if (lowerCategory.includes('goat')) return '🐐';
+  
+  return '🍎'; // Default apple emoji
+};
+
+// Apple emojis for different areas/cuisines
+const getAreaEmoji = (area: string): string => {
+  const lowerArea = area.toLowerCase();
+  
+  if (lowerArea.includes('american')) return '🇺🇸';
+  if (lowerArea.includes('british')) return '🇬🇧';
+  if (lowerArea.includes('canadian')) return '🇨🇦';
+  if (lowerArea.includes('chinese')) return '🇨🇳';
+  if (lowerArea.includes('croatian')) return '🇭🇷';
+  if (lowerArea.includes('dutch')) return '🇳🇱';
+  if (lowerArea.includes('egyptian')) return '🇪🇬';
+  if (lowerArea.includes('filipino')) return '🇵🇭';
+  if (lowerArea.includes('french')) return '🇫🇷';
+  if (lowerArea.includes('greek')) return '🇬🇷';
+  if (lowerArea.includes('indian')) return '🇮🇳';
+  if (lowerArea.includes('irish')) return '🇮🇪';
+  if (lowerArea.includes('italian')) return '🇮🇹';
+  if (lowerArea.includes('jamaican')) return '🇯🇲';
+  if (lowerArea.includes('japanese')) return '🇯🇵';
+  if (lowerArea.includes('kenyan')) return '🇰🇪';
+  if (lowerArea.includes('malaysian')) return '🇲🇾';
+  if (lowerArea.includes('mexican')) return '🇲🇽';
+  if (lowerArea.includes('moroccan')) return '🇲🇦';
+  if (lowerArea.includes('polish')) return '🇵🇱';
+  if (lowerArea.includes('portuguese')) return '🇵🇹';
+  if (lowerArea.includes('russian')) return '🇷🇺';
+  if (lowerArea.includes('spanish')) return '🇪🇸';
+  if (lowerArea.includes('thai')) return '🇹🇭';
+  if (lowerArea.includes('tunisian')) return '🇹🇳';
+  if (lowerArea.includes('turkish')) return '🇹🇷';
+  if (lowerArea.includes('unknown')) return '🍎';
+  if (lowerArea.includes('vietnamese')) return '🇻🇳';
+  
+  return '🍎'; // Default apple emoji
+};
+
 interface FilterDropdownProps {
   label: string;
-  options: Array<{ value: string; label: string }>;
+  options: Array<{ value: string; label: string; emoji?: string; description?: string }>;
   value: string;
   onChange: (value: string) => void;
   className?: string;
@@ -17,15 +75,24 @@ interface FilterDropdownProps {
 function FilterDropdown({ label, options, value, onChange, className }: FilterDropdownProps) {
   const [isOpen, setIsOpen] = useState(false);
 
+  const getEmoji = (optionValue: string) => {
+    if (label.toLowerCase() === 'category') return getCategoryEmoji(optionValue);
+    if (label.toLowerCase() === 'area') return getAreaEmoji(optionValue);
+    return '🍎'; // Default for ingredients
+  };
+
   return (
     <div className={cn("relative", className)}>
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="flex w-full items-center justify-between rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm transition-colors hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700"
       >
-        <span className="text-gray-700 dark:text-gray-300">
-          {value ? options.find(opt => opt.value === value)?.label || label : label}
-        </span>
+        <div className="flex items-center gap-2">
+          <span className="text-base">{getEmoji(value)}</span>
+          <span className="text-gray-700 dark:text-gray-300">
+            {value ? options.find(opt => opt.value === value)?.label || label : label}
+          </span>
+        </div>
         <ChevronDown className={cn("h-4 w-4 text-gray-400 transition-transform", isOpen && "rotate-180")} />
       </button>
 
@@ -37,9 +104,10 @@ function FilterDropdown({ label, options, value, onChange, className }: FilterDr
                 onChange('');
                 setIsOpen(false);
               }}
-              className="w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-700"
+              className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-700"
             >
-              All {label}s
+              <Apple className="h-4 w-4 text-gray-400" />
+              <span>All {label}s</span>
             </button>
             {options.map((option) => (
               <button
@@ -48,9 +116,15 @@ function FilterDropdown({ label, options, value, onChange, className }: FilterDr
                   onChange(option.value);
                   setIsOpen(false);
                 }}
-                className="w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-700"
+                className="flex w-full items-center gap-3 px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-700"
               >
-                {option.label}
+                <span className="text-base">{option.emoji || getEmoji(option.value)}</span>
+                <div className="flex-1">
+                  <div className="font-medium">{option.label}</div>
+                  {option.description && (
+                    <div className="text-xs text-gray-500 dark:text-gray-400">{option.description}</div>
+                  )}
+                </div>
               </button>
             ))}
           </div>
@@ -126,21 +200,33 @@ export function Filters({ onFiltersChange, className }: FiltersProps) {
     <div className={cn("flex flex-wrap gap-3", className)}>
       <FilterDropdown
         label="Category"
-        options={categories.map(cat => ({ value: cat.strCategory, label: cat.strCategory }))}
+        options={categories.map(cat => ({ 
+          value: cat.strCategory, 
+          label: cat.strCategory,
+          description: cat.strCategoryDescription || `Delicious ${cat.strCategory.toLowerCase()} recipes`
+        }))}
         value={filters.category}
         onChange={(value) => handleFilterChange('category', value)}
       />
       
       <FilterDropdown
         label="Area"
-        options={areas.map(area => ({ value: area.strArea, label: area.strArea }))}
+        options={areas.map(area => ({ 
+          value: area.strArea, 
+          label: area.strArea,
+          description: `Traditional ${area.strArea} cuisine`
+        }))}
         value={filters.area}
         onChange={(value) => handleFilterChange('area', value)}
       />
       
       <FilterDropdown
         label="Ingredient"
-        options={ingredients.map(ing => ({ value: ing.strIngredient, label: ing.strIngredient }))}
+        options={ingredients.map(ing => ({ 
+          value: ing.strIngredient, 
+          label: ing.strIngredient,
+          description: `Recipes featuring ${ing.strIngredient.toLowerCase()}`
+        }))}
         value={filters.ingredient}
         onChange={(value) => handleFilterChange('ingredient', value)}
       />

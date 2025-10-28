@@ -3,52 +3,105 @@ import { Meal, Category, Area, Ingredient, ApiResponse, SearchFilters } from '@/
 const BASE_URL = 'https://www.themealdb.com/api/json/v1/1';
 
 class MealApiService {
-  private async fetchData<T>(endpoint: string, retries: number = 3): Promise<T> {
-    for (let attempt = 1; attempt <= retries; attempt++) {
-      try {
-        // Create AbortController for timeout
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+  private requestQueue: Array<() => Promise<any>> = [];
+  private isProcessingQueue = false;
+  private lastRequestTime = 0;
+  private readonly RATE_LIMIT_DELAY = 200; // 200ms between requests (5 requests per second max)
 
-        const response = await fetch(`${BASE_URL}${endpoint}`, {
-          method: 'GET',
-          headers: {
-            'Accept': 'application/json',
-          },
-          signal: controller.signal,
-        });
+  private async processQueue() {
+    if (this.isProcessingQueue || this.requestQueue.length === 0) {
+      return;
+    }
 
-        clearTimeout(timeoutId);
-        
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
+    this.isProcessingQueue = true;
+
+    while (this.requestQueue.length > 0) {
+      const now = Date.now();
+      const timeSinceLastRequest = now - this.lastRequestTime;
+      
+      if (timeSinceLastRequest < this.RATE_LIMIT_DELAY) {
+        await new Promise(resolve => setTimeout(resolve, this.RATE_LIMIT_DELAY - timeSinceLastRequest));
+      }
+
+      const request = this.requestQueue.shift();
+      if (request) {
+        try {
+          await request();
+        } catch (error) {
+          console.error('Queue request failed:', error);
         }
-        
-        const data = await response.json();
-        return data;
-      } catch (error) {
-        console.error(`API Error (attempt ${attempt}/${retries}):`, error);
-        
-        // If this is the last attempt, throw the error
-        if (attempt === retries) {
-          // Provide more specific error messages
-          if (error instanceof TypeError && error.message === 'Failed to fetch') {
-            throw new Error('Network error: Unable to connect to the meal database. Please check your internet connection.');
-          }
-          
-          if (error instanceof Error && error.name === 'AbortError') {
-            throw new Error('Request timeout: The server took too long to respond. Please try again.');
-          }
-          
-          throw error;
-        }
-        
-        // Wait before retrying (exponential backoff)
-        await new Promise(resolve => setTimeout(resolve, Math.pow(2, attempt) * 1000));
+        this.lastRequestTime = Date.now();
       }
     }
-    
-    throw new Error('All retry attempts failed');
+
+    this.isProcessingQueue = false;
+  }
+
+  private async fetchData<T>(endpoint: string, retries: number = 3): Promise<T> {
+    return new Promise((resolve, reject) => {
+      const makeRequest = async () => {
+        for (let attempt = 1; attempt <= retries; attempt++) {
+          try {
+            // Create AbortController for timeout
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+
+            const response = await fetch(`${BASE_URL}${endpoint}`, {
+              method: 'GET',
+              headers: {
+                'Accept': 'application/json',
+              },
+              signal: controller.signal,
+            });
+
+            clearTimeout(timeoutId);
+            
+            if (!response.ok) {
+              // Handle rate limiting specifically
+              if (response.status === 429) {
+                const retryAfter = response.headers.get('retry-after');
+                const delay = retryAfter ? parseInt(retryAfter) * 1000 : 10000; // Default 10 seconds
+                console.warn(`Rate limited. Waiting ${delay}ms before retry...`);
+                await new Promise(resolve => setTimeout(resolve, delay));
+                continue; // Retry the same attempt
+              }
+              throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            
+            const data = await response.json();
+            resolve(data);
+            return;
+          } catch (error) {
+            console.error(`API Error (attempt ${attempt}/${retries}):`, error);
+            
+            // If this is the last attempt, throw the error
+            if (attempt === retries) {
+              // Provide more specific error messages
+              if (error instanceof TypeError && error.message === 'Failed to fetch') {
+                reject(new Error('Network error: Unable to connect to the meal database. Please check your internet connection.'));
+                return;
+              }
+              
+              if (error instanceof Error && error.name === 'AbortError') {
+                reject(new Error('Request timeout: The server took too long to respond. Please try again.'));
+                return;
+              }
+              
+              reject(error);
+              return;
+            }
+            
+            // Wait before retrying (exponential backoff)
+            await new Promise(resolve => setTimeout(resolve, Math.pow(2, attempt) * 1000));
+          }
+        }
+        
+        reject(new Error('All retry attempts failed'));
+      };
+
+      this.requestQueue.push(makeRequest);
+      this.processQueue();
+    });
   }
 
   // Search meals by name
@@ -238,6 +291,63 @@ class MealApiService {
         strMeasure3: "1 large",
         strMeasure4: "3 tbsp",
         strMeasure5: "3 cloves"
+      },
+      {
+        idMeal: "fallback-4",
+        strMeal: "Simple Beef Stir Fry",
+        strCategory: "Beef",
+        strArea: "Chinese",
+        strInstructions: "Slice beef thinly. Heat oil in a pan, cook beef until browned. Add vegetables and stir fry for 3-4 minutes. Add sauce and cook for 1 more minute.",
+        strMealThumb: "https://www.themealdb.com/images/media/meals/1525873040.jpg",
+        strTags: "Beef,Quick,Easy",
+        strIngredient1: "Beef",
+        strIngredient2: "Onion",
+        strIngredient3: "Bell Peppers",
+        strIngredient4: "Soy Sauce",
+        strIngredient5: "Garlic",
+        strMeasure1: "300g",
+        strMeasure2: "1 medium",
+        strMeasure3: "1 large",
+        strMeasure4: "3 tbsp",
+        strMeasure5: "2 cloves"
+      },
+      {
+        idMeal: "fallback-5",
+        strMeal: "Creamy Tomato Pasta",
+        strCategory: "Pasta",
+        strArea: "Italian",
+        strInstructions: "Cook pasta according to package directions. In a pan, sauté garlic and tomatoes. Add cream and simmer. Toss with pasta and serve.",
+        strMealThumb: "https://www.themealdb.com/images/media/meals/llcbn01574260722.jpg",
+        strTags: "Pasta,Vegetarian,Creamy",
+        strIngredient1: "Pasta",
+        strIngredient2: "Tomatoes",
+        strIngredient3: "Cream",
+        strIngredient4: "Garlic",
+        strIngredient5: "Basil",
+        strMeasure1: "400g",
+        strMeasure2: "4 large",
+        strMeasure3: "200ml",
+        strMeasure4: "3 cloves",
+        strMeasure5: "Handful"
+      },
+      {
+        idMeal: "fallback-6",
+        strMeal: "Fish Tacos",
+        strCategory: "Seafood",
+        strArea: "Mexican",
+        strInstructions: "Season fish with spices. Cook until flaky. Warm tortillas. Serve fish in tortillas with cabbage slaw and sauce.",
+        strMealThumb: "https://www.themealdb.com/images/media/meals/1543774956.jpg",
+        strTags: "Fish,Mexican,Healthy",
+        strIngredient1: "White Fish",
+        strIngredient2: "Tortillas",
+        strIngredient3: "Cabbage",
+        strIngredient4: "Lime",
+        strIngredient5: "Cilantro",
+        strMeasure1: "500g",
+        strMeasure2: "8 pieces",
+        strMeasure3: "2 cups",
+        strMeasure4: "2 pieces",
+        strMeasure5: "Handful"
       }
     ];
   }

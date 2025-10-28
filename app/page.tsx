@@ -54,9 +54,23 @@ export default function Home() {
     setIsLoading(true);
     setError(null);
     try {
-      const randomMeals = await Promise.all(
-        Array.from({ length: 12 }, () => mealApiService.getRandomMeal())
-      );
+      // Reduce concurrent requests to avoid rate limiting
+      const randomMeals: (Meal | null)[] = [];
+      const batchSize = 3; // Process 3 meals at a time
+      
+      for (let i = 0; i < 12; i += batchSize) {
+        const batch = Array.from({ length: Math.min(batchSize, 12 - i) }, () => 
+          mealApiService.getRandomMeal()
+        );
+        const batchResults = await Promise.all(batch);
+        randomMeals.push(...batchResults);
+        
+        // Small delay between batches to be respectful to the API
+        if (i + batchSize < 12) {
+          await new Promise(resolve => setTimeout(resolve, 500));
+        }
+      }
+      
       const validMeals = randomMeals.filter(meal => meal !== null) as Meal[];
       setMeals(deduplicateMeals(validMeals));
     } catch (err) {
@@ -161,8 +175,24 @@ export default function Home() {
       const results = await mealApiService.findMealsWithAvailableIngredients(ingredients);
       setMeals(deduplicateMeals(results));
     } catch (err) {
-      setError('Failed to find meals with available ingredients. Please try again.');
+      const errorMessage = err instanceof Error ? err.message : 'Failed to find meals with available ingredients.';
+      
+      // If it's a rate limiting error, show a more helpful message
+      if (errorMessage.includes('Rate Limit') || errorMessage.includes('429')) {
+        setError('The recipe database is currently busy. Please wait a moment and try again.');
+      } else {
+        setError(errorMessage);
+      }
+      
       console.error('Ingredient search error:', err);
+      
+      // Fallback to showing some random meals if ingredient search fails
+      try {
+        console.log('Falling back to random meals due to ingredient search failure');
+        await loadRandomMeals();
+      } catch (fallbackErr) {
+        console.error('Fallback also failed:', fallbackErr);
+      }
     } finally {
       setIsLoading(false);
     }
@@ -311,7 +341,9 @@ export default function Home() {
           <div className="flex justify-center py-12">
             <div className="flex items-center gap-3">
               <div className="h-6 w-6 animate-spin rounded-full border-2 border-gray-300 border-t-blue-500"></div>
-              <span className="text-gray-600 dark:text-gray-400">Loading meals...</span>
+              <span className="text-gray-600 dark:text-gray-400">
+                {searchMode === 'ingredients' ? 'Finding recipes with your ingredients...' : 'Loading meals...'}
+              </span>
             </div>
           </div>
         )}

@@ -132,7 +132,7 @@ export function IngredientList({ onIngredientsChange, className }: IngredientLis
 
   useEffect(() => {
     onIngredientsChange(selectedIngredients);
-  }, [selectedIngredients, onIngredientsChange]);
+  }, [selectedIngredients]); // Remove onIngredientsChange from dependencies to prevent infinite loops
 
   const filteredIngredients = availableIngredients.filter(ingredient =>
     ingredient.strIngredient.toLowerCase().includes(searchQuery.toLowerCase()) &&

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { SearchBar } from '@/components/SearchBar';
 import { MealCard } from '@/components/MealCard';
 import { MealDetailModal } from '@/components/MealDetailModal';
@@ -9,6 +9,13 @@ import { IngredientList } from '@/components/IngredientList';
 import { mealApiService } from '@/lib/api';
 import { Meal } from '@/types/meal';
 import { ChefHat, Sparkles, Apple } from 'lucide-react';
+
+// Extend Window interface to include our timeout property
+declare global {
+  interface Window {
+    ingredientSearchTimeout?: NodeJS.Timeout;
+  }
+}
 
 export default function Home() {
   const [meals, setMeals] = useState<Meal[]>([]);
@@ -20,6 +27,9 @@ export default function Home() {
   const [availableIngredients, setAvailableIngredients] = useState<string[]>([]);
   const [searchMode, setSearchMode] = useState<'search' | 'ingredients'>('search');
   const [isOnline, setIsOnline] = useState(true);
+  
+  // Track current search to prevent duplicates
+  const currentSearchRef = useRef<string>('');
 
   // Monitor network status
   useEffect(() => {
@@ -35,6 +45,11 @@ export default function Home() {
     return () => {
       window.removeEventListener('online', handleOnline);
       window.removeEventListener('offline', handleOffline);
+      
+      // Clean up ingredient search timeout
+      if (window.ingredientSearchTimeout) {
+        clearTimeout(window.ingredientSearchTimeout);
+      }
     };
   }, []);
 
@@ -45,10 +60,21 @@ export default function Home() {
     );
   };
 
-  // Load random meals on initial load
+  // Handle search mode changes
   useEffect(() => {
-    loadRandomMeals();
-  }, []);
+    if (searchMode === 'search') {
+      // When switching to search mode, load random meals if no search query
+      if (!searchQuery && !Object.values(filters).some(filter => filter)) {
+        loadRandomMeals();
+      }
+    } else if (searchMode === 'ingredients') {
+      // When switching to ingredient mode, clear meals if no ingredients selected
+      if (availableIngredients.length === 0) {
+        setMeals([]);
+        setError(null);
+      }
+    }
+  }, [searchMode, searchQuery, filters, availableIngredients]);
 
   const loadRandomMeals = async () => {
     setIsLoading(true);
@@ -96,7 +122,12 @@ export default function Home() {
 
   const handleSearch = async (query: string) => {
     if (!query.trim()) {
-      loadRandomMeals();
+      // Only load random meals if we're in search mode, not ingredient mode
+      if (searchMode === 'search') {
+        loadRandomMeals();
+      } else {
+        setMeals([]);
+      }
       return;
     }
 
@@ -118,10 +149,12 @@ export default function Home() {
   const handleFiltersChange = async (newFilters: { category: string; area: string; ingredient: string }) => {
     setFilters(newFilters);
     
-    // If no filters are active, show random meals
+    // If no filters are active, show random meals only in search mode
     if (!newFilters.category && !newFilters.area && !newFilters.ingredient) {
-      if (!searchQuery) {
+      if (!searchQuery && searchMode === 'search') {
         loadRandomMeals();
+      } else if (searchMode === 'ingredients') {
+        setMeals([]);
       }
       return;
     }
@@ -158,45 +191,68 @@ export default function Home() {
     setSelectedMeal(null);
   };
 
-  const handleIngredientsChange = async (ingredients: string[]) => {
+  const handleIngredientsChange = useCallback(async (ingredients: string[]) => {
     setAvailableIngredients(ingredients);
     
     if (ingredients.length === 0) {
-      if (!searchQuery && !Object.values(filters).some(filter => filter)) {
-        loadRandomMeals();
-      }
+      // Clear meals when no ingredients are selected
+      setMeals([]);
+      setError(null);
+      currentSearchRef.current = '';
       return;
     }
 
-    setIsLoading(true);
-    setError(null);
-
-    try {
-      const results = await mealApiService.findMealsWithAvailableIngredients(ingredients);
-      setMeals(deduplicateMeals(results));
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to find meals with available ingredients.';
-      
-      // If it's a rate limiting error, show a more helpful message
-      if (errorMessage.includes('Rate Limit') || errorMessage.includes('429')) {
-        setError('The recipe database is currently busy. Please wait a moment and try again.');
-      } else {
-        setError(errorMessage);
-      }
-      
-      console.error('Ingredient search error:', err);
-      
-      // Fallback to showing some random meals if ingredient search fails
-      try {
-        console.log('Falling back to random meals due to ingredient search failure');
-        await loadRandomMeals();
-      } catch (fallbackErr) {
-        console.error('Fallback also failed:', fallbackErr);
-      }
-    } finally {
-      setIsLoading(false);
+    // Create a unique search key to prevent duplicate searches
+    const searchKey = ingredients.sort().join(',');
+    
+    // If this is the same search as the current one, don't search again
+    if (currentSearchRef.current === searchKey) {
+      return;
     }
-  };
+
+    // Clear any existing timeout
+    if (window.ingredientSearchTimeout) {
+      clearTimeout(window.ingredientSearchTimeout);
+    }
+
+    // Debounce the search by 500ms to prevent flooding the API
+    window.ingredientSearchTimeout = setTimeout(async () => {
+      // Double-check that this is still the current search
+      if (currentSearchRef.current === searchKey) {
+        return;
+      }
+      
+      currentSearchRef.current = searchKey;
+      setIsLoading(true);
+      setError(null);
+
+      try {
+        const results = await mealApiService.findMealsWithAvailableIngredients(ingredients);
+        setMeals(deduplicateMeals(results));
+      } catch (err) {
+        const errorMessage = err instanceof Error ? err.message : 'Failed to find meals with available ingredients.';
+        
+        // If it's a rate limiting error, show a more helpful message
+        if (errorMessage.includes('Rate Limit') || errorMessage.includes('429')) {
+          setError('The recipe database is currently busy. Please wait a moment and try again.');
+        } else {
+          setError(errorMessage);
+        }
+        
+        console.error('Ingredient search error:', err);
+        
+        // Fallback to showing some random meals if ingredient search fails
+        try {
+          console.log('Falling back to random meals due to ingredient search failure');
+          await loadRandomMeals();
+        } catch (fallbackErr) {
+          console.error('Fallback also failed:', fallbackErr);
+        }
+      } finally {
+        setIsLoading(false);
+      }
+    }, 500); // 500ms debounce delay
+  }, [searchQuery, filters]);
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
@@ -305,10 +361,10 @@ export default function Home() {
           {searchMode === 'ingredients' && availableIngredients.length > 0 && (
             <div className="mb-4 text-center">
               <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
-                🍎 Recipes you can make with your ingredients
+                🍎 Recipes containing your ingredients
               </h2>
               <p className="text-sm text-gray-600 dark:text-gray-400">
-                {meals.length} recipe{meals.length !== 1 ? 's' : ''} found using your {availableIngredients.length} ingredient{availableIngredients.length !== 1 ? 's' : ''}
+                {meals.length} recipe{meals.length !== 1 ? 's' : ''} found containing your {availableIngredients.length} ingredient{availableIngredients.length !== 1 ? 's' : ''}
               </p>
             </div>
           )}

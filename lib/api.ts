@@ -181,7 +181,9 @@ class MealApiService {
 
   // Filter meals by ingredient
   async filterByIngredient(ingredient: string): Promise<Meal[]> {
-    const data = await this.fetchData<ApiResponse<Meal>>(`/filter.php?i=${encodeURIComponent(ingredient)}`);
+    // Convert spaces to underscores as required by the API
+    const formattedIngredient = ingredient.toLowerCase().replace(/\s+/g, '_');
+    const data = await this.fetchData<ApiResponse<Meal>>(`/filter.php?i=${encodeURIComponent(formattedIngredient)}`);
     return data.meals || [];
   }
 
@@ -202,25 +204,16 @@ class MealApiService {
     return uniqueMeals;
   }
 
-  // Find meals that can be made with available ingredients (meals where all required ingredients are available)
+  // Find meals that can be made with available ingredients (meals that contain any of the available ingredients)
   async findMealsWithAvailableIngredients(availableIngredients: string[]): Promise<Meal[]> {
     if (availableIngredients.length === 0) return [];
     
     // Get all meals that contain any of the available ingredients
     const candidateMeals = await this.filterByMultipleIngredients(availableIngredients);
     
-    // Filter to only include meals where ALL required ingredients are available
-    const compatibleMeals = candidateMeals.filter(meal => {
-      const requiredIngredients = this.getMealIngredients(meal).map(item => item.ingredient.toLowerCase());
-      return requiredIngredients.every(ingredient => 
-        availableIngredients.some(available => 
-          available.toLowerCase().includes(ingredient) || 
-          ingredient.includes(available.toLowerCase())
-        )
-      );
-    });
-    
-    return compatibleMeals;
+    // Return all candidate meals (meals that contain ANY of the available ingredients)
+    // This provides a more useful result than requiring ALL ingredients to be available
+    return candidateMeals;
   }
 
   // Get ingredient details with thumbnail

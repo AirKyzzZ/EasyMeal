@@ -21,6 +21,21 @@ export function MealDetailModal({ meal, isOpen, onClose }: MealDetailModalProps)
   const [fullMeal, setFullMeal] = useState<Meal | null>(null);
   const [isLoadingDetails, setIsLoadingDetails] = useState(false);
 
+  // Prevent body scroll when modal is open
+  useEffect(() => {
+    if (isOpen) {
+      // Store the original overflow style
+      const originalStyle = window.getComputedStyle(document.body).overflow;
+      // Disable scrolling
+      document.body.style.overflow = 'hidden';
+      
+      // Cleanup function to restore scrolling
+      return () => {
+        document.body.style.overflow = originalStyle;
+      };
+    }
+  }, [isOpen]);
+
   // Fetch full meal details when modal opens
   useEffect(() => {
     if (meal && isOpen) {

@@ -165,7 +165,7 @@ function FilterDropdown({ label, options, value, onChange, className }: FilterDr
                 )}
                 <div className="flex-1">
                   <div className="font-medium">{option.label}</div>
-                  {option.description && (
+                  {option.description && label.toLowerCase() !== 'category' && (
                     <div className="text-xs text-gray-500 dark:text-gray-400">{option.description}</div>
                   )}
                 </div>

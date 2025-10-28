@@ -111,16 +111,7 @@ export default function Home() {
       if (isInitialLoad) {
         pagination.setItems(results);
       } else {
-        // Store scroll position before appending items
-        const scrollY = window.scrollY;
         pagination.appendItems(results);
-        
-        // Restore scroll position after a short delay
-        if (scrollY > 0) {
-          setTimeout(() => {
-            window.scrollTo(0, scrollY);
-          }, 10);
-        }
       }
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to load meals. Please try again.';
@@ -483,6 +474,7 @@ export default function Home() {
                   onClick={handleMealSelect}
                   availableIngredients={availableIngredients}
                   showMatchPercentage={searchMode === 'ingredients'}
+                  isFirstImage={index === 0}
                 />
               ))}
             </div>

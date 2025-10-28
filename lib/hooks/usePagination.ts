@@ -33,6 +33,8 @@ export function usePagination(options: UsePaginationOptions = {}) {
   const loadingRef = useRef(false);
   const observerRef = useRef<IntersectionObserver | null>(null);
   const lastItemRef = useRef<HTMLDivElement | null>(null);
+  const scrollPositionRef = useRef<number>(0);
+  const isRestoringScrollRef = useRef(false);
 
   const setItems = useCallback((items: Meal[]) => {
     setState(prev => ({
@@ -44,6 +46,10 @@ export function usePagination(options: UsePaginationOptions = {}) {
   }, [maxItems]);
 
   const appendItems = useCallback((newItems: Meal[]) => {
+    // Store current scroll position before state update
+    scrollPositionRef.current = window.scrollY;
+    isRestoringScrollRef.current = true;
+    
     setState(prev => {
       const combinedItems = [...prev.items, ...newItems];
       const limitedItems = combinedItems.slice(0, maxItems);
@@ -99,6 +105,27 @@ export function usePagination(options: UsePaginationOptions = {}) {
   const markLoadComplete = useCallback(() => {
     loadingRef.current = false;
   }, []);
+
+  // Effect to restore scroll position after items are added
+  useEffect(() => {
+    if (isRestoringScrollRef.current && scrollPositionRef.current > 0) {
+      // Use multiple attempts to ensure scroll position is restored
+      const restoreScroll = () => {
+        window.scrollTo(0, scrollPositionRef.current);
+        
+        // Check if scroll position was restored correctly
+        setTimeout(() => {
+          if (Math.abs(window.scrollY - scrollPositionRef.current) > 10) {
+            window.scrollTo(0, scrollPositionRef.current);
+          }
+          isRestoringScrollRef.current = false;
+        }, 100);
+      };
+      
+      // Try immediately and after a delay
+      requestAnimationFrame(restoreScroll);
+    }
+  }, [state.items.length]); // Trigger when items change
 
   return {
     ...state,

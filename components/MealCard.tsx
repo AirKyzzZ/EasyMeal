@@ -13,10 +13,11 @@ interface MealCardProps {
   className?: string;
   availableIngredients?: string[];
   showMatchPercentage?: boolean;
+  isFirstImage?: boolean;
 }
 
 
-export function MealCard({ meal, onClick, className, availableIngredients = [], showMatchPercentage = false }: MealCardProps) {
+export function MealCard({ meal, onClick, className, availableIngredients = [], showMatchPercentage = false, isFirstImage = false }: MealCardProps) {
   const handleClick = () => {
     if (onClick) {
       onClick(meal);
@@ -48,6 +49,7 @@ export function MealCard({ meal, onClick, className, availableIngredients = [], 
           alt={meal.strMeal}
           fill
           className="object-cover transition-transform group-hover:scale-105"
+          loading={isFirstImage ? "eager" : "lazy"}
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />

@@ -342,8 +342,8 @@ export default function Home() {
                 />
               </div>
               
-              <div className="flex justify-center">
-                <Filters onFiltersChange={handleFiltersChange} />
+              <div className="flex justify-center px-4">
+                <Filters onFiltersChange={handleFiltersChange} className="w-full" />
               </div>
             </>
           ) : (

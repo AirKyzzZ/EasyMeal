@@ -119,23 +119,25 @@ function FilterDropdown({ label, options, value, onChange, className }: FilterDr
   };
 
   return (
-    <div className={cn("relative", className)}>
+    <div className={cn("relative min-w-[200px] sm:min-w-[240px] lg:min-w-[280px]", className)}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex w-full items-center justify-between rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm transition-colors hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700"
+        className="flex w-full min-w-[200px] items-center justify-between rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm transition-colors hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700 sm:min-w-[240px] lg:min-w-[280px]"
       >
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 min-w-0 flex-1">
           {value ? (
-            getSelectedDisplay()
+            <div className="min-w-0 flex-1 truncate">
+              {getSelectedDisplay()}
+            </div>
           ) : (
-            <span className="text-gray-700 dark:text-gray-300">{label}</span>
+            <span className="text-gray-700 dark:text-gray-300 truncate">{label}</span>
           )}
         </div>
-        <ChevronDown className={cn("h-4 w-4 text-gray-400 transition-transform", isOpen && "rotate-180")} />
+        <ChevronDown className={cn("h-4 w-4 text-gray-400 transition-transform flex-shrink-0 ml-2", isOpen && "rotate-180")} />
       </button>
 
       {isOpen && (
-        <div className="absolute z-10 mt-1 w-full rounded-lg border border-gray-200 bg-white shadow-lg dark:border-gray-700 dark:bg-gray-800">
+        <div className="absolute z-10 mt-1 w-full min-w-[200px] rounded-lg border border-gray-200 bg-white shadow-lg dark:border-gray-700 dark:bg-gray-800 sm:min-w-[240px] lg:min-w-[280px] left-0 right-0">
           <div className="max-h-60 overflow-y-auto">
             <button
               onClick={() => {
@@ -144,8 +146,8 @@ function FilterDropdown({ label, options, value, onChange, className }: FilterDr
               }}
               className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-700"
             >
-              <Apple className="h-4 w-4 text-gray-400" />
-              <span>All {label}s</span>
+              <Apple className="h-4 w-4 text-gray-400 flex-shrink-0" />
+              <span className="truncate">All {label}s</span>
             </button>
             {options.map((option) => (
               <button
@@ -156,17 +158,19 @@ function FilterDropdown({ label, options, value, onChange, className }: FilterDr
                 }}
                 className="flex w-full items-center gap-3 px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-700"
               >
-                {label.toLowerCase() === 'ingredient' ? (
-                  <IngredientImage ingredient={option.value} size="small" />
-                ) : label.toLowerCase() === 'area' ? (
-                  <span className="text-base">{getAreaEmoji(option.value)}</span>
-                ) : (
-                  React.createElement(getIcon(option.value), { className: "h-4 w-4 text-gray-600 dark:text-gray-400" })
-                )}
-                <div className="flex-1">
-                  <div className="font-medium">{option.label}</div>
+                <div className="flex-shrink-0">
+                  {label.toLowerCase() === 'ingredient' ? (
+                    <IngredientImage ingredient={option.value} size="small" />
+                  ) : label.toLowerCase() === 'area' ? (
+                    <span className="text-base">{getAreaEmoji(option.value)}</span>
+                  ) : (
+                    React.createElement(getIcon(option.value), { className: "h-4 w-4 text-gray-600 dark:text-gray-400" })
+                  )}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="font-medium truncate">{option.label}</div>
                   {option.description && label.toLowerCase() !== 'category' && (
-                    <div className="text-xs text-gray-500 dark:text-gray-400">{option.description}</div>
+                    <div className="text-xs text-gray-500 dark:text-gray-400 truncate">{option.description}</div>
                   )}
                 </div>
               </button>
@@ -232,16 +236,16 @@ export function Filters({ onFiltersChange, className }: FiltersProps) {
 
   if (isLoading) {
     return (
-      <div className={cn("flex gap-3", className)}>
-        <div className="h-10 w-32 animate-pulse rounded-lg bg-gray-200 dark:bg-gray-700" />
-        <div className="h-10 w-32 animate-pulse rounded-lg bg-gray-200 dark:bg-gray-700" />
-        <div className="h-10 w-32 animate-pulse rounded-lg bg-gray-200 dark:bg-gray-700" />
+      <div className={cn("flex flex-wrap gap-3 justify-center", className)}>
+        <div className="h-10 min-w-[200px] sm:min-w-[240px] lg:min-w-[280px] animate-pulse rounded-lg bg-gray-200 dark:bg-gray-700" />
+        <div className="h-10 min-w-[200px] sm:min-w-[240px] lg:min-w-[280px] animate-pulse rounded-lg bg-gray-200 dark:bg-gray-700" />
+        <div className="h-10 min-w-[200px] sm:min-w-[240px] lg:min-w-[280px] animate-pulse rounded-lg bg-gray-200 dark:bg-gray-700" />
       </div>
     );
   }
 
   return (
-    <div className={cn("flex flex-wrap gap-3", className)}>
+    <div className={cn("flex flex-wrap gap-3 justify-center", className)}>
       <FilterDropdown
         label="Category"
         options={categories.map(cat => ({ 
@@ -251,6 +255,7 @@ export function Filters({ onFiltersChange, className }: FiltersProps) {
         }))}
         value={filters.category}
         onChange={(value) => handleFilterChange('category', value)}
+        className="min-w-[200px] sm:min-w-[240px] lg:min-w-[280px]"
       />
       
       <FilterDropdown
@@ -262,6 +267,7 @@ export function Filters({ onFiltersChange, className }: FiltersProps) {
         }))}
         value={filters.area}
         onChange={(value) => handleFilterChange('area', value)}
+        className="min-w-[200px] sm:min-w-[240px] lg:min-w-[280px]"
       />
       
       <FilterDropdown
@@ -273,12 +279,13 @@ export function Filters({ onFiltersChange, className }: FiltersProps) {
         }))}
         value={filters.ingredient}
         onChange={(value) => handleFilterChange('ingredient', value)}
+        className="min-w-[200px] sm:min-w-[240px] lg:min-w-[280px]"
       />
 
       {hasActiveFilters && (
         <button
           onClick={clearAllFilters}
-          className="flex items-center gap-1 rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-600 transition-colors hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700"
+          className="flex items-center gap-1 rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-600 transition-colors hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 flex-shrink-0"
         >
           <X className="h-4 w-4" />
           Clear All

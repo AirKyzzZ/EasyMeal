@@ -1,9 +1,8 @@
 ✔ Replace apple emojis with the actual ingredient pictures like in the current ingredients list in the meal card @done(25-10-28 10:36)
-☐ c
+✔ Don't put the descirption in the area dropdown as well @done(25-10-28 10:51)
+✔ No emojis in the ingredients dropdown @done(25-10-28 10:51)
+✔ Make the dropdown larger @done(25-10-28 10:51)
 ☐ Make the first loading faster by loading only a few items then more when scrolling
-☐ Don't put the descirption in the area dropdown as well
-☐ No emojis in the ingredients dropdown
-☐ Make the dropdown larger
 ☐ Remove test api button
 ☐ Implement the logo made in canva
 ☐ Footer

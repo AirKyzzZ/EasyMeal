@@ -108,17 +108,6 @@ export default function Home() {
     }
   };
 
-  const testApiConnection = async () => {
-    console.log('Testing API connection...');
-    const result = await mealApiService.testApiConnection();
-    if (result.success) {
-      console.log('✅ API connection successful!');
-      alert('✅ API connection successful! Check console for details.');
-    } else {
-      console.error('❌ API connection failed:', result.error);
-      alert(`❌ API connection failed: ${result.error}`);
-    }
-  };
 
   const handleSearch = async (query: string) => {
     if (!query.trim()) {
@@ -280,12 +269,14 @@ export default function Home() {
             </div>
             
             <div className="flex gap-2">
-              <button
-                onClick={testApiConnection}
+              <a
+                href="https://www.themealdb.com"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="flex items-center gap-2 rounded-lg bg-[#f5f5f5] px-4 py-2 text-sm font-medium text-[#262523] transition-colors hover:bg-[#e5e5e5] dark:bg-[#3a3a3a] dark:text-white dark:hover:bg-[#4a4a4a]"
               >
-                Test API
-              </button>
+                TheMealDB
+              </a>
               <button
                 onClick={loadRandomMeals}
                 className="flex items-center gap-2 rounded-lg bg-[#262523] px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-[#3a3a3a] dark:bg-white dark:text-[#262523] dark:hover:bg-[#f5f5f5]"

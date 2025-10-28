@@ -1,11 +1,97 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { X, Clock, Users, ChefHat, ExternalLink, Youtube } from 'lucide-react';
 import { Meal } from '@/types/meal';
 import { mealApiService } from '@/lib/api';
 import { cn } from '@/lib/utils';
+
+// Apple emojis for different ingredients (same as MealCard)
+const getIngredientEmoji = (ingredient: string): string => {
+  const lowerIngredient = ingredient.toLowerCase();
+  
+  // Fruits
+  if (lowerIngredient.includes('apple') || lowerIngredient.includes('fruit')) return '🍎';
+  if (lowerIngredient.includes('banana')) return '🍌';
+  if (lowerIngredient.includes('orange') || lowerIngredient.includes('citrus')) return '🍊';
+  if (lowerIngredient.includes('lemon') || lowerIngredient.includes('lime')) return '🍋';
+  if (lowerIngredient.includes('grape')) return '🍇';
+  if (lowerIngredient.includes('strawberry') || lowerIngredient.includes('berry')) return '🍓';
+  if (lowerIngredient.includes('cherry')) return '🍒';
+  if (lowerIngredient.includes('peach')) return '🍑';
+  if (lowerIngredient.includes('pineapple')) return '🍍';
+  if (lowerIngredient.includes('watermelon')) return '🍉';
+  if (lowerIngredient.includes('melon')) return '🍈';
+  
+  // Vegetables
+  if (lowerIngredient.includes('carrot')) return '🥕';
+  if (lowerIngredient.includes('broccoli')) return '🥦';
+  if (lowerIngredient.includes('corn')) return '🌽';
+  if (lowerIngredient.includes('mushroom')) return '🍄';
+  if (lowerIngredient.includes('tomato')) return '🍅';
+  if (lowerIngredient.includes('potato') || lowerIngredient.includes('sweet potato')) return '🥔';
+  if (lowerIngredient.includes('onion')) return '🧅';
+  if (lowerIngredient.includes('garlic')) return '🧄';
+  if (lowerIngredient.includes('pepper') || lowerIngredient.includes('bell pepper')) return '🫑';
+  if (lowerIngredient.includes('cucumber')) return '🥒';
+  if (lowerIngredient.includes('lettuce') || lowerIngredient.includes('salad')) return '🥬';
+  if (lowerIngredient.includes('spinach')) return '🥬';
+  if (lowerIngredient.includes('cabbage')) return '🥬';
+  
+  // Proteins
+  if (lowerIngredient.includes('chicken') || lowerIngredient.includes('poultry')) return '🐔';
+  if (lowerIngredient.includes('beef') || lowerIngredient.includes('steak')) return '🥩';
+  if (lowerIngredient.includes('pork')) return '🐷';
+  if (lowerIngredient.includes('fish') || lowerIngredient.includes('salmon') || lowerIngredient.includes('tuna')) return '🐟';
+  if (lowerIngredient.includes('shrimp') || lowerIngredient.includes('prawn')) return '🦐';
+  if (lowerIngredient.includes('crab')) return '🦀';
+  if (lowerIngredient.includes('lobster')) return '🦞';
+  if (lowerIngredient.includes('egg')) return '🥚';
+  if (lowerIngredient.includes('bacon')) return '🥓';
+  if (lowerIngredient.includes('ham')) return '🍖';
+  if (lowerIngredient.includes('sausage')) return '🌭';
+  
+  // Dairy
+  if (lowerIngredient.includes('milk')) return '🥛';
+  if (lowerIngredient.includes('cheese')) return '🧀';
+  if (lowerIngredient.includes('butter')) return '🧈';
+  if (lowerIngredient.includes('cream')) return '🥛';
+  if (lowerIngredient.includes('yogurt')) return '🥛';
+  
+  // Grains & Bread
+  if (lowerIngredient.includes('bread') || lowerIngredient.includes('toast')) return '🍞';
+  if (lowerIngredient.includes('rice')) return '🍚';
+  if (lowerIngredient.includes('pasta') || lowerIngredient.includes('noodle')) return '🍝';
+  if (lowerIngredient.includes('pizza')) return '🍕';
+  if (lowerIngredient.includes('sandwich')) return '🥪';
+  
+  // Nuts & Seeds
+  if (lowerIngredient.includes('nut') || lowerIngredient.includes('almond') || lowerIngredient.includes('walnut')) return '🥜';
+  if (lowerIngredient.includes('peanut')) return '🥜';
+  
+  // Spices & Herbs
+  if (lowerIngredient.includes('salt')) return '🧂';
+  if (lowerIngredient.includes('pepper')) return '🌶️';
+  if (lowerIngredient.includes('herb') || lowerIngredient.includes('basil') || lowerIngredient.includes('oregano')) return '🌿';
+  if (lowerIngredient.includes('ginger')) return '🫚';
+  if (lowerIngredient.includes('cinnamon')) return '🫘';
+  
+  // Sweeteners
+  if (lowerIngredient.includes('sugar') || lowerIngredient.includes('sweet')) return '🍯';
+  if (lowerIngredient.includes('honey')) return '🍯';
+  if (lowerIngredient.includes('maple')) return '🍁';
+  
+  // Beverages
+  if (lowerIngredient.includes('coffee')) return '☕';
+  if (lowerIngredient.includes('tea')) return '🍵';
+  if (lowerIngredient.includes('juice')) return '🧃';
+  if (lowerIngredient.includes('wine')) return '🍷';
+  if (lowerIngredient.includes('beer')) return '🍺';
+  
+  // Default apple emoji for unmatched ingredients
+  return '🍎';
+};
 
 interface MealDetailModalProps {
   meal: Meal | null;
@@ -15,11 +101,35 @@ interface MealDetailModalProps {
 
 export function MealDetailModal({ meal, isOpen, onClose }: MealDetailModalProps) {
   const [activeTab, setActiveTab] = useState<'ingredients' | 'instructions'>('ingredients');
+  const [fullMeal, setFullMeal] = useState<Meal | null>(null);
+  const [isLoadingDetails, setIsLoadingDetails] = useState(false);
 
-  if (!meal || !isOpen) return null;
+  // Fetch full meal details when modal opens
+  useEffect(() => {
+    if (meal && isOpen) {
+      setIsLoadingDetails(true);
+      mealApiService.getMealById(meal.idMeal)
+        .then(fullMealData => {
+          setFullMeal(fullMealData);
+        })
+        .catch(error => {
+          console.error('Failed to fetch full meal details:', error);
+          // Fallback to the original meal data
+          setFullMeal(meal);
+        })
+        .finally(() => {
+          setIsLoadingDetails(false);
+        });
+    }
+  }, [meal, isOpen]);
 
-  const ingredients = mealApiService.getMealIngredients(meal);
-  const tags = meal.strTags ? meal.strTags.split(',').map(tag => tag.trim()) : [];
+  // Use full meal data if available, otherwise fallback to original meal
+  const displayMeal = fullMeal || meal;
+
+  if (!meal || !isOpen || !displayMeal) return null;
+
+  const ingredients = mealApiService.getMealIngredients(displayMeal);
+  const tags = displayMeal.strTags ? displayMeal.strTags.split(',').map(tag => tag.trim()) : [];
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
@@ -35,7 +145,7 @@ export function MealDetailModal({ meal, isOpen, onClose }: MealDetailModalProps)
         <div className="relative h-64 overflow-hidden">
           <Image
             src={mealApiService.getMealThumbnailUrl(meal, 'large')}
-            alt={meal.strMeal}
+            alt={displayMeal.strMeal}
             fill
             className="object-cover"
             sizes="(max-width: 1024px) 100vw, 1024px"
@@ -53,16 +163,16 @@ export function MealDetailModal({ meal, isOpen, onClose }: MealDetailModalProps)
           {/* Title and Meta */}
           <div className="absolute bottom-4 left-4 right-4">
             <h1 className="mb-2 text-2xl font-bold text-white">
-              {meal.strMeal}
+              {displayMeal.strMeal}
             </h1>
             <div className="flex items-center gap-4 text-sm text-white/90">
               <div className="flex items-center gap-1">
                 <ChefHat className="h-4 w-4" />
-                <span>{meal.strCategory}</span>
+                <span>{displayMeal.strCategory}</span>
               </div>
               <div className="flex items-center gap-1">
                 <Clock className="h-4 w-4" />
-                <span>{meal.strArea}</span>
+                <span>{displayMeal.strArea}</span>
               </div>
               <div className="flex items-center gap-1">
                 <Users className="h-4 w-4" />
@@ -88,8 +198,18 @@ export function MealDetailModal({ meal, isOpen, onClose }: MealDetailModalProps)
             </div>
           )}
 
-          {/* Tabs */}
-          <div className="mb-6 flex gap-1 rounded-lg bg-gray-100 p-1 dark:bg-gray-700">
+          {/* Loading State */}
+          {isLoadingDetails ? (
+            <div className="flex items-center justify-center py-8">
+              <div className="flex items-center gap-3">
+                <div className="h-6 w-6 animate-spin rounded-full border-2 border-gray-300 border-t-blue-500"></div>
+                <span className="text-gray-600 dark:text-gray-400">Loading full recipe details...</span>
+              </div>
+            </div>
+          ) : (
+            <>
+              {/* Tabs */}
+              <div className="mb-6 flex gap-1 rounded-lg bg-gray-100 p-1 dark:bg-gray-700">
             <button
               onClick={() => setActiveTab('ingredients')}
               className={cn(
@@ -158,18 +278,20 @@ export function MealDetailModal({ meal, isOpen, onClose }: MealDetailModalProps)
                 </h3>
                 <div className="prose prose-sm max-w-none dark:prose-invert">
                   <p className="whitespace-pre-wrap text-gray-700 dark:text-gray-300">
-                    {meal.strInstructions}
+                    {displayMeal.strInstructions}
                   </p>
                 </div>
               </div>
             )}
           </div>
+            </>
+          )}
 
           {/* External Links */}
           <div className="mt-6 flex gap-3">
-            {meal.strYoutube && (
+            {displayMeal.strYoutube && (
               <a
-                href={meal.strYoutube}
+                href={displayMeal.strYoutube}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-2 rounded-lg bg-red-500 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-red-600"
@@ -178,9 +300,9 @@ export function MealDetailModal({ meal, isOpen, onClose }: MealDetailModalProps)
                 Watch on YouTube
               </a>
             )}
-            {meal.strSource && (
+            {displayMeal.strSource && (
               <a
-                href={meal.strSource}
+                href={displayMeal.strSource}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-2 rounded-lg bg-gray-100 px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"

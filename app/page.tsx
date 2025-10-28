@@ -449,6 +449,7 @@ export default function Home() {
                 meal={meal}
                 onClick={handleMealSelect}
                 availableIngredients={availableIngredients}
+                showMatchPercentage={searchMode === 'ingredients'}
               />
             ))}
           </div>

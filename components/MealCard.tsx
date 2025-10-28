@@ -11,6 +11,7 @@ interface MealCardProps {
   onClick?: (meal: Meal) => void;
   className?: string;
   availableIngredients?: string[];
+  showMatchPercentage?: boolean;
 }
 
 // Apple emojis for different ingredients (same as IngredientList)
@@ -110,7 +111,7 @@ const getIngredientEmoji = (ingredient: string): string => {
   return '🍎';
 };
 
-export function MealCard({ meal, onClick, className, availableIngredients = [] }: MealCardProps) {
+export function MealCard({ meal, onClick, className, availableIngredients = [], showMatchPercentage = false }: MealCardProps) {
   const handleClick = () => {
     if (onClick) {
       onClick(meal);
@@ -120,16 +121,13 @@ export function MealCard({ meal, onClick, className, availableIngredients = [] }
   const ingredients = mealApiService.getMealIngredients(meal);
   const tags = meal.strTags ? meal.strTags.split(',').map(tag => tag.trim()) : [];
   
-  // Calculate ingredient matches
-  const matchedIngredients = ingredients.filter(ingredient => 
+  // Calculate ingredient matches for visual indicators (if in ingredient search mode)
+  const matchedIngredients = showMatchPercentage ? ingredients.filter(ingredient => 
     availableIngredients.some(available => 
       available.toLowerCase().includes(ingredient.ingredient.toLowerCase()) ||
       ingredient.ingredient.toLowerCase().includes(available.toLowerCase())
     )
-  );
-  
-  const matchPercentage = ingredients.length > 0 ? Math.round((matchedIngredients.length / ingredients.length) * 100) : 0;
-  const hasAvailableIngredients = availableIngredients.length > 0;
+  ) : [];
 
   return (
     <div
@@ -195,12 +193,6 @@ export function MealCard({ meal, onClick, className, availableIngredients = [] }
               <ChefHat className="h-4 w-4" />
               <span className="font-medium">Ingredients:</span>
             </div>
-            {hasAvailableIngredients && (
-              <div className="flex items-center gap-1 text-xs">
-                <Apple className="h-3 w-3 text-green-600" />
-                <span className="font-medium text-green-600">{matchPercentage}% match</span>
-              </div>
-            )}
           </div>
           
           {/* Ingredient List with Visual Indicators */}
@@ -214,14 +206,14 @@ export function MealCard({ meal, onClick, className, availableIngredients = [] }
                   <span className="text-base">{getIngredientEmoji(ingredient.ingredient)}</span>
                   <span className={cn(
                     "flex-1",
-                    isMatched && hasAvailableIngredients 
+                    isMatched && showMatchPercentage 
                       ? "text-green-700 dark:text-green-300 font-medium" 
                       : "text-gray-500 dark:text-gray-400"
                   )}>
                     {ingredient.ingredient}
                     {ingredient.measure && ` (${ingredient.measure})`}
                   </span>
-                  {isMatched && hasAvailableIngredients && (
+                  {isMatched && showMatchPercentage && (
                     <CheckCircle className="h-3 w-3 text-green-600" />
                   )}
                 </div>

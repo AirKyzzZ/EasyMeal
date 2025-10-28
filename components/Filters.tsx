@@ -1,34 +1,35 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { ChevronDown, X, Apple } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { ChevronDown, X, Beef, RotateCcw, Cake, Apple, Fish, Salad, Soup, Leaf, Carrot, Utensils, Globe } from 'lucide-react';
 import { mealApiService } from '@/lib/api';
 import { Category, Area, Ingredient } from '@/types/meal';
 import { cn } from '@/lib/utils';
+import { IngredientImage } from '@/lib/ingredientImages';
 
-// Apple emojis for different categories
-const getCategoryEmoji = (category: string): string => {
+// Icons for different categories
+const getCategoryIcon = (category: string) => {
   const lowerCategory = category.toLowerCase();
   
-  if (lowerCategory.includes('beef')) return '🥩';
-  if (lowerCategory.includes('chicken')) return '🐔';
-  if (lowerCategory.includes('dessert')) return '🍰';
-  if (lowerCategory.includes('lamb')) return '🐑';
-  if (lowerCategory.includes('miscellaneous')) return '🍎';
-  if (lowerCategory.includes('pasta')) return '🍝';
-  if (lowerCategory.includes('pork')) return '🐷';
-  if (lowerCategory.includes('seafood')) return '🐟';
-  if (lowerCategory.includes('side')) return '🥗';
-  if (lowerCategory.includes('starter')) return '🥘';
-  if (lowerCategory.includes('vegan')) return '🌱';
-  if (lowerCategory.includes('vegetarian')) return '🥕';
-  if (lowerCategory.includes('breakfast')) return '🥞';
-  if (lowerCategory.includes('goat')) return '🐐';
+  if (lowerCategory.includes('beef')) return Beef;
+  if (lowerCategory.includes('chicken')) return RotateCcw; // Using a generic icon
+  if (lowerCategory.includes('dessert')) return Cake;
+  if (lowerCategory.includes('lamb')) return RotateCcw; // Using a generic icon
+  if (lowerCategory.includes('miscellaneous')) return Apple;
+  if (lowerCategory.includes('pasta')) return Utensils; // Using utensils for pasta
+  if (lowerCategory.includes('pork')) return RotateCcw; // Using a generic icon
+  if (lowerCategory.includes('seafood')) return Fish;
+  if (lowerCategory.includes('side')) return Salad;
+  if (lowerCategory.includes('starter')) return Soup;
+  if (lowerCategory.includes('vegan')) return Leaf;
+  if (lowerCategory.includes('vegetarian')) return Carrot;
+  if (lowerCategory.includes('breakfast')) return Utensils; // Using utensils for breakfast
+  if (lowerCategory.includes('goat')) return RotateCcw; // Using a generic icon
   
-  return '🍎'; // Default apple emoji
+  return Utensils; // Default icon
 };
 
-// Apple emojis for different areas/cuisines
+// Country flag emojis for different cuisines
 const getAreaEmoji = (area: string): string => {
   const lowerArea = area.toLowerCase();
   
@@ -58,10 +59,9 @@ const getAreaEmoji = (area: string): string => {
   if (lowerArea.includes('thai')) return '🇹🇭';
   if (lowerArea.includes('tunisian')) return '🇹🇳';
   if (lowerArea.includes('turkish')) return '🇹🇷';
-  if (lowerArea.includes('unknown')) return '🍎';
   if (lowerArea.includes('vietnamese')) return '🇻🇳';
   
-  return '🍎'; // Default apple emoji
+  return '🌍'; // Default globe emoji
 };
 
 interface FilterDropdownProps {
@@ -75,10 +75,47 @@ interface FilterDropdownProps {
 function FilterDropdown({ label, options, value, onChange, className }: FilterDropdownProps) {
   const [isOpen, setIsOpen] = useState(false);
 
-  const getEmoji = (optionValue: string) => {
-    if (label.toLowerCase() === 'category') return getCategoryEmoji(optionValue);
-    if (label.toLowerCase() === 'area') return getAreaEmoji(optionValue);
-    return '🍎'; // Default for ingredients
+  const getIcon = (optionValue: string) => {
+    if (label.toLowerCase() === 'category') return getCategoryIcon(optionValue);
+    return Apple; // Default for ingredients
+  };
+
+  // Get the display element for the selected value
+  const getSelectedDisplay = () => {
+    if (!value) return label;
+    
+    // For area: show flag emoji
+    if (label.toLowerCase() === 'area') {
+      return (
+        <>
+          <span className="mr-2">{getAreaEmoji(value)}</span>
+          {options.find(opt => opt.value === value)?.label || label}
+        </>
+      );
+    }
+    
+    // For ingredient: show ingredient image
+    if (label.toLowerCase() === 'ingredient') {
+      const selectedOption = options.find(opt => opt.value === value);
+      return (
+        <>
+          <IngredientImage ingredient={value} size="small" className="mr-2" />
+          {selectedOption?.label || label}
+        </>
+      );
+    }
+    
+    // For category: show icon
+    if (label.toLowerCase() === 'category') {
+      return (
+        <>
+          {React.createElement(getIcon(value), { className: "h-4 w-4 mr-2 text-gray-600 dark:text-gray-400" })}
+          {options.find(opt => opt.value === value)?.label || label}
+        </>
+      );
+    }
+    
+    return options.find(opt => opt.value === value)?.label || label;
   };
 
   return (
@@ -88,10 +125,11 @@ function FilterDropdown({ label, options, value, onChange, className }: FilterDr
         className="flex w-full items-center justify-between rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm transition-colors hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700"
       >
         <div className="flex items-center gap-2">
-          <span className="text-base">{getEmoji(value)}</span>
-          <span className="text-gray-700 dark:text-gray-300">
-            {value ? options.find(opt => opt.value === value)?.label || label : label}
-          </span>
+          {value ? (
+            getSelectedDisplay()
+          ) : (
+            <span className="text-gray-700 dark:text-gray-300">{label}</span>
+          )}
         </div>
         <ChevronDown className={cn("h-4 w-4 text-gray-400 transition-transform", isOpen && "rotate-180")} />
       </button>
@@ -118,7 +156,13 @@ function FilterDropdown({ label, options, value, onChange, className }: FilterDr
                 }}
                 className="flex w-full items-center gap-3 px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-700"
               >
-                <span className="text-base">{option.emoji || getEmoji(option.value)}</span>
+                {label.toLowerCase() === 'ingredient' ? (
+                  <IngredientImage ingredient={option.value} size="small" />
+                ) : label.toLowerCase() === 'area' ? (
+                  <span className="text-base">{getAreaEmoji(option.value)}</span>
+                ) : (
+                  React.createElement(getIcon(option.value), { className: "h-4 w-4 text-gray-600 dark:text-gray-400" })
+                )}
                 <div className="flex-1">
                   <div className="font-medium">{option.label}</div>
                   {option.description && (

@@ -284,7 +284,7 @@ export default function Home() {
                 onClick={testApiConnection}
                 className="flex items-center gap-2 rounded-lg bg-orange-100 px-4 py-2 text-sm font-medium text-orange-700 transition-colors hover:bg-orange-200 dark:bg-orange-900/20 dark:text-orange-300 dark:hover:bg-orange-900/30"
               >
-                🔧 Test API
+                Test API
               </button>
               <button
                 onClick={loadRandomMeals}
@@ -300,7 +300,6 @@ export default function Home() {
 
       {/* Main Content */}
       <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-        {/* Search Mode Toggle */}
         <div className="mb-8">
           <div className="flex justify-center">
             <div className="flex rounded-lg bg-gray-100 p-1 dark:bg-gray-700">
@@ -361,7 +360,7 @@ export default function Home() {
           {searchMode === 'ingredients' && availableIngredients.length > 0 && (
             <div className="mb-4 text-center">
               <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
-                🍎 Recipes containing your ingredients
+                Recipes containing your ingredients
               </h2>
               <p className="text-sm text-gray-600 dark:text-gray-400">
                 {meals.length} recipe{meals.length !== 1 ? 's' : ''} found containing your {availableIngredients.length} ingredient{availableIngredients.length !== 1 ? 's' : ''}

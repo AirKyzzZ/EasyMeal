@@ -3,8 +3,9 @@
 ✔ No emojis in the ingredients dropdown @done(25-10-28 10:51)
 ✔ Make the dropdown larger @done(25-10-28 10:51)
 ☐ Make the first loading faster by loading only a few items then more when scrolling
-☐ Remove test api button
+☐ Replace test api button with a TheMealDB button that redirects to https://www.themealdb.com
 ☐ Implement the logo made in canva
+☐ Make the watch on youtube button red
 ☐ Footer
 ☐ Optimize loading for images and api calls
 ☐ Google lighthouse score optimization

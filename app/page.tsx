@@ -255,23 +255,23 @@ export default function Home() {
   }, [searchQuery, filters]);
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="min-h-screen bg-white dark:bg-[#262523]">
       {/* Header */}
-      <header className="border-b border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800">
+      <header className="border-b border-[#e5e5e5] bg-white dark:border-[#4a4a4a] dark:bg-[#262523]">
         <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-500">
-                <ChefHat className="h-6 w-6 text-white" />
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#262523] dark:bg-white">
+                <ChefHat className="h-6 w-6 text-white dark:text-[#262523]" />
               </div>
             <div>
-              <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+              <h1 className="text-2xl font-bold text-[#262523] dark:text-white">
                 EasyMeal
               </h1>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
+              <p className="text-sm text-[#6b6b6b] dark:text-[#a0a0a0]">
                 Discover amazing recipes
                 {!isOnline && (
-                  <span className="ml-2 text-orange-600 dark:text-orange-400">
+                  <span className="ml-2 text-[#262523] dark:text-white">
                     (Offline Mode)
                   </span>
                 )}
@@ -282,13 +282,13 @@ export default function Home() {
             <div className="flex gap-2">
               <button
                 onClick={testApiConnection}
-                className="flex items-center gap-2 rounded-lg bg-orange-100 px-4 py-2 text-sm font-medium text-orange-700 transition-colors hover:bg-orange-200 dark:bg-orange-900/20 dark:text-orange-300 dark:hover:bg-orange-900/30"
+                className="flex items-center gap-2 rounded-lg bg-[#f5f5f5] px-4 py-2 text-sm font-medium text-[#262523] transition-colors hover:bg-[#e5e5e5] dark:bg-[#3a3a3a] dark:text-white dark:hover:bg-[#4a4a4a]"
               >
                 Test API
               </button>
               <button
                 onClick={loadRandomMeals}
-                className="flex items-center gap-2 rounded-lg bg-gray-100 px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
+                className="flex items-center gap-2 rounded-lg bg-[#262523] px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-[#3a3a3a] dark:bg-white dark:text-[#262523] dark:hover:bg-[#f5f5f5]"
               >
                 <Sparkles className="h-4 w-4" />
                 Random Meals
@@ -302,13 +302,13 @@ export default function Home() {
       <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
         <div className="mb-8">
           <div className="flex justify-center">
-            <div className="flex rounded-lg bg-gray-100 p-1 dark:bg-gray-700">
+            <div className="flex rounded-lg bg-[#f5f5f5] p-1 dark:bg-[#3a3a3a]">
               <button
                 onClick={() => setSearchMode('search')}
                 className={`flex items-center gap-2 rounded-md px-4 py-2 text-sm font-medium transition-colors ${
                   searchMode === 'search'
-                    ? 'bg-white text-gray-900 shadow-sm dark:bg-gray-600 dark:text-white'
-                    : 'text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white'
+                    ? 'bg-white text-[#262523] shadow-sm dark:bg-[#262523] dark:text-white'
+                    : 'text-[#6b6b6b] hover:text-[#262523] dark:text-[#a0a0a0] dark:hover:text-white'
                 }`}
               >
                 <ChefHat className="h-4 w-4" />
@@ -318,8 +318,8 @@ export default function Home() {
                 onClick={() => setSearchMode('ingredients')}
                 className={`flex items-center gap-2 rounded-md px-4 py-2 text-sm font-medium transition-colors ${
                   searchMode === 'ingredients'
-                    ? 'bg-white text-gray-900 shadow-sm dark:bg-gray-600 dark:text-white'
-                    : 'text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white'
+                    ? 'bg-white text-[#262523] shadow-sm dark:bg-[#262523] dark:text-white'
+                    : 'text-[#6b6b6b] hover:text-[#262523] dark:text-[#a0a0a0] dark:hover:text-white'
                 }`}
               >
                 <Apple className="h-4 w-4" />
@@ -359,10 +359,10 @@ export default function Home() {
         <div className="mb-6">
           {searchMode === 'ingredients' && availableIngredients.length > 0 && (
             <div className="mb-4 text-center">
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+              <h2 className="text-lg font-semibold text-[#262523] dark:text-white">
                 Recipes containing your ingredients
               </h2>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
+              <p className="text-sm text-[#6b6b6b] dark:text-[#a0a0a0]">
                 {meals.length} recipe{meals.length !== 1 ? 's' : ''} found containing your {availableIngredients.length} ingredient{availableIngredients.length !== 1 ? 's' : ''}
               </p>
             </div>
@@ -370,10 +370,10 @@ export default function Home() {
           
           {searchMode === 'search' && searchQuery && (
             <div className="mb-4 text-center">
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+              <h2 className="text-lg font-semibold text-[#262523] dark:text-white">
                 Search results for "{searchQuery}"
               </h2>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
+              <p className="text-sm text-[#6b6b6b] dark:text-[#a0a0a0]">
                 {meals.length} meal{meals.length !== 1 ? 's' : ''} found
               </p>
             </div>
@@ -381,10 +381,10 @@ export default function Home() {
           
           {searchMode === 'search' && Object.values(filters).some(filter => filter) && (
             <div className="mb-4 text-center">
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+              <h2 className="text-lg font-semibold text-[#262523] dark:text-white">
                 Filtered Results
               </h2>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
+              <p className="text-sm text-[#6b6b6b] dark:text-[#a0a0a0]">
                 {meals.length} meal{meals.length !== 1 ? 's' : ''} found
               </p>
             </div>
@@ -395,8 +395,8 @@ export default function Home() {
         {isLoading && (
           <div className="flex justify-center py-12">
             <div className="flex items-center gap-3">
-              <div className="h-6 w-6 animate-spin rounded-full border-2 border-gray-300 border-t-blue-500"></div>
-              <span className="text-gray-600 dark:text-gray-400">
+              <div className="h-6 w-6 animate-spin rounded-full border-2 border-[#e5e5e5] border-t-[#262523] dark:border-[#4a4a4a] dark:border-t-white"></div>
+              <span className="text-[#6b6b6b] dark:text-[#a0a0a0]">
                 {searchMode === 'ingredients' ? 'Finding recipes with your ingredients...' : 'Loading meals...'}
               </span>
             </div>
@@ -406,8 +406,8 @@ export default function Home() {
         {/* Error State */}
         {error && (
           <div className="flex justify-center py-12">
-            <div className="rounded-lg bg-red-50 p-4 text-center dark:bg-red-900/20">
-              <p className="text-red-600 dark:text-red-400">{error}</p>
+            <div className="rounded-lg bg-[#f8f8f8] p-4 text-center dark:bg-[#404040]">
+              <p className="text-[#262523] dark:text-white">{error}</p>
               <button
                 onClick={() => {
                   if (searchQuery) {
@@ -416,7 +416,7 @@ export default function Home() {
                     loadRandomMeals();
                   }
                 }}
-                className="mt-2 text-sm text-red-600 underline hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
+                className="mt-2 text-sm text-[#262523] underline hover:text-[#3a3a3a] dark:text-white dark:hover:text-[#a0a0a0]"
               >
                 Try again
               </button>
@@ -428,11 +428,11 @@ export default function Home() {
         {!isLoading && !error && meals.length === 0 && (
           <div className="flex justify-center py-12">
             <div className="text-center">
-              <ChefHat className="mx-auto h-12 w-12 text-gray-400" />
-              <h3 className="mt-4 text-lg font-semibold text-gray-900 dark:text-white">
+              <ChefHat className="mx-auto h-12 w-12 text-[#6b6b6b] dark:text-[#a0a0a0]" />
+              <h3 className="mt-4 text-lg font-semibold text-[#262523] dark:text-white">
                 No meals found
               </h3>
-              <p className="mt-2 text-gray-600 dark:text-gray-400">
+              <p className="mt-2 text-[#6b6b6b] dark:text-[#a0a0a0]">
                 Try adjusting your search or filters
               </p>
             </div>

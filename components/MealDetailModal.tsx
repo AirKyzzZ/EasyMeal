@@ -226,7 +226,7 @@ export function MealDetailModal({ meal, isOpen, onClose }: MealDetailModalProps)
                 href={displayMeal.strYoutube}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-2 rounded-lg bg-[#262523] px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-[#3a3a3a] dark:bg-white dark:text-[#262523] dark:hover:bg-[#f5f5f5]"
+                className="flex items-center gap-2 rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-red-700 dark:bg-red-600 dark:text-white dark:hover:bg-red-700"
               >
                 <Youtube className="h-4 w-4" />
                 Watch on YouTube

@@ -463,8 +463,8 @@ export default function Home() {
           </div>
         )}
 
-        {/* Meals Grid */}
-        {!pagination.isLoading && !pagination.error && pagination.items.length > 0 && (
+        {/* Meals Grid - Always show when we have items */}
+        {pagination.items.length > 0 && (
           <>
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
               {pagination.items.map((meal, index) => (
@@ -483,14 +483,14 @@ export default function Home() {
             {pagination.hasMore && currentSearchTypeRef.current === 'random' && (
               <div ref={pagination.lastItemElementRef} className="h-1" />
             )}
-            
-            {/* Loading more indicator */}
-            {pagination.isLoading && pagination.items.length > 0 && (
-              <div className="mt-8 flex justify-center">
-                <MealGridSkeleton count={3} />
-              </div>
-            )}
           </>
+        )}
+        
+        {/* Loading more indicator - show below existing items */}
+        {pagination.isLoading && pagination.items.length > 0 && (
+          <div className="mt-8 flex justify-center" style={{ minHeight: '200px' }}>
+            <MealGridSkeleton count={3} />
+          </div>
         )}
       </main>
 

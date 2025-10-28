@@ -7,6 +7,7 @@
 ✔ Implement the logo made in canva @done(25-10-28 11:30)
 ✔ Make the first loading faster by loading only a few items then more when scrolling to optimize for google lighthouse and ecoindex score @done(25-10-28 11:48)
 ☐ Make the watch on youtube button red
+☐ Change random meals button to random meal button and it opens up a random meal modal card 
 ☐ Footer with copyright and credit, made with ☕️ by Maxime Mansiet + github link https://maximemansiet.fr/
 ☐ Optimize loading the api calls for the website to be optimized and fast
 ☐ Sujet prof optimisations et clean code

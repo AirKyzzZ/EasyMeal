@@ -60,7 +60,6 @@ export default function RootLayout({
     <html lang="en">
       <head>
         {/* Preload critical resources */}
-        <link rel="preload" href="/logo.png" as="image" />
         <link rel="dns-prefetch" href="//www.themealdb.com" />
         <link rel="preconnect" href="https://www.themealdb.com" />
       </head>

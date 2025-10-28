@@ -33,8 +33,7 @@ export function usePagination(options: UsePaginationOptions = {}) {
   const loadingRef = useRef(false);
   const observerRef = useRef<IntersectionObserver | null>(null);
   const lastItemRef = useRef<HTMLDivElement | null>(null);
-  const scrollPositionRef = useRef<number>(0);
-  const isRestoringScrollRef = useRef(false);
+  const loadingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const setItems = useCallback((items: Meal[]) => {
     setState(prev => ({
@@ -46,10 +45,6 @@ export function usePagination(options: UsePaginationOptions = {}) {
   }, [maxItems]);
 
   const appendItems = useCallback((newItems: Meal[]) => {
-    // Store current scroll position before state update
-    scrollPositionRef.current = window.scrollY;
-    isRestoringScrollRef.current = true;
-    
     setState(prev => {
       const combinedItems = [...prev.items, ...newItems];
       const limitedItems = combinedItems.slice(0, maxItems);
@@ -82,6 +77,12 @@ export function usePagination(options: UsePaginationOptions = {}) {
       page: 0
     });
     loadingRef.current = false;
+    
+    // Clear any pending loading timeout
+    if (loadingTimeoutRef.current) {
+      clearTimeout(loadingTimeoutRef.current);
+      loadingTimeoutRef.current = null;
+    }
   }, []);
 
   // Intersection Observer for infinite scroll
@@ -92,10 +93,19 @@ export function usePagination(options: UsePaginationOptions = {}) {
     observerRef.current = new IntersectionObserver(entries => {
       if (entries[0].isIntersecting && state.hasMore && !state.isLoading) {
         loadingRef.current = true;
-        setState(prev => ({ ...prev, isLoading: true }));
+        
+        // Clear any existing timeout
+        if (loadingTimeoutRef.current) {
+          clearTimeout(loadingTimeoutRef.current);
+        }
+        
+        // Only show loading state if it takes more than 200ms
+        loadingTimeoutRef.current = setTimeout(() => {
+          setState(prev => ({ ...prev, isLoading: true }));
+        }, 200);
       }
     }, {
-      rootMargin: '100px' // Trigger 100px before the element comes into view
+      rootMargin: '500px' // Trigger 500px before the element comes into view for much smoother loading
     });
     
     if (node) observerRef.current.observe(node);
@@ -104,28 +114,16 @@ export function usePagination(options: UsePaginationOptions = {}) {
 
   const markLoadComplete = useCallback(() => {
     loadingRef.current = false;
+    
+    // Clear loading timeout and reset loading state
+    if (loadingTimeoutRef.current) {
+      clearTimeout(loadingTimeoutRef.current);
+      loadingTimeoutRef.current = null;
+    }
+    
+    setState(prev => ({ ...prev, isLoading: false }));
   }, []);
 
-  // Effect to restore scroll position after items are added
-  useEffect(() => {
-    if (isRestoringScrollRef.current && scrollPositionRef.current > 0) {
-      // Use multiple attempts to ensure scroll position is restored
-      const restoreScroll = () => {
-        window.scrollTo(0, scrollPositionRef.current);
-        
-        // Check if scroll position was restored correctly
-        setTimeout(() => {
-          if (Math.abs(window.scrollY - scrollPositionRef.current) > 10) {
-            window.scrollTo(0, scrollPositionRef.current);
-          }
-          isRestoringScrollRef.current = false;
-        }, 100);
-      };
-      
-      // Try immediately and after a delay
-      requestAnimationFrame(restoreScroll);
-    }
-  }, [state.items.length]); // Trigger when items change
 
   return {
     ...state,

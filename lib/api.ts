@@ -148,6 +148,28 @@ class MealApiService {
     return enrichedMeals;
   }
 
+  // Get random meals with pagination support
+  async getRandomMeals(page: number = 0, pageSize: number = 6): Promise<Meal[]> {
+    const randomMeals: (Meal | null)[] = [];
+    const batchSize = 3; // Process 3 meals at a time
+    
+    for (let i = 0; i < pageSize; i += batchSize) {
+      const batch = Array.from({ length: Math.min(batchSize, pageSize - i) }, () => 
+        this.getRandomMeal()
+      );
+      const batchResults = await Promise.all(batch);
+      randomMeals.push(...batchResults);
+      
+      // Small delay between batches to be respectful to the API
+      if (i + batchSize < pageSize) {
+        await new Promise(resolve => setTimeout(resolve, 200));
+      }
+    }
+    
+    const validMeals = randomMeals.filter(meal => meal !== null) as Meal[];
+    return validMeals;
+  }
+
   // Get random meal
   async getRandomMeal(): Promise<Meal | null> {
     try {

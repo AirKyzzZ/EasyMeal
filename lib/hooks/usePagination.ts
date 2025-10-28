@@ -1,0 +1,115 @@
+import { useState, useCallback, useRef, useEffect } from 'react';
+import { Meal } from '@/types/meal';
+
+interface PaginationState {
+  items: Meal[];
+  isLoading: boolean;
+  hasMore: boolean;
+  error: string | null;
+  page: number;
+}
+
+interface UsePaginationOptions {
+  initialPageSize?: number;
+  loadMoreSize?: number;
+  maxItems?: number;
+}
+
+export function usePagination(options: UsePaginationOptions = {}) {
+  const {
+    initialPageSize = 6, // Load 6 items initially for fast first paint
+    loadMoreSize = 6,    // Load 6 more items on scroll
+    maxItems = 50        // Maximum items to prevent memory issues
+  } = options;
+
+  const [state, setState] = useState<PaginationState>({
+    items: [],
+    isLoading: false,
+    hasMore: true,
+    error: null,
+    page: 0
+  });
+
+  const loadingRef = useRef(false);
+  const observerRef = useRef<IntersectionObserver | null>(null);
+  const lastItemRef = useRef<HTMLDivElement | null>(null);
+
+  const setItems = useCallback((items: Meal[]) => {
+    setState(prev => ({
+      ...prev,
+      items: items.slice(0, maxItems), // Limit total items
+      hasMore: items.length < maxItems,
+      page: 0
+    }));
+  }, [maxItems]);
+
+  const appendItems = useCallback((newItems: Meal[]) => {
+    setState(prev => {
+      const combinedItems = [...prev.items, ...newItems];
+      const limitedItems = combinedItems.slice(0, maxItems);
+      
+      return {
+        ...prev,
+        items: limitedItems,
+        hasMore: combinedItems.length < maxItems && newItems.length === loadMoreSize,
+        page: prev.page + 1,
+        isLoading: false,
+        error: null
+      };
+    });
+  }, [loadMoreSize, maxItems]);
+
+  const setLoading = useCallback((isLoading: boolean) => {
+    setState(prev => ({ ...prev, isLoading }));
+  }, []);
+
+  const setError = useCallback((error: string | null) => {
+    setState(prev => ({ ...prev, error }));
+  }, []);
+
+  const reset = useCallback(() => {
+    setState({
+      items: [],
+      isLoading: false,
+      hasMore: true,
+      error: null,
+      page: 0
+    });
+    loadingRef.current = false;
+  }, []);
+
+  // Intersection Observer for infinite scroll
+  const lastItemElementRef = useCallback((node: HTMLDivElement | null) => {
+    if (loadingRef.current) return;
+    if (observerRef.current) observerRef.current.disconnect();
+    
+    observerRef.current = new IntersectionObserver(entries => {
+      if (entries[0].isIntersecting && state.hasMore && !state.isLoading) {
+        loadingRef.current = true;
+        setState(prev => ({ ...prev, isLoading: true }));
+      }
+    }, {
+      rootMargin: '100px' // Trigger 100px before the element comes into view
+    });
+    
+    if (node) observerRef.current.observe(node);
+    lastItemRef.current = node;
+  }, [state.hasMore, state.isLoading]);
+
+  const markLoadComplete = useCallback(() => {
+    loadingRef.current = false;
+  }, []);
+
+  return {
+    ...state,
+    setItems,
+    appendItems,
+    setLoading,
+    setError,
+    reset,
+    lastItemElementRef,
+    markLoadComplete,
+    initialPageSize,
+    loadMoreSize
+  };
+}

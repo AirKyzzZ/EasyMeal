@@ -5,11 +5,12 @@
 ✔ Fix the fact that you can still scroll the page after the meal card is opened it's annoying @done(25-10-28 11:09)
 ✔ Replace "test api" button with a TheMealDB button that redirects to https://www.themealdb.com @done(25-10-28 11:14)
 ✔ Implement the logo made in canva @done(25-10-28 11:30)
-☐ Make the first loading faster by loading only a few items then more when scrolling to optimize for google lighthouse score
+✔ Make the first loading faster by loading only a few items then more when scrolling to optimize for google lighthouse and ecoindex score @done(25-10-28 11:48)
 ☐ Make the watch on youtube button red
-☐ Footer with copyright and credit, made with ☕️ by Maxime Mansiet + github link https://github.com/airkyzzz
-☐ Optimize loading for images and api calls
-☐ Google lighthouse score optimization
-☐ Eco score optimization
+☐ Footer with copyright and credit, made with ☕️ by Maxime Mansiet + github link https://maximemansiet.fr/
+☐ Optimize loading the api calls for the website to be optimized and fast
+☐ Sujet prof optimisations et clean code
+☐ Make sure the code is super clean formated with linter prettier eslint strict config and run
+☐ Optimize SEO for the website to be the best in google search results
 ☐ Readme
-☐ Post netlify
+☐ Upload netlify branch main

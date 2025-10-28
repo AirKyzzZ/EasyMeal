@@ -30,11 +30,9 @@
           ],
           "estimate": "S",
           "priority": "P0",
-          "dependencies": [
-            1
-          ],
+          "dependencies": [1],
           "assignee": "Student",
-          "status": "pending"
+          "status": "done"
         },
         {
           "id": 3,
@@ -46,10 +44,7 @@
           ],
           "estimate": "S",
           "priority": "P0",
-          "dependencies": [
-            1,
-            2
-          ],
+          "dependencies": [1, 2],
           "assignee": "Student",
           "status": "pending"
         },
@@ -63,9 +58,7 @@
           ],
           "estimate": "XS",
           "priority": "P0",
-          "dependencies": [
-            1
-          ],
+          "dependencies": [1],
           "assignee": "Student",
           "status": "pending"
         },
@@ -81,9 +74,7 @@
           ],
           "estimate": "M",
           "priority": "P0",
-          "dependencies": [
-            3
-          ],
+          "dependencies": [3],
           "assignee": "Student",
           "status": "pending"
         },
@@ -98,9 +89,7 @@
           ],
           "estimate": "M",
           "priority": "P0",
-          "dependencies": [
-            4
-          ],
+          "dependencies": [4],
           "assignee": "Student",
           "status": "pending"
         },
@@ -115,9 +104,7 @@
           ],
           "estimate": "M",
           "priority": "P0",
-          "dependencies": [
-            6
-          ],
+          "dependencies": [6],
           "assignee": "Student",
           "status": "pending"
         },
@@ -131,9 +118,7 @@
           ],
           "estimate": "M",
           "priority": "P1",
-          "dependencies": [
-            7
-          ],
+          "dependencies": [7],
           "assignee": "Student",
           "status": "pending"
         },
@@ -148,10 +133,7 @@
           ],
           "estimate": "M",
           "priority": "P0",
-          "dependencies": [
-            3,
-            7
-          ],
+          "dependencies": [3, 7],
           "assignee": "Student",
           "status": "pending"
         },
@@ -166,10 +148,7 @@
           ],
           "estimate": "M",
           "priority": "P0",
-          "dependencies": [
-            6,
-            9
-          ],
+          "dependencies": [6, 9],
           "assignee": "Student",
           "status": "pending"
         },
@@ -184,9 +163,7 @@
           ],
           "estimate": "M",
           "priority": "P1",
-          "dependencies": [
-            10
-          ],
+          "dependencies": [10],
           "assignee": "Student",
           "status": "pending"
         },
@@ -200,10 +177,7 @@
           ],
           "estimate": "S",
           "priority": "P1",
-          "dependencies": [
-            9,
-            10
-          ],
+          "dependencies": [9, 10],
           "assignee": "Student",
           "status": "pending"
         },
@@ -218,10 +192,7 @@
           ],
           "estimate": "S",
           "priority": "P2",
-          "dependencies": [
-            7,
-            9
-          ],
+          "dependencies": [7, 9],
           "assignee": "Student",
           "status": "pending"
         },
@@ -235,10 +206,7 @@
           ],
           "estimate": "S",
           "priority": "P0",
-          "dependencies": [
-            7,
-            9
-          ],
+          "dependencies": [7, 9],
           "assignee": "Student",
           "status": "pending"
         },
@@ -252,11 +220,7 @@
           ],
           "estimate": "S",
           "priority": "P0",
-          "dependencies": [
-            5,
-            9,
-            10
-          ],
+          "dependencies": [5, 9, 10],
           "assignee": "Student",
           "status": "pending"
         },
@@ -270,10 +234,7 @@
           ],
           "estimate": "S",
           "priority": "P1",
-          "dependencies": [
-            9,
-            10
-          ],
+          "dependencies": [9, 10],
           "assignee": "Student",
           "status": "pending"
         },
@@ -287,9 +248,7 @@
           ],
           "estimate": "S",
           "priority": "P2",
-          "dependencies": [
-            10
-          ],
+          "dependencies": [10],
           "assignee": "Student",
           "status": "pending"
         },
@@ -297,18 +256,10 @@
           "id": 18,
           "title": "Testing baseline (Jest/RTL + Cypress)",
           "description": "Configure Jest/RTL; 3 unit tests (input, orchestrator, card); 2 e2e specs (search flow, detail).",
-          "acceptanceCriteria": [
-            "npm test passes",
-            "npx cypress run passes"
-          ],
+          "acceptanceCriteria": ["npm test passes", "npx cypress run passes"],
           "estimate": "M",
           "priority": "P0",
-          "dependencies": [
-            5,
-            7,
-            9,
-            10
-          ],
+          "dependencies": [5, 7, 9, 10],
           "assignee": "Student",
           "status": "pending"
         },
@@ -323,11 +274,7 @@
           ],
           "estimate": "S",
           "priority": "P0",
-          "dependencies": [
-            1,
-            2,
-            18
-          ],
+          "dependencies": [1, 2, 18],
           "assignee": "Student",
           "status": "pending"
         },
@@ -343,12 +290,7 @@
           ],
           "estimate": "S",
           "priority": "P0",
-          "dependencies": [
-            9,
-            10,
-            14,
-            16
-          ],
+          "dependencies": [9, 10, 14, 16],
           "assignee": "Student",
           "status": "pending"
         }
@@ -378,14 +320,10 @@
           "id": 2,
           "title": "Configure ESLint/Prettier",
           "description": "Prettier integration, scripts lint/format, recommended rules.",
-          "acceptanceCriteria": [
-            "npm run lint and npm run format succeed"
-          ],
+          "acceptanceCriteria": ["npm run lint and npm run format succeed"],
           "estimate": "0.5h",
           "priority": "P0",
-          "dependencies": [
-            1
-          ],
+          "dependencies": [1],
           "assignee": "Student",
           "status": "pending"
         },
@@ -393,15 +331,10 @@
           "id": 3,
           "title": "Base layout + responsive nav",
           "description": "Implement app/layout.tsx and a simple header/footer, focus-visible styles.",
-          "acceptanceCriteria": [
-            "Mobile/tablet/desktop layouts verified"
-          ],
+          "acceptanceCriteria": ["Mobile/tablet/desktop layouts verified"],
           "estimate": "1h",
           "priority": "P0",
-          "dependencies": [
-            1,
-            2
-          ],
+          "dependencies": [1, 2],
           "assignee": "Student",
           "status": "pending"
         },
@@ -409,14 +342,10 @@
           "id": 4,
           "title": "Add TanStack Query provider",
           "description": "Initialize QueryClient in root; add devtools in dev.",
-          "acceptanceCriteria": [
-            "React Query devtools visible in dev"
-          ],
+          "acceptanceCriteria": ["React Query devtools visible in dev"],
           "estimate": "0.5h",
           "priority": "P0",
-          "dependencies": [
-            1
-          ],
+          "dependencies": [1],
           "assignee": "Student",
           "status": "pending"
         },
@@ -432,9 +361,7 @@
           ],
           "estimate": "2h",
           "priority": "P0",
-          "dependencies": [
-            3
-          ],
+          "dependencies": [3],
           "assignee": "Student",
           "status": "pending"
         },
@@ -448,9 +375,7 @@
           ],
           "estimate": "1.5h",
           "priority": "P0",
-          "dependencies": [
-            4
-          ],
+          "dependencies": [4],
           "assignee": "Student",
           "status": "pending"
         },
@@ -464,9 +389,7 @@
           ],
           "estimate": "1.5h",
           "priority": "P0",
-          "dependencies": [
-            6
-          ],
+          "dependencies": [6],
           "assignee": "Student",
           "status": "pending"
         },
@@ -480,10 +403,7 @@
           ],
           "estimate": "1.5h",
           "priority": "P0",
-          "dependencies": [
-            5,
-            7
-          ],
+          "dependencies": [5, 7],
           "assignee": "Student",
           "status": "pending"
         },
@@ -491,15 +411,10 @@
           "id": 9,
           "title": "Demo route /demo wiring",
           "description": "Create simple page assembling IngredientInput + ResultsGrid with mock data toggle.",
-          "acceptanceCriteria": [
-            "/demo loads and demo flow works without API"
-          ],
+          "acceptanceCriteria": ["/demo loads and demo flow works without API"],
           "estimate": "0.5h",
           "priority": "P0",
-          "dependencies": [
-            5,
-            8
-          ],
+          "dependencies": [5, 8],
           "assignee": "Student",
           "status": "pending"
         },
@@ -512,11 +427,7 @@
           ],
           "estimate": "0.5h",
           "priority": "P0",
-          "dependencies": [
-            1,
-            2,
-            9
-          ],
+          "dependencies": [1, 2, 9],
           "assignee": "Student",
           "status": "pending"
         }
@@ -524,7 +435,145 @@
     }
   },
   "sprint-0": {
-    "tasks": [],
+    "tasks": [
+      {
+        "id": 1,
+        "title": "Create Next.js app (TS + Tailwind + App Router)",
+        "description": "Scaffold project with TypeScript, Tailwind, ESLint.",
+        "acceptanceCriteria": [
+          "Dev server runs",
+          "Tailwind working",
+          "Repo initialized"
+        ],
+        "estimate": "1h",
+        "priority": "P0",
+        "dependencies": [],
+        "assignee": "Student",
+        "status": "done",
+        "details": "Commands:\n\n# Scaffold Next.js (TypeScript, Tailwind, ESLint, App Router)\nnpx create-next-app@latest easymeal --ts --tailwind --eslint --app --src-dir --use-npm --import-alias \"@/*\"\ncd easymeal\n\n# Install TanStack Query\nnpm install @tanstack/react-query @tanstack/react-query-devtools\n\n# Testing (Jest/RTL + Cypress)\nnpm install -D jest @testing-library/react @testing-library/jest-dom @testing-library/user-event jest-environment-jsdom ts-node next @types/jest cypress\nnpx cypress install\n\n# Linting/Prettier extras\nnpm install -D prettier eslint-config-prettier eslint-plugin-import eslint-plugin-jsx-a11y eslint-plugin-react eslint-plugin-react-hooks @typescript-eslint/eslint-plugin @typescript-eslint/parser\n\n# Initialize git\ngit init\ngit add .\ngit commit -m \"chore: scaffold Next.js (TS+Tailwind), add React Query, testing, linting\""
+      },
+      {
+        "id": 2,
+        "title": "Configure ESLint/Prettier",
+        "description": "Prettier integration, scripts lint/format, recommended rules.",
+        "acceptanceCriteria": [
+          "npm run lint and npm run format succeed"
+        ],
+        "estimate": "0.5h",
+        "priority": "P0",
+        "dependencies": [1],
+        "assignee": "Student",
+        "status": "done"
+      },
+      {
+        "id": 3,
+        "title": "Base layout + responsive nav",
+        "description": "Implement app/layout.tsx and a simple header/footer, focus-visible styles.",
+        "acceptanceCriteria": [
+          "Mobile/tablet/desktop layouts verified"
+        ],
+        "estimate": "1h",
+        "priority": "P0",
+        "dependencies": [1, 2],
+        "assignee": "Student",
+        "status": "pending"
+      },
+      {
+        "id": 4,
+        "title": "Add TanStack Query provider",
+        "description": "Initialize QueryClient in root; add devtools in dev.",
+        "acceptanceCriteria": [
+          "React Query devtools visible in dev"
+        ],
+        "estimate": "0.5h",
+        "priority": "P0",
+        "dependencies": [1],
+        "assignee": "Student",
+        "status": "pending"
+      },
+      {
+        "id": 5,
+        "title": "IngredientInput component (MVP)",
+        "description": "Tag input with add/remove via keyboard; accessible labels; basic suggestions list.",
+        "acceptanceCriteria": [
+          "Add via Enter/comma",
+          "Remove via Backspace",
+          "Tab/arrow navigation",
+          "ARIA labels set"
+        ],
+        "estimate": "2h",
+        "priority": "P0",
+        "dependencies": [3],
+        "assignee": "Student",
+        "status": "pending"
+      },
+      {
+        "id": 6,
+        "title": "TheMealDB fetch helper (mock mode)",
+        "description": "Create typed fetchers with AbortController; add mock responses for offline/demo.",
+        "acceptanceCriteria": [
+          "Helper returns mock on flag",
+          "Aborts on rapid input"
+        ],
+        "estimate": "1.5h",
+        "priority": "P0",
+        "dependencies": [4],
+        "assignee": "Student",
+        "status": "pending"
+      },
+      {
+        "id": 7,
+        "title": "Debounced search orchestrator (basic)",
+        "description": "Fan-out per ingredient; simple intersection; 300ms debounce; cancellation.",
+        "acceptanceCriteria": [
+          "Intersection works with multiple tags",
+          "No race conditions"
+        ],
+        "estimate": "1.5h",
+        "priority": "P0",
+        "dependencies": [6],
+        "assignee": "Student",
+        "status": "pending"
+      },
+      {
+        "id": 8,
+        "title": "ResultsGrid with skeletons (placeholder cards)",
+        "description": "Grid responsive columns; skeleton loading states; basic card info.",
+        "acceptanceCriteria": [
+          "Loading shows skeletons",
+          "Cards render with mock data"
+        ],
+        "estimate": "1.5h",
+        "priority": "P0",
+        "dependencies": [5, 7],
+        "assignee": "Student",
+        "status": "pending"
+      },
+      {
+        "id": 9,
+        "title": "Demo route /demo wiring",
+        "description": "Create simple page assembling IngredientInput + ResultsGrid with mock data toggle.",
+        "acceptanceCriteria": ["/demo loads and demo flow works without API"],
+        "estimate": "0.5h",
+        "priority": "P0",
+        "dependencies": [5, 8],
+        "assignee": "Student",
+        "status": "pending"
+      },
+      {
+        "id": 10,
+        "title": "README + scripts",
+        "description": "Document setup, scripts, how to run tests; note env and mock mode.",
+        "acceptanceCriteria": [
+          "README complete; classmates can run dev locally"
+        ],
+        "estimate": "0.5h",
+        "priority": "P0",
+        "dependencies": [1, 2, 9],
+        "assignee": "Student",
+        "status": "pending"
+      }
+    ],
     "metadata": {
       "created": "2025-10-27T20:02:47.504Z",
       "updated": "2025-10-27T20:02:47.513Z",

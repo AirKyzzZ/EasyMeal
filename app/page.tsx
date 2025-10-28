@@ -9,6 +9,7 @@ import { IngredientList } from '@/components/IngredientList';
 import { mealApiService } from '@/lib/api';
 import { Meal } from '@/types/meal';
 import { ChefHat, Sparkles, Apple } from 'lucide-react';
+import Image from 'next/image';
 
 // Extend Window interface to include our timeout property
 declare global {
@@ -250,8 +251,18 @@ export default function Home() {
         <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#262523] dark:bg-white">
-                <ChefHat className="h-6 w-6 text-white dark:text-[#262523]" />
+              <div className="relative h-10 w-10 overflow-hidden rounded-lg">
+                <Image
+                  src="/logo.png"
+                  alt="EasyMeal Logo"
+                  width={40}
+                  height={40}
+                  className="object-contain"
+                  priority
+                  quality={85}
+                  placeholder="blur"
+                  blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k="
+                />
               </div>
             <div>
               <h1 className="text-2xl font-bold text-[#262523] dark:text-white">

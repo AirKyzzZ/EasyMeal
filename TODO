@@ -3,11 +3,11 @@
 ✔ No emojis in the ingredients dropdown @done(25-10-28 10:51)
 ✔ Make the dropdown larger @done(25-10-28 10:51)
 ✔ Fix the fact that you can still scroll the page after the meal card is opened it's annoying @done(25-10-28 11:09)
-☐ Make the first loading faster by loading only a few items then more when scrolling
-☐ Replace "test api" button with a TheMealDB button that redirects to https://www.themealdb.com
-☐ Implement the logo made in canva
+✔ Replace "test api" button with a TheMealDB button that redirects to https://www.themealdb.com @done(25-10-28 11:14)
+✔ Implement the logo made in canva @done(25-10-28 11:30)
+☐ Make the first loading faster by loading only a few items then more when scrolling to optimize for google lighthouse score
 ☐ Make the watch on youtube button red
-☐ Footer
+☐ Footer with copyright and credit, made with ☕️ by Maxime Mansiet + github link https://github.com/airkyzzz
 ☐ Optimize loading for images and api calls
 ☐ Google lighthouse score optimization
 ☐ Eco score optimization

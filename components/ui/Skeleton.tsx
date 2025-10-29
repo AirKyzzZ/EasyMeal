@@ -6,12 +6,7 @@ interface SkeletonProps {
 
 export function Skeleton({ className }: SkeletonProps) {
   return (
-    <div
-      className={cn(
-        "animate-pulse rounded-md bg-secondary",
-        className
-      )}
-    />
+    <div className={cn('animate-pulse rounded-md bg-secondary', className)} />
   );
 }
 
@@ -22,17 +17,17 @@ export function MealCardSkeleton() {
       <div className="aspect-[4/3] rounded-t-lg">
         <Skeleton className="h-full w-full" />
       </div>
-      
+
       <div className="p-4">
         {/* Title skeleton */}
         <Skeleton className="mb-2 h-6 w-3/4" />
-        
+
         {/* Tags skeleton */}
         <div className="mb-3 flex gap-1">
           <Skeleton className="h-6 w-16 rounded-full" />
           <Skeleton className="h-6 w-20 rounded-full" />
         </div>
-        
+
         {/* Ingredients skeleton */}
         <div className="mb-3">
           <Skeleton className="mb-2 h-4 w-24" />
@@ -42,14 +37,14 @@ export function MealCardSkeleton() {
             <Skeleton className="h-4 w-3/4" />
           </div>
         </div>
-        
+
         {/* Description skeleton */}
         <div className="space-y-1">
           <Skeleton className="h-4 w-full" />
           <Skeleton className="h-4 w-5/6" />
           <Skeleton className="h-4 w-2/3" />
         </div>
-        
+
         {/* Action button skeleton */}
         <div className="mt-4 flex justify-between">
           <div className="flex gap-4">

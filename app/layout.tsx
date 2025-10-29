@@ -15,7 +15,8 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   metadataBase: new URL('https://easymeal.app'),
   title: 'EasyMeal - Discover Amazing Recipes',
-  description: 'Search and discover delicious recipes from around the world. Find meals by ingredients, cuisine, or category with our powerful search and filter system.',
+  description:
+    'Search and discover delicious recipes from around the world. Find meals by ingredients, cuisine, or category with our powerful search and filter system.',
   keywords: ['recipes', 'cooking', 'meals', 'food', 'cuisine', 'ingredients'],
   authors: [{ name: 'EasyMeal Team' }],
   icons: {
@@ -55,7 +56,7 @@ export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
-}>) {
+}>): React.JSX.Element {
   return (
     <html lang="en">
       <head>

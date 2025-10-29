@@ -1,17 +1,18 @@
 'use client';
 
-import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
-import { SearchBar } from '@/components/SearchBar';
-import { MealCard } from '@/components/MealCard';
-import { MealDetailModal } from '@/components/MealDetailModal';
-import { Filters } from '@/components/Filters';
-import { IngredientList } from '@/components/IngredientList';
-import { MealGridSkeleton } from '@/components/ui/Skeleton';
-import { mealApiService } from '@/lib/api';
-import { Meal } from '@/types/meal';
 import { ChefHat, Sparkles, Apple } from 'lucide-react';
 import Image from 'next/image';
+import { useState, useEffect, useCallback, useRef } from 'react';
+
+import { Filters } from '@/components/Filters';
+import { IngredientList } from '@/components/IngredientList';
+import { MealCard } from '@/components/MealCard';
+import { MealDetailModal } from '@/components/MealDetailModal';
+import { SearchBar } from '@/components/SearchBar';
+import { MealGridSkeleton } from '@/components/ui/Skeleton';
+import { mealApiService } from '@/lib/api';
 import { usePagination } from '@/lib/hooks/usePagination';
+import { Meal } from '@/types/meal';
 
 // Extend Window interface to include our timeout property
 declare global {
@@ -20,40 +21,50 @@ declare global {
   }
 }
 
-export default function Home() {
+export default function Home(): React.JSX.Element {
   const [selectedMeal, setSelectedMeal] = useState<Meal | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
-  const [filters, setFilters] = useState({ category: '', area: '', ingredient: '' });
-  const [availableIngredients, setAvailableIngredients] = useState<string[]>([]);
-  const [searchMode, setSearchMode] = useState<'search' | 'ingredients'>('search');
+  const [filters, setFilters] = useState({
+    category: '',
+    area: '',
+    ingredient: '',
+  });
+  const [availableIngredients, setAvailableIngredients] = useState<string[]>(
+    []
+  );
+  const [searchMode, setSearchMode] = useState<'search' | 'ingredients'>(
+    'search'
+  );
   const [isOnline, setIsOnline] = useState(true);
-  
+
   // Use pagination hook for meal management
   const pagination = usePagination({
-    initialPageSize: 6,  // Load 6 items initially for fast first paint
-    loadMoreSize: 6,     // Load 6 more items on scroll
-    maxItems: 50         // Maximum items to prevent memory issues
+    initialPageSize: 6, // Load 6 items initially for fast first paint
+    loadMoreSize: 6, // Load 6 more items on scroll
+    maxItems: 50, // Maximum items to prevent memory issues
   });
-  
+
   // Track current search to prevent duplicates
   const currentSearchRef = useRef<string>('');
-  const currentSearchTypeRef = useRef<'random' | 'search' | 'filter' | 'ingredients'>('random');
+  const currentSearchTypeRef = useRef<
+    'random' | 'search' | 'filter' | 'ingredients'
+  >('random');
 
   // Monitor network status
   useEffect(() => {
     const handleOnline = () => setIsOnline(true);
     const handleOffline = () => setIsOnline(false);
-    
+
     window.addEventListener('online', handleOnline);
     window.addEventListener('offline', handleOffline);
-    
+
     // Check initial status
     setIsOnline(navigator.onLine);
-    
+
     return () => {
       window.removeEventListener('online', handleOnline);
       window.removeEventListener('offline', handleOffline);
-      
+
       // Clean up ingredient search timeout
       if (window.ingredientSearchTimeout) {
         clearTimeout(window.ingredientSearchTimeout);
@@ -61,19 +72,12 @@ export default function Home() {
     };
   }, []);
 
-  // Utility function to deduplicate meals by idMeal
-  const deduplicateMeals = (meals: Meal[]): Meal[] => {
-    return meals.filter((meal, index, self) => 
-      index === self.findIndex(m => m.idMeal === meal.idMeal)
-    );
-  };
-
   // Handle search mode changes
   useEffect(() => {
     if (searchMode === 'search') {
       // When switching to search mode, load random meals if no search query
       if (!searchQuery && !Object.values(filters).some(filter => filter)) {
-        loadRandomMeals(true);
+        void loadRandomMeals(true);
       }
     } else if (searchMode === 'ingredients') {
       // When switching to ingredient mode, clear meals if no ingredients selected
@@ -81,52 +85,88 @@ export default function Home() {
         pagination.reset();
       }
     }
-  }, [searchMode, searchQuery, filters, availableIngredients]);
+  }, [
+    searchMode,
+    searchQuery,
+    filters,
+    availableIngredients,
+    loadRandomMeals,
+    pagination,
+  ]);
 
   // Load initial meals on component mount
   useEffect(() => {
-    if (searchMode === 'search' && !searchQuery && !Object.values(filters).some(filter => filter)) {
-      loadRandomMeals(true);
+    if (
+      searchMode === 'search' &&
+      !searchQuery &&
+      !Object.values(filters).some(filter => filter)
+    ) {
+      void loadRandomMeals(true);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Handle infinite scroll for random meals
   useEffect(() => {
-    if (pagination.isLoading && pagination.hasMore && currentSearchTypeRef.current === 'random') {
-      loadRandomMeals(false);
+    if (
+      pagination.isLoading &&
+      pagination.hasMore &&
+      currentSearchTypeRef.current === 'random'
+    ) {
+      void loadRandomMeals(false);
     }
-  }, [pagination.isLoading, pagination.hasMore]);
+  }, [pagination.isLoading, pagination.hasMore, loadRandomMeals]);
 
-  const loadRandomMeals = useCallback(async (isInitialLoad: boolean = false) => {
-    if (isInitialLoad) {
-      pagination.setLoading(true);
-      pagination.setError(null);
-      currentSearchTypeRef.current = 'random';
-    }
-
-    try {
-      const pageSize = isInitialLoad ? pagination.initialPageSize : pagination.loadMoreSize;
-      const results = await mealApiService.getRandomMeals(pagination.page, pageSize);
-      
+  const loadRandomMeals = useCallback(
+    async (isInitialLoad: boolean = false): Promise<void> => {
       if (isInitialLoad) {
-        pagination.setItems(results);
-      } else {
-        pagination.appendItems(results);
+        pagination.setLoading(true);
+        pagination.setError(null);
+        currentSearchTypeRef.current = 'random';
       }
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to load meals. Please try again.';
-      pagination.setError(errorMessage);
-      console.error('Error loading random meals:', err);
-    } finally {
-      if (isInitialLoad) {
-        pagination.setLoading(false);
-      } else {
-        pagination.markLoadComplete();
-      }
-    }
-  }, [pagination]);
 
-  const loadRandomMeal = async () => {
+      try {
+        const pageSize = isInitialLoad
+          ? pagination.initialPageSize
+          : pagination.loadMoreSize;
+        const results = await mealApiService.getRandomMeals(
+          pagination.page,
+          pageSize
+        );
+
+        if (isInitialLoad) {
+          pagination.setItems(results);
+        } else {
+          pagination.appendItems(results);
+        }
+      } catch (err) {
+        const errorMessage =
+          err instanceof Error
+            ? err.message
+            : 'Failed to load meals. Please try again.';
+        pagination.setError(errorMessage);
+        console.error('Error loading random meals:', err);
+      } finally {
+        if (isInitialLoad) {
+          pagination.setLoading(false);
+        } else {
+          pagination.markLoadComplete();
+        }
+      }
+    },
+    [
+      pagination.initialPageSize,
+      pagination.loadMoreSize,
+      pagination.page,
+      pagination.setItems,
+      pagination.appendItems,
+      pagination.setLoading,
+      pagination.setError,
+      pagination.markLoadComplete,
+    ]
+  );
+
+  const loadRandomMeal = async (): Promise<void> => {
     try {
       const randomMeal = await mealApiService.getRandomMeal();
       if (randomMeal) {
@@ -137,72 +177,100 @@ export default function Home() {
     }
   };
 
-
-  const handleSearch = useCallback(async (query: string) => {
-    if (!query.trim()) {
-      // Only load random meals if we're in search mode, not ingredient mode
-      if (searchMode === 'search') {
-        loadRandomMeals(true);
-      } else {
-        pagination.reset();
-      }
-      return;
-    }
-
-    pagination.setLoading(true);
-    pagination.setError(null);
-    setSearchQuery(query);
-    currentSearchTypeRef.current = 'search';
-
-    try {
-      // This is now cached, so repeated searches are instant
-      const results = await mealApiService.searchMeals(query);
-      pagination.setItems(results);
-    } catch (err) {
-      pagination.setError('Search failed. Please try again.');
-      console.error('Search error:', err);
-    } finally {
-      pagination.setLoading(false);
-    }
-  }, [searchMode, pagination, loadRandomMeals]);
-
-  const handleFiltersChange = useCallback(async (newFilters: { category: string; area: string; ingredient: string }) => {
-    setFilters(newFilters);
-    
-    // If no filters are active, show random meals only in search mode
-    if (!newFilters.category && !newFilters.area && !newFilters.ingredient) {
-      if (!searchQuery && searchMode === 'search') {
-        loadRandomMeals(true);
-      } else if (searchMode === 'ingredients') {
-        pagination.reset();
-      }
-      return;
-    }
-
-    pagination.setLoading(true);
-    pagination.setError(null);
-    currentSearchTypeRef.current = 'filter';
-
-    try {
-      let results: Meal[] = [];
-
-      // Apply filters in order of specificity (these are now cached)
-      if (newFilters.category) {
-        results = await mealApiService.filterByCategory(newFilters.category);
-      } else if (newFilters.area) {
-        results = await mealApiService.filterByArea(newFilters.area);
-      } else if (newFilters.ingredient) {
-        results = await mealApiService.filterByIngredient(newFilters.ingredient);
+  const handleSearch = useCallback(
+    async (query: string): Promise<void> => {
+      if (!query.trim()) {
+        // Only load random meals if we're in search mode, not ingredient mode
+        if (searchMode === 'search') {
+          void loadRandomMeals(true);
+        } else {
+          pagination.reset();
+        }
+        return;
       }
 
-      pagination.setItems(results);
-    } catch (err) {
-      pagination.setError('Failed to apply filters. Please try again.');
-      console.error('Filter error:', err);
-    } finally {
-      pagination.setLoading(false);
-    }
-  }, [searchQuery, searchMode, pagination, loadRandomMeals]);
+      pagination.setLoading(true);
+      pagination.setError(null);
+      setSearchQuery(query);
+      currentSearchTypeRef.current = 'search';
+
+      try {
+        // This is now cached, so repeated searches are instant
+        const results = await mealApiService.searchMeals(query);
+        pagination.setItems(results);
+      } catch (err) {
+        pagination.setError('Search failed. Please try again.');
+        console.error('Search error:', err);
+      } finally {
+        pagination.setLoading(false);
+      }
+    },
+    [
+      searchMode,
+      pagination.setLoading,
+      pagination.setError,
+      pagination.setItems,
+      pagination.reset,
+      loadRandomMeals,
+      mealApiService,
+    ]
+  );
+
+  const handleFiltersChange = useCallback(
+    async (newFilters: {
+      category: string;
+      area: string;
+      ingredient: string;
+    }): Promise<void> => {
+      setFilters(newFilters);
+
+      // If no filters are active, show random meals only in search mode
+      if (!newFilters.category && !newFilters.area && !newFilters.ingredient) {
+        if (!searchQuery && searchMode === 'search') {
+          void loadRandomMeals(true);
+        } else if (searchMode === 'ingredients') {
+          pagination.reset();
+        }
+        return;
+      }
+
+      pagination.setLoading(true);
+      pagination.setError(null);
+      currentSearchTypeRef.current = 'filter';
+
+      try {
+        let results: Meal[] = [];
+
+        // Apply filters in order of specificity (these are now cached)
+        if (newFilters.category) {
+          results = await mealApiService.filterByCategory(newFilters.category);
+        } else if (newFilters.area) {
+          results = await mealApiService.filterByArea(newFilters.area);
+        } else if (newFilters.ingredient) {
+          results = await mealApiService.filterByIngredient(
+            newFilters.ingredient
+          );
+        }
+
+        pagination.setItems(results);
+      } catch (err) {
+        pagination.setError('Failed to apply filters. Please try again.');
+        console.error('Filter error:', err);
+      } finally {
+        pagination.setLoading(false);
+      }
+    },
+    [
+      searchQuery,
+      searchMode,
+      pagination.setLoading,
+      pagination.setError,
+      pagination.setItems,
+      pagination.reset,
+      loadRandomMeals,
+      mealApiService,
+    ]
+  );
 
   const handleMealSelect = useCallback((meal: Meal) => {
     setSelectedMeal(meal);
@@ -212,68 +280,86 @@ export default function Home() {
     setSelectedMeal(null);
   }, []);
 
-  const handleIngredientsChange = useCallback(async (ingredients: string[]) => {
-    setAvailableIngredients(ingredients);
-    
-    if (ingredients.length === 0) {
-      // Clear meals when no ingredients are selected
-      pagination.reset();
-      currentSearchRef.current = '';
-      return;
-    }
+  const handleIngredientsChange = useCallback(
+    async (ingredients: string[]): Promise<void> => {
+      setAvailableIngredients(ingredients);
 
-    // Create a unique search key to prevent duplicate searches
-    const searchKey = ingredients.sort().join(',');
-    
-    // If this is the same search as the current one, don't search again
-    if (currentSearchRef.current === searchKey) {
-      return;
-    }
+      if (ingredients.length === 0) {
+        // Clear meals when no ingredients are selected
+        pagination.reset();
+        currentSearchRef.current = '';
+        return;
+      }
 
-    // Clear any existing timeout
-    if (window.ingredientSearchTimeout) {
-      clearTimeout(window.ingredientSearchTimeout);
-    }
+      // Create a unique search key to prevent duplicate searches
+      const searchKey = ingredients.sort().join(',');
 
-    // Debounce the search by 500ms to prevent flooding the API
-    window.ingredientSearchTimeout = setTimeout(async () => {
-      // Double-check that this is still the current search
+      // If this is the same search as the current one, don't search again
       if (currentSearchRef.current === searchKey) {
         return;
       }
-      
-      currentSearchRef.current = searchKey;
-      pagination.setLoading(true);
-      pagination.setError(null);
-      currentSearchTypeRef.current = 'ingredients';
 
-      try {
-        const results = await mealApiService.findMealsWithAvailableIngredients(ingredients);
-        pagination.setItems(results);
-      } catch (err) {
-        const errorMessage = err instanceof Error ? err.message : 'Failed to find meals with available ingredients.';
-        
-        // If it's a rate limiting error, show a more helpful message
-        if (errorMessage.includes('Rate Limit') || errorMessage.includes('429')) {
-          pagination.setError('The recipe database is currently busy. Please wait a moment and try again.');
-        } else {
-          pagination.setError(errorMessage);
-        }
-        
-        console.error('Ingredient search error:', err);
-        
-        // Fallback to showing some random meals if ingredient search fails
-        try {
-          console.log('Falling back to random meals due to ingredient search failure');
-          await loadRandomMeals(true);
-        } catch (fallbackErr) {
-          console.error('Fallback also failed:', fallbackErr);
-        }
-      } finally {
-        pagination.setLoading(false);
+      // Clear any existing timeout
+      if (window.ingredientSearchTimeout) {
+        clearTimeout(window.ingredientSearchTimeout);
       }
-    }, 500); // 500ms debounce delay
-  }, [searchQuery, filters]);
+
+      // Debounce the search by 500ms to prevent flooding the API
+      window.ingredientSearchTimeout = setTimeout(() => {
+        void (async () => {
+          // Double-check that this is still the current search
+          if (currentSearchRef.current === searchKey) {
+            return;
+          }
+
+          currentSearchRef.current = searchKey;
+          pagination.setLoading(true);
+          pagination.setError(null);
+          currentSearchTypeRef.current = 'ingredients';
+
+          try {
+            const results =
+              await mealApiService.findMealsWithAvailableIngredients(
+                ingredients
+              );
+            pagination.setItems(results);
+          } catch (err) {
+            const errorMessage =
+              err instanceof Error
+                ? err.message
+                : 'Failed to find meals with available ingredients.';
+
+            // If it's a rate limiting error, show a more helpful message
+            if (
+              errorMessage.includes('Rate Limit') ||
+              errorMessage.includes('429')
+            ) {
+              pagination.setError(
+                'The recipe database is currently busy. Please wait a moment and try again.'
+              );
+            } else {
+              pagination.setError(errorMessage);
+            }
+
+            console.error('Ingredient search error:', err);
+
+            // Fallback to showing some random meals if ingredient search fails
+            try {
+              console.log(
+                'Falling back to random meals due to ingredient search failure'
+              );
+              await loadRandomMeals(true);
+            } catch (fallbackErr) {
+              console.error('Fallback also failed:', fallbackErr);
+            }
+          } finally {
+            pagination.setLoading(false);
+          }
+        })();
+      }, 500); // 500ms debounce delay
+    },
+    [pagination, loadRandomMeals]
+  );
 
   return (
     <div className="min-h-screen bg-background overflow-x-hidden">
@@ -295,21 +381,19 @@ export default function Home() {
                   blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k="
                 />
               </div>
-            <div className="min-w-0 flex-1">
-              <h1 className="text-xl sm:text-2xl font-bold text-foreground truncate">
-                EasyMeal
-              </h1>
-              <p className="text-xs sm:text-sm text-muted-foreground truncate">
-                Discover amazing recipes
-                {!isOnline && (
-                  <span className="ml-2 text-foreground">
-                    (Offline Mode)
-                  </span>
-                )}
-              </p>
+              <div className="min-w-0 flex-1">
+                <h1 className="text-xl sm:text-2xl font-bold text-foreground truncate">
+                  EasyMeal
+                </h1>
+                <p className="text-xs sm:text-sm text-muted-foreground truncate">
+                  Discover amazing recipes
+                  {!isOnline && (
+                    <span className="ml-2 text-foreground">(Offline Mode)</span>
+                  )}
+                </p>
+              </div>
             </div>
-            </div>
-            
+
             <div className="flex gap-1 sm:gap-2 flex-shrink-0">
               <a
                 href="https://www.themealdb.com"
@@ -320,7 +404,9 @@ export default function Home() {
                 TheMealDB
               </a>
               <button
-                onClick={() => loadRandomMeal()}
+                onClick={() => {
+                  void loadRandomMeal();
+                }}
                 className="flex items-center gap-1 sm:gap-2 rounded-lg bg-primary px-2 sm:px-4 py-2 text-xs sm:text-sm font-medium text-primary-foreground transition-colors hover:bg-hover"
               >
                 <Sparkles className="h-3 w-3 sm:h-4 sm:w-4" />
@@ -381,7 +467,9 @@ export default function Home() {
                   </div>
                   <div className="flex justify-center">
                     <SearchBar
-                      onSearch={handleSearch}
+                      onSearch={(query: string) => {
+                        void handleSearch(query);
+                      }}
                       onMealSelect={handleMealSelect}
                       placeholder="Search for meals, ingredients, or cuisines..."
                       className="w-full max-w-4xl"
@@ -389,9 +477,14 @@ export default function Home() {
                   </div>
                 </div>
               </div>
-              
+
               <div className="flex justify-center px-4">
-                <Filters onFiltersChange={handleFiltersChange} className="w-full max-w-4xl" />
+                <Filters
+                  onFiltersChange={filters => {
+                    void handleFiltersChange(filters);
+                  }}
+                  className="w-full max-w-4xl"
+                />
               </div>
             </>
           ) : (
@@ -402,12 +495,17 @@ export default function Home() {
                     Find Recipes by Ingredients
                   </h2>
                   <p className="text-sm sm:text-base lg:text-lg text-muted-foreground">
-                    Tell us what you have and we'll find the perfect recipes
+                    Tell us what you have and we&apos;ll find the perfect
+                    recipes
                   </p>
                 </div>
                 <div className="flex justify-center">
                   <div className="w-full max-w-4xl">
-                    <IngredientList onIngredientsChange={handleIngredientsChange} />
+                    <IngredientList
+                      onIngredientsChange={ingredients => {
+                        void handleIngredientsChange(ingredients);
+                      }}
+                    />
                   </div>
                 </div>
               </div>
@@ -423,32 +521,38 @@ export default function Home() {
                 Recipes containing your ingredients
               </h2>
               <p className="text-sm text-muted-foreground">
-                {pagination.items.length} recipe{pagination.items.length !== 1 ? 's' : ''} found containing your {availableIngredients.length} ingredient{availableIngredients.length !== 1 ? 's' : ''}
+                {pagination.items.length} recipe
+                {pagination.items.length !== 1 ? 's' : ''} found containing your{' '}
+                {availableIngredients.length} ingredient
+                {availableIngredients.length !== 1 ? 's' : ''}
               </p>
             </div>
           )}
-          
+
           {searchMode === 'search' && searchQuery && (
             <div className="mb-4 text-center">
               <h2 className="text-lg font-semibold text-foreground">
-                Search results for "{searchQuery}"
+                Search results for &quot;{searchQuery}&quot;
               </h2>
               <p className="text-sm text-muted-foreground">
-                {pagination.items.length} meal{pagination.items.length !== 1 ? 's' : ''} found
+                {pagination.items.length} meal
+                {pagination.items.length !== 1 ? 's' : ''} found
               </p>
             </div>
           )}
-          
-          {searchMode === 'search' && Object.values(filters).some(filter => filter) && (
-            <div className="mb-4 text-center">
-              <h2 className="text-lg font-semibold text-foreground">
-                Filtered Results
-              </h2>
-              <p className="text-sm text-muted-foreground">
-                {pagination.items.length} meal{pagination.items.length !== 1 ? 's' : ''} found
-              </p>
-            </div>
-          )}
+
+          {searchMode === 'search' &&
+            Object.values(filters).some(filter => filter) && (
+              <div className="mb-4 text-center">
+                <h2 className="text-lg font-semibold text-foreground">
+                  Filtered Results
+                </h2>
+                <p className="text-sm text-muted-foreground">
+                  {pagination.items.length} meal
+                  {pagination.items.length !== 1 ? 's' : ''} found
+                </p>
+              </div>
+            )}
         </div>
 
         {/* Loading State */}
@@ -457,7 +561,9 @@ export default function Home() {
             <div className="flex items-center gap-3">
               <div className="h-6 w-6 animate-spin rounded-full border-2 border-spinner-border border-t-spinner-border-active"></div>
               <span className="text-muted-foreground">
-                {searchMode === 'ingredients' ? 'Finding recipes with your ingredients...' : 'Loading meals...'}
+                {searchMode === 'ingredients'
+                  ? 'Finding recipes with your ingredients...'
+                  : 'Loading meals...'}
               </span>
             </div>
           </div>
@@ -471,9 +577,9 @@ export default function Home() {
               <button
                 onClick={() => {
                   if (searchQuery) {
-                    handleSearch(searchQuery);
+                    void handleSearch(searchQuery);
                   } else {
-                    loadRandomMeals(true);
+                    void loadRandomMeals(true);
                   }
                 }}
                 className="mt-2 text-sm text-foreground underline hover:text-hover"
@@ -485,22 +591,25 @@ export default function Home() {
         )}
 
         {/* No Results - Only show when a search has been performed */}
-        {!pagination.isLoading && !pagination.error && pagination.items.length === 0 && (
-          (searchMode === 'search' && (searchQuery || Object.values(filters).some(filter => filter))) ||
-          (searchMode === 'ingredients' && availableIngredients.length > 0)
-        ) && (
-          <div className="flex justify-center py-12">
-            <div className="text-center">
-              <ChefHat className="mx-auto h-12 w-12 text-muted-foreground" />
-              <h3 className="mt-4 text-lg font-semibold text-foreground">
-                No meals found
-              </h3>
-              <p className="mt-2 text-muted-foreground">
-                Try adjusting your search or filters
-              </p>
+        {!pagination.isLoading &&
+          !pagination.error &&
+          pagination.items.length === 0 &&
+          ((searchMode === 'search' &&
+            (searchQuery || Object.values(filters).some(filter => filter))) ||
+            (searchMode === 'ingredients' &&
+              availableIngredients.length > 0)) && (
+            <div className="flex justify-center py-12">
+              <div className="text-center">
+                <ChefHat className="mx-auto h-12 w-12 text-muted-foreground" />
+                <h3 className="mt-4 text-lg font-semibold text-foreground">
+                  No meals found
+                </h3>
+                <p className="mt-2 text-muted-foreground">
+                  Try adjusting your search or filters
+                </p>
+              </div>
             </div>
-          </div>
-        )}
+          )}
 
         {/* Meals Grid - Always show when we have items */}
         {pagination.items.length > 0 && (
@@ -517,17 +626,21 @@ export default function Home() {
                 />
               ))}
             </div>
-            
+
             {/* Infinite scroll trigger */}
-            {pagination.hasMore && currentSearchTypeRef.current === 'random' && (
-              <div ref={pagination.lastItemElementRef} className="h-1" />
-            )}
+            {pagination.hasMore &&
+              currentSearchTypeRef.current === 'random' && (
+                <div ref={pagination.lastItemElementRef} className="h-1" />
+              )}
           </>
         )}
-        
+
         {/* Loading more indicator - show below existing items */}
         {pagination.isLoading && pagination.items.length > 0 && (
-          <div className="mt-8 flex justify-center" style={{ minHeight: '200px' }}>
+          <div
+            className="mt-8 flex justify-center"
+            style={{ minHeight: '200px' }}
+          >
             <MealGridSkeleton count={3} />
           </div>
         )}

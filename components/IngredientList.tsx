@@ -1,20 +1,25 @@
 'use client';
 
-import { useState, useEffect } from 'react';
 import { Plus, X, Search, Apple, CheckCircle, Circle } from 'lucide-react';
+import { useState, useEffect } from 'react';
+
 import { mealApiService } from '@/lib/api';
-import { Ingredient } from '@/types/meal';
-import { cn } from '@/lib/utils';
 import { IngredientImage } from '@/lib/ingredientImages';
+import { cn } from '@/lib/utils';
+import { Ingredient } from '@/types/meal';
 
 interface IngredientListProps {
   onIngredientsChange: (ingredients: string[]) => void;
   className?: string;
 }
 
-
-export function IngredientList({ onIngredientsChange, className }: IngredientListProps) {
-  const [availableIngredients, setAvailableIngredients] = useState<Ingredient[]>([]);
+export function IngredientList({
+  onIngredientsChange,
+  className,
+}: IngredientListProps) {
+  const [availableIngredients, setAvailableIngredients] = useState<
+    Ingredient[]
+  >([]);
   const [selectedIngredients, setSelectedIngredients] = useState<string[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [isLoading, setIsLoading] = useState(true);
@@ -39,9 +44,12 @@ export function IngredientList({ onIngredientsChange, className }: IngredientLis
     onIngredientsChange(selectedIngredients);
   }, [selectedIngredients]); // Remove onIngredientsChange from dependencies to prevent infinite loops
 
-  const filteredIngredients = availableIngredients.filter(ingredient =>
-    ingredient.strIngredient.toLowerCase().includes(searchQuery.toLowerCase()) &&
-    !selectedIngredients.includes(ingredient.strIngredient)
+  const filteredIngredients = availableIngredients.filter(
+    ingredient =>
+      ingredient.strIngredient
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase()) &&
+      !selectedIngredients.includes(ingredient.strIngredient)
   );
 
   const addIngredient = (ingredient: string) => {
@@ -53,21 +61,26 @@ export function IngredientList({ onIngredientsChange, className }: IngredientLis
   };
 
   const removeIngredient = (ingredient: string) => {
-    setSelectedIngredients(selectedIngredients.filter(ing => ing !== ingredient));
+    setSelectedIngredients(
+      selectedIngredients.filter(ing => ing !== ingredient)
+    );
   };
 
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     setSearchQuery(e.target.value);
     setShowDropdown(e.target.value.length > 0);
   };
 
   if (isLoading) {
     return (
-      <div className={cn("space-y-4", className)}>
+      <div className={cn('space-y-4', className)}>
         <div className="h-10 w-full animate-pulse rounded-lg bg-secondary" />
         <div className="flex flex-wrap gap-2">
           {Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} className="h-8 w-24 animate-pulse rounded-full bg-secondary" />
+            <div
+              key={i}
+              className="h-8 w-24 animate-pulse rounded-full bg-secondary"
+            />
           ))}
         </div>
       </div>
@@ -75,7 +88,7 @@ export function IngredientList({ onIngredientsChange, className }: IngredientLis
   }
 
   return (
-    <div className={cn("space-y-4", className)}>
+    <div className={cn('space-y-4', className)}>
       <div className="space-y-2">
         <label className="text-sm font-medium text-foreground">
           What ingredients do you have?
@@ -96,13 +109,16 @@ export function IngredientList({ onIngredientsChange, className }: IngredientLis
           {showDropdown && filteredIngredients.length > 0 && (
             <div className="absolute z-10 mt-1 w-full rounded-lg border border-border bg-popover shadow-lg">
               <div className="max-h-60 overflow-y-auto">
-                {filteredIngredients.slice(0, 20).map((ingredient) => (
+                {filteredIngredients.slice(0, 20).map(ingredient => (
                   <button
                     key={ingredient.strIngredient}
                     onClick={() => addIngredient(ingredient.strIngredient)}
                     className="flex w-full items-center gap-3 px-3 py-2 text-left text-sm text-popover-foreground hover:bg-hover"
                   >
-                    <IngredientImage ingredient={ingredient.strIngredient} size="small" />
+                    <IngredientImage
+                      ingredient={ingredient.strIngredient}
+                      size="small"
+                    />
                     <span className="flex-1">{ingredient.strIngredient}</span>
                     <Plus className="h-4 w-4 text-muted-foreground" />
                   </button>
@@ -122,7 +138,7 @@ export function IngredientList({ onIngredientsChange, className }: IngredientLis
             </span>
           </div>
           <div className="flex flex-wrap gap-2">
-            {selectedIngredients.map((ingredient) => (
+            {selectedIngredients.map(ingredient => (
               <div
                 key={ingredient}
                 className="flex items-center gap-2 rounded-full bg-secondary px-3 py-1 text-sm text-secondary-foreground"

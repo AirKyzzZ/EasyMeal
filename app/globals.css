@@ -4,26 +4,26 @@
   /* Base colors */
   --background: #ffffff;
   --foreground: #262523;
-  
+
   /* Primary colors */
   --primary: #262523;
   --primary-foreground: #ffffff;
-  
+
   /* Secondary colors */
   --secondary: #f5f5f5;
   --secondary-foreground: #262523;
-  
+
   /* Muted colors */
   --muted: #f8f8f8;
   --muted-foreground: #6b6b6b;
-  
+
   /* Border colors */
   --border: #e5e5e5;
-  
+
   /* Accent colors */
   --accent: #262523;
   --accent-foreground: #ffffff;
-  
+
   /* Additional semantic colors */
   --card: #ffffff;
   --card-foreground: #262523;
@@ -35,13 +35,13 @@
   --success-foreground: #ffffff;
   --warning: #f59e0b;
   --warning-foreground: #ffffff;
-  
+
   /* Interactive states */
   --hover: #f8f8f8;
   --active: #e5e5e5;
   --focus: #262523;
   --focus-ring: rgba(38, 37, 35, 0.2);
-  
+
   /* Loading spinner */
   --spinner-border: #e5e5e5;
   --spinner-border-active: #262523;
@@ -84,26 +84,26 @@
     /* Base colors */
     --background: #262523;
     --foreground: #ffffff;
-    
+
     /* Primary colors */
     --primary: #ffffff;
     --primary-foreground: #262523;
-    
+
     /* Secondary colors */
     --secondary: #3a3a3a;
     --secondary-foreground: #ffffff;
-    
+
     /* Muted colors */
     --muted: #404040;
     --muted-foreground: #a0a0a0;
-    
+
     /* Border colors */
     --border: #4a4a4a;
-    
+
     /* Accent colors */
     --accent: #ffffff;
     --accent-foreground: #262523;
-    
+
     /* Additional semantic colors */
     --card: #262523;
     --card-foreground: #ffffff;
@@ -115,13 +115,13 @@
     --success-foreground: #ffffff;
     --warning: #f59e0b;
     --warning-foreground: #ffffff;
-    
+
     /* Interactive states */
     --hover: #3a3a3a;
     --active: #4a4a4a;
     --focus: #ffffff;
     --focus-ring: rgba(255, 255, 255, 0.2);
-    
+
     /* Loading spinner */
     --spinner-border: #4a4a4a;
     --spinner-border-active: #ffffff;

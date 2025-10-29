@@ -1,10 +1,11 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
 import { Search, X } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+
 import { mealApiService } from '@/lib/api';
-import { Meal } from '@/types/meal';
 import { cn } from '@/lib/utils';
+import { Meal } from '@/types/meal';
 
 interface SearchBarProps {
   onSearch: (query: string) => void;
@@ -13,13 +14,18 @@ interface SearchBarProps {
   className?: string;
 }
 
-export function SearchBar({ onSearch, onMealSelect, placeholder = "Search for meals...", className }: SearchBarProps) {
+export function SearchBar({
+  onSearch,
+  onMealSelect,
+  placeholder = 'Search for meals...',
+  className,
+}: SearchBarProps): React.JSX.Element {
   const [query, setQuery] = useState('');
   const [suggestions, setSuggestions] = useState<Meal[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(-1);
-  
+
   const searchRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -33,24 +39,26 @@ export function SearchBar({ onSearch, onMealSelect, placeholder = "Search for me
 
     let cancelled = false;
 
-    const timeoutId = setTimeout(async () => {
-      setIsLoading(true);
-      try {
-        const results = await mealApiService.searchMeals(query);
-        // Check if request was cancelled before updating state
-        if (!cancelled) {
-          setSuggestions(results.slice(0, 8)); // Limit to 8 suggestions
+    const timeoutId = setTimeout(() => {
+      void (async () => {
+        setIsLoading(true);
+        try {
+          const results = await mealApiService.searchMeals(query);
+          // Check if request was cancelled before updating state
+          if (!cancelled) {
+            setSuggestions(results.slice(0, 8)); // Limit to 8 suggestions
+          }
+        } catch (error) {
+          if (!cancelled) {
+            console.error('Search error:', error);
+            setSuggestions([]);
+          }
+        } finally {
+          if (!cancelled) {
+            setIsLoading(false);
+          }
         }
-      } catch (error) {
-        if (!cancelled) {
-          console.error('Search error:', error);
-          setSuggestions([]);
-        }
-      } finally {
-        if (!cancelled) {
-          setIsLoading(false);
-        }
-      }
+      })();
     }, 300);
 
     return () => {
@@ -62,7 +70,10 @@ export function SearchBar({ onSearch, onMealSelect, placeholder = "Search for me
   // Handle click outside to close suggestions
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
+      if (
+        searchRef.current &&
+        !searchRef.current.contains(event.target as Node)
+      ) {
         setShowSuggestions(false);
       }
     };
@@ -71,26 +82,26 @@ export function SearchBar({ onSearch, onMealSelect, placeholder = "Search for me
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     const value = e.target.value;
     setQuery(value);
     setShowSuggestions(true);
     setSelectedIndex(-1);
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
+  const handleKeyDown = (e: React.KeyboardEvent): void => {
     if (!showSuggestions || suggestions.length === 0) return;
 
     switch (e.key) {
       case 'ArrowDown':
         e.preventDefault();
-        setSelectedIndex(prev => 
+        setSelectedIndex(prev =>
           prev < suggestions.length - 1 ? prev + 1 : prev
         );
         break;
       case 'ArrowUp':
         e.preventDefault();
-        setSelectedIndex(prev => prev > 0 ? prev - 1 : -1);
+        setSelectedIndex(prev => (prev > 0 ? prev - 1 : -1));
         break;
       case 'Enter':
         e.preventDefault();
@@ -107,18 +118,18 @@ export function SearchBar({ onSearch, onMealSelect, placeholder = "Search for me
     }
   };
 
-  const handleSearch = () => {
+  const handleSearch = (): void => {
     if (query.trim()) {
       onSearch(query.trim());
       setShowSuggestions(false);
     }
   };
 
-  const handleMealSelect = (meal: Meal) => {
+  const handleMealSelect = (meal: Meal): void => {
     setQuery(meal.strMeal);
     setShowSuggestions(false);
     setSelectedIndex(-1);
-    
+
     if (onMealSelect) {
       onMealSelect(meal);
     } else {
@@ -126,7 +137,7 @@ export function SearchBar({ onSearch, onMealSelect, placeholder = "Search for me
     }
   };
 
-  const clearSearch = () => {
+  const clearSearch = (): void => {
     setQuery('');
     setSuggestions([]);
     setShowSuggestions(false);
@@ -135,7 +146,7 @@ export function SearchBar({ onSearch, onMealSelect, placeholder = "Search for me
   };
 
   return (
-    <div ref={searchRef} className={cn("relative w-full max-w-4xl", className)}>
+    <div ref={searchRef} className={cn('relative w-full max-w-4xl', className)}>
       <div className="relative">
         <Search className="absolute left-4 sm:left-6 top-1/2 h-5 w-5 sm:h-6 sm:w-6 -translate-y-1/2 text-muted-foreground" />
         <input
@@ -171,8 +182,8 @@ export function SearchBar({ onSearch, onMealSelect, placeholder = "Search for me
               key={meal.idMeal}
               onClick={() => handleMealSelect(meal)}
               className={cn(
-                "flex w-full items-center gap-4 px-4 sm:px-6 py-3 sm:py-4 text-left text-sm sm:text-base transition-colors hover:bg-hover first:rounded-t-xl sm:first:rounded-t-2xl last:rounded-b-xl sm:last:rounded-b-2xl",
-                index === selectedIndex && "bg-hover"
+                'flex w-full items-center gap-4 px-4 sm:px-6 py-3 sm:py-4 text-left text-sm sm:text-base transition-colors hover:bg-hover first:rounded-t-xl sm:first:rounded-t-2xl last:rounded-b-xl sm:last:rounded-b-2xl',
+                index === selectedIndex && 'bg-hover'
               )}
             >
               <img

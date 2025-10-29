@@ -1,12 +1,13 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import Image from 'next/image';
 import { X, Clock, Users, ChefHat, ExternalLink, Youtube } from 'lucide-react';
-import { Meal } from '@/types/meal';
+import Image from 'next/image';
+import { useState, useEffect } from 'react';
+
 import { mealApiService } from '@/lib/api';
 import { IngredientImage } from '@/lib/ingredientImages';
 import { cn } from '@/lib/utils';
+import { Meal } from '@/types/meal';
 
 // Removed emoji function - now using IngredientImage component
 
@@ -16,8 +17,14 @@ interface MealDetailModalProps {
   onClose: () => void;
 }
 
-export function MealDetailModal({ meal, isOpen, onClose }: MealDetailModalProps) {
-  const [activeTab, setActiveTab] = useState<'ingredients' | 'instructions'>('ingredients');
+export function MealDetailModal({
+  meal,
+  isOpen,
+  onClose,
+}: MealDetailModalProps) {
+  const [activeTab, setActiveTab] = useState<'ingredients' | 'instructions'>(
+    'ingredients'
+  );
   const [fullMeal, setFullMeal] = useState<Meal | null>(null);
   const [isLoadingDetails, setIsLoadingDetails] = useState(false);
 
@@ -28,7 +35,7 @@ export function MealDetailModal({ meal, isOpen, onClose }: MealDetailModalProps)
       const originalStyle = window.getComputedStyle(document.body).overflow;
       // Disable scrolling
       document.body.style.overflow = 'hidden';
-      
+
       // Cleanup function to restore scrolling
       return () => {
         document.body.style.overflow = originalStyle;
@@ -39,8 +46,12 @@ export function MealDetailModal({ meal, isOpen, onClose }: MealDetailModalProps)
   // Helper to check if meal data is complete (has instructions and ingredients)
   const isMealComplete = (meal: Meal | null): boolean => {
     if (!meal) return false;
-    const hasInstructions = !!(meal.strInstructions && meal.strInstructions.trim());
-    const hasIngredients = !!(meal.strIngredient1 && meal.strIngredient1.trim());
+    const hasInstructions = !!(
+      meal.strInstructions && meal.strInstructions.trim()
+    );
+    const hasIngredients = !!(
+      meal.strIngredient1 && meal.strIngredient1.trim()
+    );
     return hasInstructions && hasIngredients;
   };
 
@@ -56,7 +67,8 @@ export function MealDetailModal({ meal, isOpen, onClose }: MealDetailModalProps)
 
       // Only fetch if meal is incomplete
       setIsLoadingDetails(true);
-      mealApiService.getMealById(meal.idMeal)
+      mealApiService
+        .getMealById(meal.idMeal)
         .then(fullMealData => {
           setFullMeal(fullMealData || meal); // Fallback to original if null
         })
@@ -80,16 +92,18 @@ export function MealDetailModal({ meal, isOpen, onClose }: MealDetailModalProps)
   if (!meal || !isOpen || !displayMeal) return null;
 
   const ingredients = mealApiService.getMealIngredients(displayMeal);
-  const tags = displayMeal.strTags ? displayMeal.strTags.split(',').map(tag => tag.trim()) : [];
+  const tags = displayMeal.strTags
+    ? displayMeal.strTags.split(',').map(tag => tag.trim())
+    : [];
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       {/* Backdrop */}
-      <div 
+      <div
         className="absolute inset-0 bg-black/50 backdrop-blur-sm"
         onClick={onClose}
       />
-      
+
       {/* Modal */}
       <div className="relative w-full max-w-4xl max-h-[90vh] overflow-hidden rounded-lg bg-white dark:bg-[#262523] shadow-2xl flex flex-col">
         {/* Header */}
@@ -102,7 +116,7 @@ export function MealDetailModal({ meal, isOpen, onClose }: MealDetailModalProps)
             sizes="(max-width: 1024px) 100vw, 1024px"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-          
+
           {/* Close Button */}
           <button
             onClick={onClose}
@@ -154,87 +168,93 @@ export function MealDetailModal({ meal, isOpen, onClose }: MealDetailModalProps)
             <div className="flex items-center justify-center py-8">
               <div className="flex items-center gap-3">
                 <div className="h-6 w-6 animate-spin rounded-full border-2 border-spinner-border border-t-spinner-border-active"></div>
-                <span className="text-muted-foreground">Loading full recipe details...</span>
+                <span className="text-muted-foreground">
+                  Loading full recipe details...
+                </span>
               </div>
             </div>
           ) : (
             <>
               {/* Tabs */}
               <div className="mb-6 flex gap-1 rounded-lg bg-secondary p-1">
-            <button
-              onClick={() => setActiveTab('ingredients')}
-              className={cn(
-                "flex-1 rounded-md px-4 py-2 text-sm font-medium transition-colors",
-                activeTab === 'ingredients'
-                  ? "bg-background text-foreground shadow-sm"
-                  : "text-muted-foreground hover:text-foreground"
-              )}
-            >
-              Ingredients
-            </button>
-            <button
-              onClick={() => setActiveTab('instructions')}
-              className={cn(
-                "flex-1 rounded-md px-4 py-2 text-sm font-medium transition-colors",
-                activeTab === 'instructions'
-                  ? "bg-background text-foreground shadow-sm"
-                  : "text-muted-foreground hover:text-foreground"
-              )}
-            >
-              Instructions
-            </button>
-          </div>
-
-          {/* Tab Content */}
-          <div className="max-h-96 overflow-y-auto overflow-x-hidden overscroll-contain">
-            {activeTab === 'ingredients' && (
-              <div className="space-y-3 pb-12">
-                <h3 className="text-lg font-semibold text-card-foreground">
+                <button
+                  onClick={() => setActiveTab('ingredients')}
+                  className={cn(
+                    'flex-1 rounded-md px-4 py-2 text-sm font-medium transition-colors',
+                    activeTab === 'ingredients'
+                      ? 'bg-background text-foreground shadow-sm'
+                      : 'text-muted-foreground hover:text-foreground'
+                  )}
+                >
                   Ingredients
-                </h3>
-                <div className="grid gap-3">
-                  {ingredients.map((item, index) => (
-                    <div
-                      key={index}
-                      className="flex items-center gap-3 rounded-lg bg-muted p-3"
-                    >
-                      <img
-                        src={mealApiService.getIngredientThumbnailUrl(item.ingredient, 'small')}
-                        alt={item.ingredient}
-                        className="h-8 w-8 rounded object-cover"
-                        onError={(e) => {
-                          (e.target as HTMLImageElement).style.display = 'none';
-                        }}
-                      />
-                      <div className="flex-1">
-                        <span className="font-medium text-card-foreground">
-                          {item.ingredient}
-                        </span>
-                        {item.measure && (
-                          <span className="ml-2 text-sm text-muted-foreground">
-                            {item.measure}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {activeTab === 'instructions' && (
-              <div className="space-y-3 pb-12">
-                <h3 className="text-lg font-semibold text-card-foreground">
+                </button>
+                <button
+                  onClick={() => setActiveTab('instructions')}
+                  className={cn(
+                    'flex-1 rounded-md px-4 py-2 text-sm font-medium transition-colors',
+                    activeTab === 'instructions'
+                      ? 'bg-background text-foreground shadow-sm'
+                      : 'text-muted-foreground hover:text-foreground'
+                  )}
+                >
                   Instructions
-                </h3>
-                <div className="prose prose-sm max-w-none dark:prose-invert">
-                  <p className="whitespace-pre-wrap text-card-foreground">
-                    {displayMeal.strInstructions}
-                  </p>
-                </div>
+                </button>
               </div>
-            )}
-          </div>
+
+              {/* Tab Content */}
+              <div className="max-h-96 overflow-y-auto overflow-x-hidden overscroll-contain">
+                {activeTab === 'ingredients' && (
+                  <div className="space-y-3 pb-12">
+                    <h3 className="text-lg font-semibold text-card-foreground">
+                      Ingredients
+                    </h3>
+                    <div className="grid gap-3">
+                      {ingredients.map((item, index) => (
+                        <div
+                          key={index}
+                          className="flex items-center gap-3 rounded-lg bg-muted p-3"
+                        >
+                          <img
+                            src={mealApiService.getIngredientThumbnailUrl(
+                              item.ingredient,
+                              'small'
+                            )}
+                            alt={item.ingredient}
+                            className="h-8 w-8 rounded object-cover"
+                            onError={e => {
+                              (e.target as HTMLImageElement).style.display =
+                                'none';
+                            }}
+                          />
+                          <div className="flex-1">
+                            <span className="font-medium text-card-foreground">
+                              {item.ingredient}
+                            </span>
+                            {item.measure && (
+                              <span className="ml-2 text-sm text-muted-foreground">
+                                {item.measure}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {activeTab === 'instructions' && (
+                  <div className="space-y-3 pb-12">
+                    <h3 className="text-lg font-semibold text-card-foreground">
+                      Instructions
+                    </h3>
+                    <div className="prose prose-sm max-w-none dark:prose-invert">
+                      <p className="whitespace-pre-wrap text-card-foreground">
+                        {displayMeal.strInstructions}
+                      </p>
+                    </div>
+                  </div>
+                )}
+              </div>
             </>
           )}
 

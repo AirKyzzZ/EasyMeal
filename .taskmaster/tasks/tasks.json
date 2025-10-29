@@ -456,9 +456,7 @@
         "id": 2,
         "title": "Configure ESLint/Prettier",
         "description": "Prettier integration, scripts lint/format, recommended rules.",
-        "acceptanceCriteria": [
-          "npm run lint and npm run format succeed"
-        ],
+        "acceptanceCriteria": ["npm run lint and npm run format succeed"],
         "estimate": "0.5h",
         "priority": "P0",
         "dependencies": [1],
@@ -469,9 +467,7 @@
         "id": 3,
         "title": "Base layout + responsive nav",
         "description": "Implement app/layout.tsx and a simple header/footer, focus-visible styles.",
-        "acceptanceCriteria": [
-          "Mobile/tablet/desktop layouts verified"
-        ],
+        "acceptanceCriteria": ["Mobile/tablet/desktop layouts verified"],
         "estimate": "1h",
         "priority": "P0",
         "dependencies": [1, 2],
@@ -482,9 +478,7 @@
         "id": 4,
         "title": "Add TanStack Query provider",
         "description": "Initialize QueryClient in root; add devtools in dev.",
-        "acceptanceCriteria": [
-          "React Query devtools visible in dev"
-        ],
+        "acceptanceCriteria": ["React Query devtools visible in dev"],
         "estimate": "0.5h",
         "priority": "P0",
         "dependencies": [1],

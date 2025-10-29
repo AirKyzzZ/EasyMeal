@@ -44,11 +44,78 @@ export default function Home(): React.JSX.Element {
     maxItems: 50, // Maximum items to prevent memory issues
   });
 
+  // Extract stable pagination functions and values to avoid recreating loadRandomMeals on every state change
+  const {
+    setLoading,
+    setError,
+    setItems,
+    appendItems,
+    markLoadComplete,
+    reset,
+    initialPageSize,
+    loadMoreSize,
+  } = pagination;
+
+  // Use refs to access current pagination values without causing dependency issues
+  const paginationPageRef = useRef(pagination.page);
+  useEffect(() => {
+    paginationPageRef.current = pagination.page;
+  }, [pagination.page]);
+
   // Track current search to prevent duplicates
   const currentSearchRef = useRef<string>('');
   const currentSearchTypeRef = useRef<
     'random' | 'search' | 'filter' | 'ingredients'
   >('random');
+
+  // Define loadRandomMeals before it's used in useEffect hooks
+  // Only depend on stable functions, not the entire pagination object
+  const loadRandomMeals = useCallback(
+    async (isInitialLoad: boolean = false): Promise<void> => {
+      if (isInitialLoad) {
+        setLoading(true);
+        setError(null);
+        currentSearchTypeRef.current = 'random';
+      }
+
+      try {
+        const pageSize = isInitialLoad ? initialPageSize : loadMoreSize;
+        const results = await mealApiService.getRandomMeals(
+          paginationPageRef.current,
+          pageSize
+        );
+
+        if (isInitialLoad) {
+          setItems(results);
+        } else {
+          appendItems(results);
+        }
+      } catch (err) {
+        const errorMessage =
+          err instanceof Error
+            ? err.message
+            : 'Failed to load meals. Please try again.';
+        setError(errorMessage);
+        // eslint-disable-next-line no-console
+        console.error('Error loading random meals:', err);
+      } finally {
+        if (isInitialLoad) {
+          setLoading(false);
+        } else {
+          markLoadComplete();
+        }
+      }
+    },
+    [
+      setLoading,
+      setError,
+      setItems,
+      appendItems,
+      markLoadComplete,
+      initialPageSize,
+      loadMoreSize,
+    ]
+  );
 
   // Monitor network status
   useEffect(() => {
@@ -82,7 +149,7 @@ export default function Home(): React.JSX.Element {
     } else if (searchMode === 'ingredients') {
       // When switching to ingredient mode, clear meals if no ingredients selected
       if (availableIngredients.length === 0) {
-        pagination.reset();
+        reset();
       }
     }
   }, [
@@ -91,7 +158,7 @@ export default function Home(): React.JSX.Element {
     filters,
     availableIngredients,
     loadRandomMeals,
-    pagination,
+    reset,
   ]);
 
   // Load initial meals on component mount
@@ -117,47 +184,6 @@ export default function Home(): React.JSX.Element {
     }
   }, [pagination.isLoading, pagination.hasMore, loadRandomMeals]);
 
-  const loadRandomMeals = useCallback(
-    async (isInitialLoad: boolean = false): Promise<void> => {
-      if (isInitialLoad) {
-        pagination.setLoading(true);
-        pagination.setError(null);
-        currentSearchTypeRef.current = 'random';
-      }
-
-      try {
-        const pageSize = isInitialLoad
-          ? pagination.initialPageSize
-          : pagination.loadMoreSize;
-        const results = await mealApiService.getRandomMeals(
-          pagination.page,
-          pageSize
-        );
-
-        if (isInitialLoad) {
-          pagination.setItems(results);
-        } else {
-          pagination.appendItems(results);
-        }
-      } catch (err) {
-        const errorMessage =
-          err instanceof Error
-            ? err.message
-            : 'Failed to load meals. Please try again.';
-        pagination.setError(errorMessage);
-        // eslint-disable-next-line no-console
-        console.error('Error loading random meals:', err);
-      } finally {
-        if (isInitialLoad) {
-          pagination.setLoading(false);
-        } else {
-          pagination.markLoadComplete();
-        }
-      }
-    },
-    [pagination]
-  );
-
   const loadRandomMeal = async (): Promise<void> => {
     try {
       const randomMeal = await mealApiService.getRandomMeal();
@@ -177,29 +203,29 @@ export default function Home(): React.JSX.Element {
         if (searchMode === 'search') {
           void loadRandomMeals(true);
         } else {
-          pagination.reset();
+          reset();
         }
         return;
       }
 
-      pagination.setLoading(true);
-      pagination.setError(null);
+      setLoading(true);
+      setError(null);
       setSearchQuery(query);
       currentSearchTypeRef.current = 'search';
 
       try {
         // This is now cached, so repeated searches are instant
         const results = await mealApiService.searchMeals(query);
-        pagination.setItems(results);
+        setItems(results);
       } catch (err) {
-        pagination.setError('Search failed. Please try again.');
+        setError('Search failed. Please try again.');
         // eslint-disable-next-line no-console
         console.error('Search error:', err);
       } finally {
-        pagination.setLoading(false);
+        setLoading(false);
       }
     },
-    [searchMode, pagination, loadRandomMeals]
+    [searchMode, setLoading, setError, setItems, loadRandomMeals, reset]
   );
 
   const handleFiltersChange = useCallback(
@@ -215,13 +241,13 @@ export default function Home(): React.JSX.Element {
         if (!searchQuery && searchMode === 'search') {
           void loadRandomMeals(true);
         } else if (searchMode === 'ingredients') {
-          pagination.reset();
+          reset();
         }
         return;
       }
 
-      pagination.setLoading(true);
-      pagination.setError(null);
+      setLoading(true);
+      setError(null);
       currentSearchTypeRef.current = 'filter';
 
       try {
@@ -238,16 +264,24 @@ export default function Home(): React.JSX.Element {
           );
         }
 
-        pagination.setItems(results);
+        setItems(results);
       } catch (err) {
-        pagination.setError('Failed to apply filters. Please try again.');
+        setError('Failed to apply filters. Please try again.');
         // eslint-disable-next-line no-console
         console.error('Filter error:', err);
       } finally {
-        pagination.setLoading(false);
+        setLoading(false);
       }
     },
-    [searchQuery, searchMode, pagination, loadRandomMeals]
+    [
+      searchQuery,
+      searchMode,
+      setLoading,
+      setError,
+      setItems,
+      loadRandomMeals,
+      reset,
+    ]
   );
 
   const handleMealSelect = useCallback((meal: Meal) => {
@@ -264,7 +298,7 @@ export default function Home(): React.JSX.Element {
 
       if (ingredients.length === 0) {
         // Clear meals when no ingredients are selected
-        pagination.reset();
+        reset();
         currentSearchRef.current = '';
         return;
       }
@@ -292,8 +326,8 @@ export default function Home(): React.JSX.Element {
           }
 
           currentSearchRef.current = searchKey;
-          pagination.setLoading(true);
-          pagination.setError(null);
+          setLoading(true);
+          setError(null);
           currentSearchTypeRef.current = 'ingredients';
 
           try {
@@ -301,7 +335,7 @@ export default function Home(): React.JSX.Element {
               await mealApiService.findMealsWithAvailableIngredients(
                 ingredients
               );
-            pagination.setItems(results);
+            setItems(results);
           } catch (err) {
             const errorMessage =
               err instanceof Error
@@ -313,11 +347,11 @@ export default function Home(): React.JSX.Element {
               errorMessage.includes('Rate Limit') ||
               errorMessage.includes('429')
             ) {
-              pagination.setError(
+              setError(
                 'The recipe database is currently busy. Please wait a moment and try again.'
               );
             } else {
-              pagination.setError(errorMessage);
+              setError(errorMessage);
             }
 
             // eslint-disable-next-line no-console
@@ -335,12 +369,12 @@ export default function Home(): React.JSX.Element {
               console.error('Fallback also failed:', fallbackErr);
             }
           } finally {
-            pagination.setLoading(false);
+            setLoading(false);
           }
         })();
       }, 500); // 500ms debounce delay
     },
-    [pagination, loadRandomMeals]
+    [setLoading, setError, setItems, loadRandomMeals, reset]
   );
 
   return (

@@ -56,14 +56,14 @@ export function MealCard({ meal, onClick, className, availableIngredients = [], 
         
         {/* Category Badge */}
         <div className="absolute top-3 left-3">
-          <span className="rounded-full bg-white/90 px-2 py-1 text-xs font-medium text-card-foreground backdrop-blur-sm">
+          <span className="rounded-full bg-white/90 px-2 py-1 text-xs font-medium text-[#262523] backdrop-blur-sm">
             {meal.strCategory}
           </span>
         </div>
 
         {/* Area Badge */}
         <div className="absolute top-3 right-3">
-          <span className="rounded-full bg-white/90 px-2 py-1 text-xs font-medium text-card-foreground backdrop-blur-sm">
+          <span className="rounded-full bg-white/90 px-2 py-1 text-xs font-medium text-[#262523] backdrop-blur-sm">
             {meal.strArea}
           </span>
         </div>
@@ -80,13 +80,13 @@ export function MealCard({ meal, onClick, className, availableIngredients = [], 
             {tags.slice(0, 3).map((tag, index) => (
               <span
                 key={index}
-                className="rounded-full bg-secondary px-2 py-1 text-xs text-secondary-foreground"
+                className="rounded-full bg-[#f5f5f5] px-2 py-1 text-xs text-[#262523] dark:bg-[#3a3a3a] dark:text-white"
               >
                 {tag}
               </span>
             ))}
             {tags.length > 3 && (
-              <span className="rounded-full bg-secondary px-2 py-1 text-xs text-secondary-foreground">
+              <span className="rounded-full bg-[#f5f5f5] px-2 py-1 text-xs text-[#262523] dark:bg-[#3a3a3a] dark:text-white">
                 +{tags.length - 3}
               </span>
             )}

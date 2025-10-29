@@ -72,7 +72,7 @@ export function MealDetailModal({ meal, isOpen, onClose }: MealDetailModalProps)
       />
       
       {/* Modal */}
-      <div className="relative w-full max-w-4xl max-h-[90vh] overflow-hidden rounded-lg bg-card shadow-2xl">
+      <div className="relative w-full max-w-4xl max-h-[90vh] overflow-hidden rounded-lg bg-white dark:bg-[#262523] shadow-2xl">
         {/* Header */}
         <div className="relative h-64 overflow-hidden">
           <Image
@@ -122,7 +122,7 @@ export function MealDetailModal({ meal, isOpen, onClose }: MealDetailModalProps)
               {tags.map((tag, index) => (
                 <span
                   key={index}
-                  className="rounded-full bg-secondary px-3 py-1 text-sm text-secondary-foreground"
+                  className="rounded-full bg-[#f5f5f5] px-3 py-1 text-sm text-[#262523] dark:bg-[#3a3a3a] dark:text-white"
                 >
                   {tag}
                 </span>

@@ -275,13 +275,13 @@ export default function Home() {
   }, [searchQuery, filters]);
 
   return (
-    <div className="min-h-screen bg-white dark:bg-[#262523]">
+    <div className="min-h-screen bg-white dark:bg-[#262523] overflow-x-hidden">
       {/* Header */}
       <header className="border-b border-[#e5e5e5] bg-white dark:border-[#4a4a4a] dark:bg-[#262523]">
         <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="relative h-10 w-10 overflow-hidden rounded-lg">
+            <div className="flex items-center gap-3 min-w-0 flex-1">
+              <div className="relative h-10 w-10 overflow-hidden rounded-lg flex-shrink-0">
                 <Image
                   src="/logo.png"
                   alt="EasyMeal Logo"
@@ -294,11 +294,11 @@ export default function Home() {
                   blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k="
                 />
               </div>
-            <div>
-              <h1 className="text-2xl font-bold text-[#262523] dark:text-white">
+            <div className="min-w-0 flex-1">
+              <h1 className="text-xl sm:text-2xl font-bold text-[#262523] dark:text-white truncate">
                 EasyMeal
               </h1>
-              <p className="text-sm text-[#6b6b6b] dark:text-[#a0a0a0]">
+              <p className="text-xs sm:text-sm text-[#6b6b6b] dark:text-[#a0a0a0] truncate">
                 Discover amazing recipes
                 {!isOnline && (
                   <span className="ml-2 text-[#262523] dark:text-white">
@@ -309,21 +309,22 @@ export default function Home() {
             </div>
             </div>
             
-            <div className="flex gap-2">
+            <div className="flex gap-1 sm:gap-2 flex-shrink-0">
               <a
                 href="https://www.themealdb.com"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-2 rounded-lg bg-[#f5f5f5] px-4 py-2 text-sm font-medium text-[#262523] transition-colors hover:bg-[#e5e5e5] dark:bg-[#3a3a3a] dark:text-white dark:hover:bg-[#4a4a4a]"
+                className="hidden sm:flex items-center gap-2 rounded-lg bg-[#f5f5f5] px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium text-[#262523] transition-colors hover:bg-[#e5e5e5] dark:bg-[#3a3a3a] dark:text-white dark:hover:bg-[#4a4a4a]"
               >
                 TheMealDB
               </a>
               <button
                 onClick={() => loadRandomMeal()}
-                className="flex items-center gap-2 rounded-lg bg-[#262523] px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-[#3a3a3a] dark:bg-white dark:text-[#262523] dark:hover:bg-[#f5f5f5]"
+                className="flex items-center gap-1 sm:gap-2 rounded-lg bg-[#262523] px-2 sm:px-4 py-2 text-xs sm:text-sm font-medium text-white transition-colors hover:bg-[#3a3a3a] dark:bg-white dark:text-[#262523] dark:hover:bg-[#f5f5f5]"
               >
-                <Sparkles className="h-4 w-4" />
-                Random Meal
+                <Sparkles className="h-3 w-3 sm:h-4 sm:w-4" />
+                <span className="hidden sm:inline">Random Meal</span>
+                <span className="sm:hidden">Random</span>
               </button>
             </div>
           </div>
@@ -334,28 +335,30 @@ export default function Home() {
       <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
         <div className="mb-8">
           <div className="flex justify-center">
-            <div className="flex rounded-lg bg-[#f5f5f5] p-1 dark:bg-[#3a3a3a]">
+            <div className="flex rounded-lg bg-[#f5f5f5] p-1 dark:bg-[#3a3a3a] w-full max-w-md">
               <button
                 onClick={() => setSearchMode('search')}
-                className={`flex items-center gap-2 rounded-md px-4 py-2 text-sm font-medium transition-colors ${
+                className={`flex items-center justify-center gap-1 sm:gap-2 rounded-md px-2 sm:px-4 py-2 text-xs sm:text-sm font-medium transition-colors flex-1 ${
                   searchMode === 'search'
                     ? 'bg-white text-[#262523] shadow-sm dark:bg-[#262523] dark:text-white'
                     : 'text-[#6b6b6b] hover:text-[#262523] dark:text-[#a0a0a0] dark:hover:text-white'
                 }`}
               >
-                <ChefHat className="h-4 w-4" />
-                Search Recipes
+                <ChefHat className="h-3 w-3 sm:h-4 sm:w-4" />
+                <span className="hidden sm:inline">Search Recipes</span>
+                <span className="sm:hidden">Search</span>
               </button>
               <button
                 onClick={() => setSearchMode('ingredients')}
-                className={`flex items-center gap-2 rounded-md px-4 py-2 text-sm font-medium transition-colors ${
+                className={`flex items-center justify-center gap-1 sm:gap-2 rounded-md px-2 sm:px-4 py-2 text-xs sm:text-sm font-medium transition-colors flex-1 ${
                   searchMode === 'ingredients'
                     ? 'bg-white text-[#262523] shadow-sm dark:bg-[#262523] dark:text-white'
                     : 'text-[#6b6b6b] hover:text-[#262523] dark:text-[#a0a0a0] dark:hover:text-white'
                 }`}
               >
-                <Apple className="h-4 w-4" />
-                Find by Ingredients
+                <Apple className="h-3 w-3 sm:h-4 sm:w-4" />
+                <span className="hidden sm:inline">Find by Ingredients</span>
+                <span className="sm:hidden">Ingredients</span>
               </button>
             </div>
           </div>
@@ -365,7 +368,7 @@ export default function Home() {
         <div className="mb-8">
           {searchMode === 'search' ? (
             <>
-              <div className="mb-6 flex justify-center">
+              <div className="mb-6 flex justify-center px-2">
                 <SearchBar
                   onSearch={handleSearch}
                   onMealSelect={handleMealSelect}
@@ -374,12 +377,12 @@ export default function Home() {
                 />
               </div>
               
-              <div className="flex justify-center px-4">
-                <Filters onFiltersChange={handleFiltersChange} className="w-full" />
+              <div className="flex justify-center px-2">
+                <Filters onFiltersChange={handleFiltersChange} className="w-full max-w-4xl" />
               </div>
             </>
           ) : (
-            <div className="mb-6">
+            <div className="mb-6 px-2">
               <div className="mx-auto max-w-2xl">
                 <IngredientList onIngredientsChange={handleIngredientsChange} />
               </div>
@@ -477,7 +480,7 @@ export default function Home() {
         {/* Meals Grid - Always show when we have items */}
         {pagination.items.length > 0 && (
           <>
-            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
               {pagination.items.map((meal, index) => (
                 <MealCard
                   key={`${meal.idMeal}-${index}`}

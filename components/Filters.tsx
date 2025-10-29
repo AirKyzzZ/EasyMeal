@@ -119,10 +119,10 @@ function FilterDropdown({ label, options, value, onChange, className }: FilterDr
   };
 
   return (
-    <div className={cn("relative min-w-[200px] sm:min-w-[240px] lg:min-w-[280px]", className)}>
+    <div className={cn("relative w-full min-w-0", className)}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex w-full min-w-[200px] items-center justify-between rounded-lg border border-[#e5e5e5] bg-white px-3 py-2 text-sm transition-colors hover:bg-[#f8f8f8] dark:border-[#4a4a4a] dark:bg-[#262523] dark:hover:bg-[#3a3a3a] sm:min-w-[240px] lg:min-w-[280px]"
+        className="flex w-full items-center justify-between rounded-lg border border-[#e5e5e5] bg-white px-3 py-2 text-sm transition-colors hover:bg-[#f8f8f8] dark:border-[#4a4a4a] dark:bg-[#262523] dark:hover:bg-[#3a3a3a]"
       >
         <div className="flex items-center gap-2 min-w-0 flex-1">
           {value ? (
@@ -137,7 +137,7 @@ function FilterDropdown({ label, options, value, onChange, className }: FilterDr
       </button>
 
       {isOpen && (
-        <div className="absolute z-10 mt-1 w-full min-w-[200px] rounded-lg border border-[#e5e5e5] bg-white shadow-lg dark:border-[#4a4a4a] dark:bg-[#262523] sm:min-w-[240px] lg:min-w-[280px] left-0 right-0">
+        <div className="absolute z-10 mt-1 w-full rounded-lg border border-[#e5e5e5] bg-white shadow-lg dark:border-[#4a4a4a] dark:bg-[#262523] left-0 right-0">
           <div className="max-h-60 overflow-y-auto">
             <button
               onClick={() => {
@@ -236,16 +236,16 @@ export function Filters({ onFiltersChange, className }: FiltersProps) {
 
   if (isLoading) {
     return (
-      <div className={cn("flex flex-wrap gap-3 justify-center", className)}>
-        <div className="h-10 min-w-[200px] sm:min-w-[240px] lg:min-w-[280px] animate-pulse rounded-lg bg-[#f5f5f5] dark:bg-[#3a3a3a]" />
-        <div className="h-10 min-w-[200px] sm:min-w-[240px] lg:min-w-[280px] animate-pulse rounded-lg bg-[#f5f5f5] dark:bg-[#3a3a3a]" />
-        <div className="h-10 min-w-[200px] sm:min-w-[240px] lg:min-w-[280px] animate-pulse rounded-lg bg-[#f5f5f5] dark:bg-[#3a3a3a]" />
+      <div className={cn("flex flex-wrap gap-2 sm:gap-3 justify-center", className)}>
+        <div className="h-10 flex-1 min-w-[120px] sm:min-w-[150px] animate-pulse rounded-lg bg-[#f5f5f5] dark:bg-[#3a3a3a]" />
+        <div className="h-10 flex-1 min-w-[120px] sm:min-w-[150px] animate-pulse rounded-lg bg-[#f5f5f5] dark:bg-[#3a3a3a]" />
+        <div className="h-10 flex-1 min-w-[120px] sm:min-w-[150px] animate-pulse rounded-lg bg-[#f5f5f5] dark:bg-[#3a3a3a]" />
       </div>
     );
   }
 
   return (
-    <div className={cn("flex flex-wrap gap-3 justify-center", className)}>
+    <div className={cn("flex flex-wrap gap-2 sm:gap-3 justify-center", className)}>
       <FilterDropdown
         label="Category"
         options={categories.map(cat => ({ 
@@ -255,7 +255,7 @@ export function Filters({ onFiltersChange, className }: FiltersProps) {
         }))}
         value={filters.category}
         onChange={(value) => handleFilterChange('category', value)}
-        className="min-w-[200px] sm:min-w-[240px] lg:min-w-[280px]"
+        className="flex-1 min-w-[120px] sm:min-w-[150px]"
       />
       
       <FilterDropdown
@@ -267,7 +267,7 @@ export function Filters({ onFiltersChange, className }: FiltersProps) {
         }))}
         value={filters.area}
         onChange={(value) => handleFilterChange('area', value)}
-        className="min-w-[200px] sm:min-w-[240px] lg:min-w-[280px]"
+        className="flex-1 min-w-[120px] sm:min-w-[150px]"
       />
       
       <FilterDropdown
@@ -279,16 +279,17 @@ export function Filters({ onFiltersChange, className }: FiltersProps) {
         }))}
         value={filters.ingredient}
         onChange={(value) => handleFilterChange('ingredient', value)}
-        className="min-w-[200px] sm:min-w-[240px] lg:min-w-[280px]"
+        className="flex-1 min-w-[120px] sm:min-w-[150px]"
       />
 
         {hasActiveFilters && (
           <button
             onClick={clearAllFilters}
-            className="flex items-center gap-1 rounded-lg border border-[#e5e5e5] bg-white px-3 py-2 text-sm text-[#262523] transition-colors hover:bg-[#f8f8f8] dark:border-[#4a4a4a] dark:bg-[#262523] dark:text-white dark:hover:bg-[#3a3a3a] flex-shrink-0"
+            className="flex items-center gap-1 rounded-lg border border-[#e5e5e5] bg-white px-2 sm:px-3 py-2 text-xs sm:text-sm text-[#262523] transition-colors hover:bg-[#f8f8f8] dark:border-[#4a4a4a] dark:bg-[#262523] dark:text-white dark:hover:bg-[#3a3a3a] flex-shrink-0"
           >
-            <X className="h-4 w-4" />
-            Clear All
+            <X className="h-3 w-3 sm:h-4 sm:w-4" />
+            <span className="hidden sm:inline">Clear All</span>
+            <span className="sm:hidden">Clear</span>
           </button>
         )}
     </div>

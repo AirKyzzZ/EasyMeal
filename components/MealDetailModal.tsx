@@ -72,7 +72,7 @@ export function MealDetailModal({ meal, isOpen, onClose }: MealDetailModalProps)
       />
       
       {/* Modal */}
-      <div className="relative w-full max-w-4xl max-h-[90vh] overflow-hidden rounded-lg bg-white dark:bg-[#262523] shadow-2xl">
+      <div className="relative w-full max-w-4xl max-h-[90vh] overflow-hidden rounded-lg bg-white dark:bg-[#262523] shadow-2xl flex flex-col">
         {/* Header */}
         <div className="relative h-64 overflow-hidden">
           <Image
@@ -115,7 +115,7 @@ export function MealDetailModal({ meal, isOpen, onClose }: MealDetailModalProps)
         </div>
 
         {/* Content */}
-        <div className="p-6">
+        <div className="p-6 overflow-y-auto flex-1">
           {/* Tags */}
           {tags.length > 0 && (
             <div className="mb-6 flex flex-wrap gap-2">
@@ -167,9 +167,9 @@ export function MealDetailModal({ meal, isOpen, onClose }: MealDetailModalProps)
           </div>
 
           {/* Tab Content */}
-          <div className="max-h-96 overflow-y-auto">
+          <div className="max-h-96 overflow-y-auto overflow-x-hidden overscroll-contain">
             {activeTab === 'ingredients' && (
-              <div className="space-y-3">
+              <div className="space-y-3 pb-12">
                 <h3 className="text-lg font-semibold text-card-foreground">
                   Ingredients
                 </h3>
@@ -204,7 +204,7 @@ export function MealDetailModal({ meal, isOpen, onClose }: MealDetailModalProps)
             )}
 
             {activeTab === 'instructions' && (
-              <div className="space-y-3">
+              <div className="space-y-3 pb-12">
                 <h3 className="text-lg font-semibold text-card-foreground">
                   Instructions
                 </h3>

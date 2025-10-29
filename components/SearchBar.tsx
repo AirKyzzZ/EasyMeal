@@ -23,27 +23,40 @@ export function SearchBar({ onSearch, onMealSelect, placeholder = "Search for me
   const searchRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // Debounced search for suggestions
+  // Debounced search for suggestions with request cancellation
   useEffect(() => {
     if (query.length < 2) {
       setSuggestions([]);
+      setIsLoading(false);
       return;
     }
+
+    let cancelled = false;
 
     const timeoutId = setTimeout(async () => {
       setIsLoading(true);
       try {
         const results = await mealApiService.searchMeals(query);
-        setSuggestions(results.slice(0, 8)); // Limit to 8 suggestions
+        // Check if request was cancelled before updating state
+        if (!cancelled) {
+          setSuggestions(results.slice(0, 8)); // Limit to 8 suggestions
+        }
       } catch (error) {
-        console.error('Search error:', error);
-        setSuggestions([]);
+        if (!cancelled) {
+          console.error('Search error:', error);
+          setSuggestions([]);
+        }
       } finally {
-        setIsLoading(false);
+        if (!cancelled) {
+          setIsLoading(false);
+        }
       }
     }, 300);
 
-    return () => clearTimeout(timeoutId);
+    return () => {
+      cancelled = true;
+      clearTimeout(timeoutId);
+    };
   }, [query]);
 
   // Handle click outside to close suggestions

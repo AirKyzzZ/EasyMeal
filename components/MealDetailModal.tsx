@@ -36,13 +36,29 @@ export function MealDetailModal({ meal, isOpen, onClose }: MealDetailModalProps)
     }
   }, [isOpen]);
 
-  // Fetch full meal details when modal opens
+  // Helper to check if meal data is complete (has instructions and ingredients)
+  const isMealComplete = (meal: Meal | null): boolean => {
+    if (!meal) return false;
+    const hasInstructions = !!(meal.strInstructions && meal.strInstructions.trim());
+    const hasIngredients = !!(meal.strIngredient1 && meal.strIngredient1.trim());
+    return hasInstructions && hasIngredients;
+  };
+
+  // Only fetch full meal details if the meal data is incomplete
   useEffect(() => {
     if (meal && isOpen) {
+      // Check if meal already has complete data
+      if (isMealComplete(meal)) {
+        setFullMeal(meal);
+        setIsLoadingDetails(false);
+        return;
+      }
+
+      // Only fetch if meal is incomplete
       setIsLoadingDetails(true);
       mealApiService.getMealById(meal.idMeal)
         .then(fullMealData => {
-          setFullMeal(fullMealData);
+          setFullMeal(fullMealData || meal); // Fallback to original if null
         })
         .catch(error => {
           console.error('Failed to fetch full meal details:', error);
@@ -52,6 +68,9 @@ export function MealDetailModal({ meal, isOpen, onClose }: MealDetailModalProps)
         .finally(() => {
           setIsLoadingDetails(false);
         });
+    } else if (!isOpen) {
+      // Reset when modal closes
+      setFullMeal(null);
     }
   }, [meal, isOpen]);
 

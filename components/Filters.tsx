@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, memo } from 'react';
 import { ChevronDown, X, Beef, RotateCcw, Cake, Apple, Fish, Salad, Soup, Leaf, Carrot, Utensils, Globe } from 'lucide-react';
 import { mealApiService } from '@/lib/api';
 import { Category, Area, Ingredient } from '@/types/meal';
@@ -187,7 +187,7 @@ interface FiltersProps {
   className?: string;
 }
 
-export function Filters({ onFiltersChange, className }: FiltersProps) {
+export const Filters = memo(function Filters({ onFiltersChange, className }: FiltersProps) {
   const [categories, setCategories] = useState<Category[]>([]);
   const [areas, setAreas] = useState<Area[]>([]);
   const [ingredients, setIngredients] = useState<Ingredient[]>([]);
@@ -201,6 +201,7 @@ export function Filters({ onFiltersChange, className }: FiltersProps) {
   useEffect(() => {
     const loadFilters = async () => {
       try {
+        // These are now cached, so subsequent calls are instant
         const [categoriesData, areasData, ingredientsData] = await Promise.all([
           mealApiService.getCategories(),
           mealApiService.getAreas(),
@@ -294,4 +295,4 @@ export function Filters({ onFiltersChange, className }: FiltersProps) {
         )}
     </div>
   );
-}
+});

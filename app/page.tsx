@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { SearchBar } from '@/components/SearchBar';
 import { MealCard } from '@/components/MealCard';
 import { MealDetailModal } from '@/components/MealDetailModal';
@@ -97,7 +97,7 @@ export default function Home() {
     }
   }, [pagination.isLoading, pagination.hasMore]);
 
-  const loadRandomMeals = async (isInitialLoad: boolean = false) => {
+  const loadRandomMeals = useCallback(async (isInitialLoad: boolean = false) => {
     if (isInitialLoad) {
       pagination.setLoading(true);
       pagination.setError(null);
@@ -124,7 +124,7 @@ export default function Home() {
         pagination.markLoadComplete();
       }
     }
-  };
+  }, [pagination]);
 
   const loadRandomMeal = async () => {
     try {
@@ -138,7 +138,7 @@ export default function Home() {
   };
 
 
-  const handleSearch = async (query: string) => {
+  const handleSearch = useCallback(async (query: string) => {
     if (!query.trim()) {
       // Only load random meals if we're in search mode, not ingredient mode
       if (searchMode === 'search') {
@@ -155,6 +155,7 @@ export default function Home() {
     currentSearchTypeRef.current = 'search';
 
     try {
+      // This is now cached, so repeated searches are instant
       const results = await mealApiService.searchMeals(query);
       pagination.setItems(results);
     } catch (err) {
@@ -163,9 +164,9 @@ export default function Home() {
     } finally {
       pagination.setLoading(false);
     }
-  };
+  }, [searchMode, pagination, loadRandomMeals]);
 
-  const handleFiltersChange = async (newFilters: { category: string; area: string; ingredient: string }) => {
+  const handleFiltersChange = useCallback(async (newFilters: { category: string; area: string; ingredient: string }) => {
     setFilters(newFilters);
     
     // If no filters are active, show random meals only in search mode
@@ -185,7 +186,7 @@ export default function Home() {
     try {
       let results: Meal[] = [];
 
-      // Apply filters in order of specificity
+      // Apply filters in order of specificity (these are now cached)
       if (newFilters.category) {
         results = await mealApiService.filterByCategory(newFilters.category);
       } else if (newFilters.area) {
@@ -201,15 +202,15 @@ export default function Home() {
     } finally {
       pagination.setLoading(false);
     }
-  };
+  }, [searchQuery, searchMode, pagination, loadRandomMeals]);
 
-  const handleMealSelect = (meal: Meal) => {
+  const handleMealSelect = useCallback((meal: Meal) => {
     setSelectedMeal(meal);
-  };
+  }, []);
 
-  const handleCloseModal = () => {
+  const handleCloseModal = useCallback(() => {
     setSelectedMeal(null);
-  };
+  }, []);
 
   const handleIngredientsChange = useCallback(async (ingredients: string[]) => {
     setAvailableIngredients(ingredients);

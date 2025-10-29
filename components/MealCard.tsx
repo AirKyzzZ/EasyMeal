@@ -1,5 +1,6 @@
 'use client';
 
+import { memo, useMemo } from 'react';
 import Image from 'next/image';
 import { Clock, Users, ChefHat, CheckCircle, Apple } from 'lucide-react';
 import { Meal } from '@/types/meal';
@@ -16,24 +17,27 @@ interface MealCardProps {
   isFirstImage?: boolean;
 }
 
-
-export function MealCard({ meal, onClick, className, availableIngredients = [], showMatchPercentage = false, isFirstImage = false }: MealCardProps) {
+export const MealCard = memo(function MealCard({ meal, onClick, className, availableIngredients = [], showMatchPercentage = false, isFirstImage = false }: MealCardProps) {
   const handleClick = () => {
     if (onClick) {
       onClick(meal);
     }
   };
 
-  const ingredients = mealApiService.getMealIngredients(meal);
-  const tags = meal.strTags ? meal.strTags.split(',').map(tag => tag.trim()) : [];
+  // Memoize expensive calculations
+  const ingredients = useMemo(() => mealApiService.getMealIngredients(meal), [meal]);
+  const tags = useMemo(() => meal.strTags ? meal.strTags.split(',').map(tag => tag.trim()) : [], [meal.strTags]);
   
   // Calculate ingredient matches for visual indicators (if in ingredient search mode)
-  const matchedIngredients = showMatchPercentage ? ingredients.filter(ingredient => 
-    availableIngredients.some(available => 
-      available.toLowerCase().includes(ingredient.ingredient.toLowerCase()) ||
-      ingredient.ingredient.toLowerCase().includes(available.toLowerCase())
-    )
-  ) : [];
+  const matchedIngredients = useMemo(() => {
+    if (!showMatchPercentage) return [];
+    return ingredients.filter(ingredient => 
+      availableIngredients.some(available => 
+        available.toLowerCase().includes(ingredient.ingredient.toLowerCase()) ||
+        ingredient.ingredient.toLowerCase().includes(available.toLowerCase())
+      )
+    );
+  }, [ingredients, availableIngredients, showMatchPercentage]);
 
   return (
     <div
@@ -159,4 +163,15 @@ export function MealCard({ meal, onClick, className, availableIngredients = [], 
       </div>
     </div>
   );
-}
+}, (prevProps, nextProps) => {
+  // Custom comparison function for memoization
+  // Only re-render if meal data or relevant props changed
+  return (
+    prevProps.meal.idMeal === nextProps.meal.idMeal &&
+    prevProps.onClick === nextProps.onClick &&
+    prevProps.className === nextProps.className &&
+    prevProps.showMatchPercentage === nextProps.showMatchPercentage &&
+    prevProps.isFirstImage === nextProps.isFirstImage &&
+    JSON.stringify(prevProps.availableIngredients) === JSON.stringify(nextProps.availableIngredients)
+  );
+});

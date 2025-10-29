@@ -9,10 +9,11 @@
 ✔ Make the watch on youtube button red @done(25-10-28 20:46)
 ✔ Change random meals button to random meal button and it opens up a random meal modal card @done(25-10-28 21:15)
 ✔ dont put the colors in this form [#262523] etc make variables for all the colors used in the project and use this variables in the actual code @done(25-10-29 09:06)
-☐ Make the search bar way bigger it must be the center of attraction for the user and visible as well as responsive
-☐ Optimize loading the api calls for the website to be optimized and fast
+✔ Make the search bar way bigger it must be the center of attraction for the user and visible as well as responsive @done(25-10-29 09:37)
+✔ Optimize loading the api calls for the website to be optimized and fast @done(25-10-29)
 ☐ Sujet prof optimisations et clean code
 ☐ Make sure the code is super clean formated with linter prettier eslint strict config and run
+☐ Implement a CI/CD github actions to check everything best practices and deploy on netlify
 ☐ Optimize SEO for the website to be the best in google search results
-☐ Readme
-☐ Upload netlify branch main
+☐ Make a full readme of the project IN FRENCH
+☐ Upload on netlify, branch main

@@ -2,11 +2,99 @@ import { Meal, Category, Area, Ingredient, ApiResponse, SearchFilters } from '@/
 
 const BASE_URL = 'https://www.themealdb.com/api/json/v1/1';
 
+// Cache interface with TTL
+interface CacheEntry<T> {
+  data: T;
+  timestamp: number;
+  ttl: number; // Time to live in milliseconds
+}
+
+// Request deduplication - track ongoing requests
+interface PendingRequest {
+  promise: Promise<any>;
+  timestamp: number;
+}
+
 class MealApiService {
   private requestQueue: Array<() => Promise<any>> = [];
   private isProcessingQueue = false;
   private lastRequestTime = 0;
   private readonly RATE_LIMIT_DELAY = 200; // 200ms between requests (5 requests per second max)
+  
+  // Caching for frequently accessed data
+  private cache = new Map<string, CacheEntry<any>>();
+  private readonly CACHE_TTL = {
+    categories: 24 * 60 * 60 * 1000, // 24 hours (rarely changes)
+    areas: 24 * 60 * 60 * 1000, // 24 hours (rarely changes)
+    ingredients: 24 * 60 * 60 * 1000, // 24 hours (rarely changes)
+    meal: 5 * 60 * 1000, // 5 minutes (meal details)
+    search: 2 * 60 * 1000, // 2 minutes (search results)
+  };
+  
+  // Request deduplication - prevent duplicate concurrent requests
+  private pendingRequests = new Map<string, PendingRequest>();
+  private readonly REQUEST_DEDUP_TTL = 5000; // 5 seconds to consider request as same
+
+  // Helper to check if meal data is complete (has instructions)
+  private isMealComplete(meal: Meal): boolean {
+    return !!(meal.strInstructions && meal.strInstructions.trim());
+  }
+
+  // Cache getter with TTL check
+  private getCached<T>(key: string): T | null {
+    const entry = this.cache.get(key);
+    if (!entry) return null;
+    
+    const now = Date.now();
+    if (now - entry.timestamp > entry.ttl) {
+      this.cache.delete(key);
+      return null;
+    }
+    
+    return entry.data as T;
+  }
+
+  // Cache setter
+  private setCached<T>(key: string, data: T, ttl: number): void {
+    this.cache.set(key, {
+      data,
+      timestamp: Date.now(),
+      ttl
+    });
+  }
+
+  // Clean up expired cache entries periodically
+  private cleanExpiredCache(): void {
+    const now = Date.now();
+    for (const [key, entry] of this.cache.entries()) {
+      if (now - entry.timestamp > entry.ttl) {
+        this.cache.delete(key);
+      }
+    }
+  }
+
+  // Request deduplication - check if same request is already pending
+  private getDeduplicatedRequest<T>(key: string, fetcher: () => Promise<T>): Promise<T> {
+    const pending = this.pendingRequests.get(key);
+    const now = Date.now();
+    
+    // If there's a pending request that's still fresh, return it
+    if (pending && (now - pending.timestamp) < this.REQUEST_DEDUP_TTL) {
+      return pending.promise as Promise<T>;
+    }
+
+    // Create new request
+    const promise = fetcher().finally(() => {
+      // Remove from pending requests after completion
+      const currentPending = this.pendingRequests.get(key);
+      if (currentPending?.promise === promise) {
+        this.pendingRequests.delete(key);
+      }
+    });
+
+    this.pendingRequests.set(key, { promise, timestamp: now });
+    return promise;
+  }
 
   private async processQueue() {
     if (this.isProcessingQueue || this.requestQueue.length === 0) {
@@ -106,11 +194,28 @@ class MealApiService {
 
   // Search meals by name
   async searchMeals(query: string): Promise<Meal[]> {
+    const normalizedQuery = query.trim().toLowerCase();
+    const cacheKey = `search:${normalizedQuery}`;
+    
+    // Check cache first
+    const cached = this.getCached<Meal[]>(cacheKey);
+    if (cached) {
+      return cached;
+    }
+
     const data = await this.fetchData<ApiResponse<Meal>>(`/search.php?s=${encodeURIComponent(query)}`);
     const basicMeals = data.meals || [];
     
-    // Enrich basic meals with full details (tags, ingredients, etc.)
-    return this.enrichMealsWithDetails(basicMeals);
+    // Only enrich if needed (check if meals are incomplete)
+    const needsEnrichment = basicMeals.some(meal => !this.isMealComplete(meal));
+    const enrichedMeals = needsEnrichment 
+      ? await this.enrichMealsWithDetails(basicMeals)
+      : basicMeals;
+    
+    // Cache the results
+    this.setCached(cacheKey, enrichedMeals, this.CACHE_TTL.search);
+    
+    return enrichedMeals;
   }
 
   // Search meals by first letter
@@ -124,28 +229,73 @@ class MealApiService {
 
   // Get meal details by ID
   async getMealById(id: string): Promise<Meal | null> {
-    const data = await this.fetchData<ApiResponse<Meal>>(`/lookup.php?i=${id}`);
-    return data.meals?.[0] || null;
+    const cacheKey = `meal:${id}`;
+    
+    // Check cache first
+    const cached = this.getCached<Meal>(cacheKey);
+    if (cached) {
+      return cached;
+    }
+
+    // Use deduplication for concurrent requests
+    const meal = await this.getDeduplicatedRequest(
+      `getMealById:${id}`,
+      async () => {
+        const data = await this.fetchData<ApiResponse<Meal>>(`/lookup.php?i=${id}`);
+        return data.meals?.[0] || null;
+      }
+    );
+
+    // Cache the result if found
+    if (meal) {
+      this.setCached(cacheKey, meal, this.CACHE_TTL.meal);
+    }
+    
+    return meal;
   }
 
   // Helper method to enrich basic meal data with full details
+  // Only enriches meals that need enrichment (incomplete data)
   private async enrichMealsWithDetails(basicMeals: Meal[]): Promise<Meal[]> {
     if (basicMeals.length === 0) return [];
     
-    // Fetch full details for each meal in parallel (with rate limiting)
-    const enrichedMeals = await Promise.all(
-      basicMeals.map(async (meal) => {
-        try {
-          const fullMeal = await this.getMealById(meal.idMeal);
-          return fullMeal || meal; // Fallback to basic meal if full details fail
-        } catch (error) {
-          console.warn(`Failed to enrich meal ${meal.idMeal}:`, error);
-          return meal; // Fallback to basic meal
-        }
-      })
-    );
+    // Separate complete and incomplete meals
+    const completeMeals: Meal[] = [];
+    const incompleteMeals: Meal[] = [];
     
-    return enrichedMeals;
+    basicMeals.forEach(meal => {
+      if (this.isMealComplete(meal)) {
+        completeMeals.push(meal);
+      } else {
+        incompleteMeals.push(meal);
+      }
+    });
+
+    // Only fetch details for incomplete meals
+    const enrichedIncomplete = incompleteMeals.length > 0
+      ? await Promise.all(
+          incompleteMeals.map(async (meal) => {
+            try {
+              // Check cache first
+              const cacheKey = `meal:${meal.idMeal}`;
+              const cached = this.getCached<Meal>(cacheKey);
+              if (cached) {
+                return cached;
+              }
+
+              // Fetch if not cached
+              const fullMeal = await this.getMealById(meal.idMeal);
+              return fullMeal || meal; // Fallback to basic meal if full details fail
+            } catch (error) {
+              console.warn(`Failed to enrich meal ${meal.idMeal}:`, error);
+              return meal; // Fallback to basic meal
+            }
+          })
+        )
+      : [];
+
+    // Combine complete meals with enriched incomplete meals
+    return [...completeMeals, ...enrichedIncomplete];
   }
 
   // Get random meals with pagination support
@@ -184,71 +334,186 @@ class MealApiService {
 
   // Get all categories
   async getCategories(): Promise<Category[]> {
-    try {
-      const data = await this.fetchData<ApiResponse<Category>>('/categories.php');
-      return data.categories || [];
-    } catch (error) {
-      console.warn('API unavailable, using fallback categories');
-      return this.getFallbackCategories();
+    const cacheKey = 'categories';
+    
+    // Check cache first
+    const cached = this.getCached<Category[]>(cacheKey);
+    if (cached) {
+      return cached;
     }
+
+    // Use deduplication
+    const categories = await this.getDeduplicatedRequest(
+      'getCategories',
+      async () => {
+        try {
+          const data = await this.fetchData<ApiResponse<Category>>('/categories.php');
+          return data.categories || [];
+        } catch (error) {
+          console.warn('API unavailable, using fallback categories');
+          return this.getFallbackCategories();
+        }
+      }
+    );
+
+    // Cache the result
+    this.setCached(cacheKey, categories, this.CACHE_TTL.categories);
+    
+    return categories;
   }
 
   // Get all areas
   async getAreas(): Promise<Area[]> {
-    try {
-      const data = await this.fetchData<ApiResponse<Area>>('/list.php?a=list');
-      return data.meals || [];
-    } catch (error) {
-      console.warn('API unavailable, using fallback areas');
-      return this.getFallbackAreas();
+    const cacheKey = 'areas';
+    
+    // Check cache first
+    const cached = this.getCached<Area[]>(cacheKey);
+    if (cached) {
+      return cached;
     }
+
+    // Use deduplication
+    const areas = await this.getDeduplicatedRequest(
+      'getAreas',
+      async () => {
+        try {
+          const data = await this.fetchData<ApiResponse<Area>>('/list.php?a=list');
+          return data.meals || [];
+        } catch (error) {
+          console.warn('API unavailable, using fallback areas');
+          return this.getFallbackAreas();
+        }
+      }
+    );
+
+    // Cache the result
+    this.setCached(cacheKey, areas, this.CACHE_TTL.areas);
+    
+    return areas;
   }
 
   // Get all ingredients
   async getIngredients(): Promise<Ingredient[]> {
-    try {
-      const data = await this.fetchData<ApiResponse<Ingredient>>('/list.php?i=list');
-      return data.meals || [];
-    } catch (error) {
-      console.warn('API unavailable, using fallback ingredients');
-      return this.getFallbackIngredients();
+    const cacheKey = 'ingredients';
+    
+    // Check cache first
+    const cached = this.getCached<Ingredient[]>(cacheKey);
+    if (cached) {
+      return cached;
     }
+
+    // Use deduplication
+    const ingredients = await this.getDeduplicatedRequest(
+      'getIngredients',
+      async () => {
+        try {
+          const data = await this.fetchData<ApiResponse<Ingredient>>('/list.php?i=list');
+          return data.meals || [];
+        } catch (error) {
+          console.warn('API unavailable, using fallback ingredients');
+          return this.getFallbackIngredients();
+        }
+      }
+    );
+
+    // Cache the result
+    this.setCached(cacheKey, ingredients, this.CACHE_TTL.ingredients);
+    
+    return ingredients;
   }
 
   // Filter meals by category
   async filterByCategory(category: string): Promise<Meal[]> {
+    const cacheKey = `filter:category:${category.toLowerCase()}`;
+    
+    // Check cache first
+    const cached = this.getCached<Meal[]>(cacheKey);
+    if (cached) {
+      return cached;
+    }
+
     const data = await this.fetchData<ApiResponse<Meal>>(`/filter.php?c=${encodeURIComponent(category)}`);
     const basicMeals = data.meals || [];
     
-    // Enrich basic meals with full details (tags, ingredients, etc.)
-    return this.enrichMealsWithDetails(basicMeals);
+    // Only enrich if needed
+    const needsEnrichment = basicMeals.some(meal => !this.isMealComplete(meal));
+    const enrichedMeals = needsEnrichment 
+      ? await this.enrichMealsWithDetails(basicMeals)
+      : basicMeals;
+    
+    // Cache the results
+    this.setCached(cacheKey, enrichedMeals, this.CACHE_TTL.search);
+    
+    return enrichedMeals;
   }
 
   // Filter meals by area
   async filterByArea(area: string): Promise<Meal[]> {
+    const cacheKey = `filter:area:${area.toLowerCase()}`;
+    
+    // Check cache first
+    const cached = this.getCached<Meal[]>(cacheKey);
+    if (cached) {
+      return cached;
+    }
+
     const data = await this.fetchData<ApiResponse<Meal>>(`/filter.php?a=${encodeURIComponent(area)}`);
     const basicMeals = data.meals || [];
     
-    // Enrich basic meals with full details (tags, ingredients, etc.)
-    return this.enrichMealsWithDetails(basicMeals);
+    // Only enrich if needed
+    const needsEnrichment = basicMeals.some(meal => !this.isMealComplete(meal));
+    const enrichedMeals = needsEnrichment 
+      ? await this.enrichMealsWithDetails(basicMeals)
+      : basicMeals;
+    
+    // Cache the results
+    this.setCached(cacheKey, enrichedMeals, this.CACHE_TTL.search);
+    
+    return enrichedMeals;
   }
 
   // Filter meals by ingredient
   async filterByIngredient(ingredient: string): Promise<Meal[]> {
     // Convert spaces to underscores as required by the API
     const formattedIngredient = ingredient.toLowerCase().replace(/\s+/g, '_');
+    const cacheKey = `filter:ingredient:${formattedIngredient}`;
+    
+    // Check cache first
+    const cached = this.getCached<Meal[]>(cacheKey);
+    if (cached) {
+      return cached;
+    }
+
     const data = await this.fetchData<ApiResponse<Meal>>(`/filter.php?i=${encodeURIComponent(formattedIngredient)}`);
     const basicMeals = data.meals || [];
     
-    // Enrich basic meals with full details (tags, ingredients, etc.)
-    return this.enrichMealsWithDetails(basicMeals);
+    // Only enrich if needed
+    const needsEnrichment = basicMeals.some(meal => !this.isMealComplete(meal));
+    const enrichedMeals = needsEnrichment 
+      ? await this.enrichMealsWithDetails(basicMeals)
+      : basicMeals;
+    
+    // Cache the results
+    this.setCached(cacheKey, enrichedMeals, this.CACHE_TTL.search);
+    
+    return enrichedMeals;
   }
 
   // Filter meals by multiple ingredients (find meals that contain any of the provided ingredients)
   async filterByMultipleIngredients(ingredients: string[]): Promise<Meal[]> {
     if (ingredients.length === 0) return [];
     
-    // Get meals for each ingredient
+    // Create cache key from sorted ingredients
+    const sortedIngredients = [...ingredients].sort();
+    const cacheKey = `filter:ingredients:${sortedIngredients.join(',')}`;
+    
+    // Check cache first
+    const cached = this.getCached<Meal[]>(cacheKey);
+    if (cached) {
+      return cached;
+    }
+    
+    // Get meals for each ingredient (these calls are already cached/optimized)
     const mealPromises = ingredients.map(ingredient => this.filterByIngredient(ingredient));
     const mealArrays = await Promise.all(mealPromises);
     
@@ -257,6 +522,9 @@ class MealApiService {
     const uniqueMeals = allMeals.filter((meal, index, self) => 
       index === self.findIndex(m => m.idMeal === meal.idMeal)
     );
+    
+    // Cache the combined results
+    this.setCached(cacheKey, uniqueMeals, this.CACHE_TTL.search);
     
     return uniqueMeals;
   }

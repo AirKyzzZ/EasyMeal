@@ -74,6 +74,7 @@ export const MealCard = memo(
             alt={meal.strMeal}
             fill
             className="object-cover transition-transform group-hover:scale-105"
+            priority={isFirstImage}
             loading={isFirstImage ? 'eager' : 'lazy'}
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           />

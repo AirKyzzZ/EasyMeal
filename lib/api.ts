@@ -1,11 +1,4 @@
-import {
-  Meal,
-  Category,
-  Area,
-  Ingredient,
-  ApiResponse,
-  SearchFilters,
-} from '@/types/meal';
+import { Meal, Category, Area, Ingredient, ApiResponse } from '@/types/meal';
 
 const BASE_URL = 'https://www.themealdb.com/api/json/v1/1';
 
@@ -18,18 +11,18 @@ interface CacheEntry<T> {
 
 // Request deduplication - track ongoing requests
 interface PendingRequest {
-  promise: Promise<any>;
+  promise: Promise<unknown>;
   timestamp: number;
 }
 
 class MealApiService {
-  private requestQueue: Array<() => Promise<any>> = [];
+  private requestQueue: Array<() => Promise<unknown>> = [];
   private isProcessingQueue = false;
   private lastRequestTime = 0;
   private readonly RATE_LIMIT_DELAY = 200; // 200ms between requests (5 requests per second max)
 
   // Caching for frequently accessed data
-  private cache = new Map<string, CacheEntry<any>>();
+  private cache = new Map<string, CacheEntry<unknown>>();
   private readonly CACHE_TTL = {
     categories: 24 * 60 * 60 * 1000, // 24 hours (rarely changes)
     areas: 24 * 60 * 60 * 1000, // 24 hours (rarely changes)
@@ -137,11 +130,8 @@ class MealApiService {
     this.isProcessingQueue = false;
   }
 
-  private async fetchData<T>(
-    endpoint: string,
-    retries: number = 3
-  ): Promise<T> {
-    return new Promise((resolve, reject) => {
+  private fetchData<T>(endpoint: string, retries: number = 3): Promise<T> {
+    return new Promise<T>((resolve, reject) => {
       const makeRequest = async () => {
         for (let attempt = 1; attempt <= retries; attempt++) {
           try {
@@ -218,7 +208,7 @@ class MealApiService {
       };
 
       this.requestQueue.push(makeRequest);
-      this.processQueue();
+      void this.processQueue();
     });
   }
 
@@ -323,8 +313,8 @@ class MealApiService {
                 // Fetch if not cached
                 const fullMeal = await this.getMealById(meal.idMeal);
                 return fullMeal || meal; // Fallback to basic meal if full details fail
-              } catch (error) {
-                console.warn(`Failed to enrich meal ${meal.idMeal}:`, error);
+              } catch (err) {
+                console.warn(`Failed to enrich meal ${meal.idMeal}:`, err);
                 return meal; // Fallback to basic meal
               }
             })
@@ -337,7 +327,7 @@ class MealApiService {
 
   // Get random meals with pagination support
   async getRandomMeals(
-    page: number = 0,
+    _page: number = 0,
     pageSize: number = 6
   ): Promise<Meal[]> {
     const randomMeals: (Meal | null)[] = [];
@@ -366,7 +356,7 @@ class MealApiService {
     try {
       const data = await this.fetchData<ApiResponse<Meal>>('/random.php');
       return data.meals?.[0] || null;
-    } catch (error) {
+    } catch {
       console.warn('API unavailable, using fallback data');
       const fallbackMeals = this.getFallbackMeals();
       return fallbackMeals[Math.floor(Math.random() * fallbackMeals.length)];
@@ -391,7 +381,7 @@ class MealApiService {
           const data =
             await this.fetchData<ApiResponse<Category>>('/categories.php');
           return data.categories || [];
-        } catch (error) {
+        } catch {
           console.warn('API unavailable, using fallback categories');
           return this.getFallbackCategories();
         }
@@ -420,7 +410,7 @@ class MealApiService {
         const data =
           await this.fetchData<ApiResponse<Area>>('/list.php?a=list');
         return data.meals || [];
-      } catch (error) {
+      } catch {
         console.warn('API unavailable, using fallback areas');
         return this.getFallbackAreas();
       }
@@ -450,7 +440,7 @@ class MealApiService {
           const data =
             await this.fetchData<ApiResponse<Ingredient>>('/list.php?i=list');
           return data.meals || [];
-        } catch (error) {
+        } catch {
           console.warn('API unavailable, using fallback ingredients');
           return this.getFallbackIngredients();
         }
@@ -595,9 +585,11 @@ class MealApiService {
   }
 
   // Get ingredient details with thumbnail
-  async getIngredientDetails(
-    ingredient: string
-  ): Promise<{ name: string; thumbnail: string; description?: string }> {
+  getIngredientDetails(ingredient: string): {
+    name: string;
+    thumbnail: string;
+    description?: string;
+  } {
     return {
       name: ingredient,
       thumbnail: this.getIngredientThumbnailUrl(ingredient),
@@ -813,7 +805,7 @@ class MealApiService {
   // Get meal thumbnail URL
   getMealThumbnailUrl(
     meal: Meal,
-    size: 'small' | 'medium' | 'large' = 'medium'
+    _size: 'small' | 'medium' | 'large' = 'medium'
   ): string {
     // TheMealDB returns full URLs like https://www.themealdb.com/images/media/meals/...
     // For now, just return the original URL as is
@@ -855,7 +847,7 @@ class MealApiService {
   async testApiConnection(): Promise<{
     success: boolean;
     error?: string;
-    data?: any;
+    data?: ApiResponse<Meal>;
   }> {
     try {
       console.log('Testing API connection...');

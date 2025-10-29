@@ -6,7 +6,7 @@ import typescriptParser from '@typescript-eslint/parser';
 import prettier from 'eslint-config-prettier';
 import globals from 'globals';
 
-export default [
+const config = [
   ...nextConfig,
   prettier,
   {
@@ -125,3 +125,5 @@ export default [
     },
   },
 ];
+
+export default config;

@@ -2,7 +2,7 @@
 
 import { ChefHat, Sparkles, Apple } from 'lucide-react';
 import Image from 'next/image';
-import { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 
 import { Filters } from '@/components/Filters';
 import { IngredientList } from '@/components/IngredientList';
@@ -154,16 +154,7 @@ export default function Home(): React.JSX.Element {
         }
       }
     },
-    [
-      pagination.initialPageSize,
-      pagination.loadMoreSize,
-      pagination.page,
-      pagination.setItems,
-      pagination.appendItems,
-      pagination.setLoading,
-      pagination.setError,
-      pagination.markLoadComplete,
-    ]
+    [pagination]
   );
 
   const loadRandomMeal = async (): Promise<void> => {
@@ -205,15 +196,7 @@ export default function Home(): React.JSX.Element {
         pagination.setLoading(false);
       }
     },
-    [
-      searchMode,
-      pagination.setLoading,
-      pagination.setError,
-      pagination.setItems,
-      pagination.reset,
-      loadRandomMeals,
-      mealApiService,
-    ]
+    [searchMode, pagination, loadRandomMeals]
   );
 
   const handleFiltersChange = useCallback(
@@ -260,16 +243,7 @@ export default function Home(): React.JSX.Element {
         pagination.setLoading(false);
       }
     },
-    [
-      searchQuery,
-      searchMode,
-      pagination.setLoading,
-      pagination.setError,
-      pagination.setItems,
-      pagination.reset,
-      loadRandomMeals,
-      mealApiService,
-    ]
+    [searchQuery, searchMode, pagination, loadRandomMeals]
   );
 
   const handleMealSelect = useCallback((meal: Meal) => {
@@ -281,7 +255,7 @@ export default function Home(): React.JSX.Element {
   }, []);
 
   const handleIngredientsChange = useCallback(
-    async (ingredients: string[]): Promise<void> => {
+    (ingredients: string[]): void => {
       setAvailableIngredients(ingredients);
 
       if (ingredients.length === 0) {
@@ -306,7 +280,8 @@ export default function Home(): React.JSX.Element {
 
       // Debounce the search by 500ms to prevent flooding the API
       window.ingredientSearchTimeout = setTimeout(() => {
-        void (async () => {
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+        (async (): Promise<void> => {
           // Double-check that this is still the current search
           if (currentSearchRef.current === searchKey) {
             return;

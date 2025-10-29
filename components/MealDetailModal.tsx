@@ -2,10 +2,9 @@
 
 import { X, Clock, Users, ChefHat, ExternalLink, Youtube } from 'lucide-react';
 import Image from 'next/image';
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import { mealApiService } from '@/lib/api';
-import { IngredientImage } from '@/lib/ingredientImages';
 import { cn } from '@/lib/utils';
 import { Meal } from '@/types/meal';
 
@@ -21,7 +20,7 @@ export function MealDetailModal({
   meal,
   isOpen,
   onClose,
-}: MealDetailModalProps) {
+}: MealDetailModalProps): React.JSX.Element | null {
   const [activeTab, setActiveTab] = useState<'ingredients' | 'instructions'>(
     'ingredients'
   );
@@ -44,13 +43,13 @@ export function MealDetailModal({
   }, [isOpen]);
 
   // Helper to check if meal data is complete (has instructions and ingredients)
-  const isMealComplete = (meal: Meal | null): boolean => {
-    if (!meal) return false;
+  const isMealComplete = (mealToCheck: Meal | null): boolean => {
+    if (!mealToCheck) return false;
     const hasInstructions = !!(
-      meal.strInstructions && meal.strInstructions.trim()
+      mealToCheck.strInstructions && mealToCheck.strInstructions.trim()
     );
     const hasIngredients = !!(
-      meal.strIngredient1 && meal.strIngredient1.trim()
+      mealToCheck.strIngredient1 && mealToCheck.strIngredient1.trim()
     );
     return hasInstructions && hasIngredients;
   };
@@ -60,20 +59,25 @@ export function MealDetailModal({
     if (meal && isOpen) {
       // Check if meal already has complete data
       if (isMealComplete(meal)) {
-        setFullMeal(meal);
-        setIsLoadingDetails(false);
+        // Use setTimeout to avoid synchronous setState in effect
+        setTimeout(() => {
+          setFullMeal(meal);
+          setIsLoadingDetails(false);
+        }, 0);
         return;
       }
 
       // Only fetch if meal is incomplete
-      setIsLoadingDetails(true);
-      mealApiService
+      setTimeout(() => {
+        setIsLoadingDetails(true);
+      }, 0);
+      void mealApiService
         .getMealById(meal.idMeal)
         .then(fullMealData => {
           setFullMeal(fullMealData || meal); // Fallback to original if null
         })
-        .catch(error => {
-          console.error('Failed to fetch full meal details:', error);
+        .catch(err => {
+          console.error('Failed to fetch full meal details:', err);
           // Fallback to the original meal data
           setFullMeal(meal);
         })
@@ -82,7 +86,9 @@ export function MealDetailModal({
         });
     } else if (!isOpen) {
       // Reset when modal closes
-      setFullMeal(null);
+      setTimeout(() => {
+        setFullMeal(null);
+      }, 0);
     }
   }, [meal, isOpen]);
 

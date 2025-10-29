@@ -1,16 +1,18 @@
+import React from 'react';
+
 import { cn } from '@/lib/utils';
 
 interface SkeletonProps {
   className?: string;
 }
 
-export function Skeleton({ className }: SkeletonProps) {
+export function Skeleton({ className }: SkeletonProps): React.JSX.Element {
   return (
     <div className={cn('animate-pulse rounded-md bg-secondary', className)} />
   );
 }
 
-export function MealCardSkeleton() {
+export function MealCardSkeleton(): React.JSX.Element {
   return (
     <div className="rounded-lg border border-border bg-card shadow-sm">
       {/* Image skeleton */}
@@ -58,7 +60,11 @@ export function MealCardSkeleton() {
   );
 }
 
-export function MealGridSkeleton({ count = 6 }: { count?: number }) {
+export function MealGridSkeleton({
+  count = 6,
+}: {
+  count?: number;
+}): React.JSX.Element {
   return (
     <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
       {Array.from({ length: count }).map((_, index) => (

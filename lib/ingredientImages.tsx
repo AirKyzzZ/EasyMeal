@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import React from 'react';
 
 import { mealApiService } from './api';
 
@@ -12,7 +13,7 @@ export function IngredientImage({
   ingredient,
   size = 'small',
   className = '',
-}: IngredientImageProps) {
+}: IngredientImageProps): React.JSX.Element {
   const imageUrl = mealApiService.getIngredientThumbnailUrl(ingredient, size);
 
   return (

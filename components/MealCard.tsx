@@ -1,8 +1,8 @@
 'use client';
 
-import { Clock, Users, ChefHat, CheckCircle, Apple } from 'lucide-react';
+import { Clock, Users, ChefHat, CheckCircle } from 'lucide-react';
 import Image from 'next/image';
-import { memo, useMemo } from 'react';
+import React, { memo, useMemo } from 'react';
 
 import { mealApiService } from '@/lib/api';
 import { IngredientImage } from '@/lib/ingredientImages';
@@ -27,7 +27,7 @@ export const MealCard = memo(
     showMatchPercentage = false,
     isFirstImage = false,
   }: MealCardProps) {
-    const handleClick = () => {
+    const handleClick = (): void => {
       if (onClick) {
         onClick(meal);
       }

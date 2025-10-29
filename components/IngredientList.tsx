@@ -1,7 +1,7 @@
 'use client';
 
-import { Plus, X, Search, Apple, CheckCircle, Circle } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { Plus, X, Search, Apple } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
 
 import { mealApiService } from '@/lib/api';
 import { IngredientImage } from '@/lib/ingredientImages';
@@ -16,7 +16,7 @@ interface IngredientListProps {
 export function IngredientList({
   onIngredientsChange,
   className,
-}: IngredientListProps) {
+}: IngredientListProps): React.JSX.Element {
   const [availableIngredients, setAvailableIngredients] = useState<
     Ingredient[]
   >([]);
@@ -26,7 +26,7 @@ export function IngredientList({
   const [showDropdown, setShowDropdown] = useState(false);
 
   useEffect(() => {
-    const loadIngredients = async () => {
+    const loadIngredients = async (): Promise<void> => {
       try {
         const ingredients = await mealApiService.getIngredients();
         setAvailableIngredients(ingredients);
@@ -37,12 +37,13 @@ export function IngredientList({
       }
     };
 
-    loadIngredients();
+    void loadIngredients();
   }, []);
 
   useEffect(() => {
     onIngredientsChange(selectedIngredients);
-  }, [selectedIngredients]); // Remove onIngredientsChange from dependencies to prevent infinite loops
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedIngredients]); // onIngredientsChange intentionally excluded to prevent infinite loops
 
   const filteredIngredients = availableIngredients.filter(
     ingredient =>
@@ -52,7 +53,7 @@ export function IngredientList({
       !selectedIngredients.includes(ingredient.strIngredient)
   );
 
-  const addIngredient = (ingredient: string) => {
+  const addIngredient = (ingredient: string): void => {
     if (!selectedIngredients.includes(ingredient)) {
       setSelectedIngredients([...selectedIngredients, ingredient]);
       setSearchQuery('');
@@ -60,7 +61,7 @@ export function IngredientList({
     }
   };
 
-  const removeIngredient = (ingredient: string) => {
+  const removeIngredient = (ingredient: string): void => {
     setSelectedIngredients(
       selectedIngredients.filter(ing => ing !== ingredient)
     );

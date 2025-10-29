@@ -122,7 +122,7 @@ function FilterDropdown({ label, options, value, onChange, className }: FilterDr
     <div className={cn("relative w-full min-w-0", className)}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex w-full items-center justify-between rounded-lg border border-[#e5e5e5] bg-white px-3 py-2 text-sm transition-colors hover:bg-[#f8f8f8] dark:border-[#4a4a4a] dark:bg-[#262523] dark:hover:bg-[#3a3a3a]"
+        className="flex w-full items-center justify-between rounded-lg border border-border bg-background px-3 py-2 text-sm transition-colors hover:bg-hover"
       >
         <div className="flex items-center gap-2 min-w-0 flex-1">
           {value ? (
@@ -130,23 +130,23 @@ function FilterDropdown({ label, options, value, onChange, className }: FilterDr
               {getSelectedDisplay()}
             </div>
           ) : (
-            <span className="text-[#262523] dark:text-white truncate">{label}</span>
+            <span className="text-foreground truncate">{label}</span>
           )}
         </div>
-        <ChevronDown className={cn("h-4 w-4 text-[#6b6b6b] dark:text-[#a0a0a0] transition-transform flex-shrink-0 ml-2", isOpen && "rotate-180")} />
+        <ChevronDown className={cn("h-4 w-4 text-muted-foreground transition-transform flex-shrink-0 ml-2", isOpen && "rotate-180")} />
       </button>
 
       {isOpen && (
-        <div className="absolute z-10 mt-1 w-full rounded-lg border border-[#e5e5e5] bg-white shadow-lg dark:border-[#4a4a4a] dark:bg-[#262523] left-0 right-0">
+        <div className="absolute z-10 mt-1 w-full rounded-lg border border-border bg-popover shadow-lg left-0 right-0">
           <div className="max-h-60 overflow-y-auto">
             <button
               onClick={() => {
                 onChange('');
                 setIsOpen(false);
               }}
-              className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-[#262523] hover:bg-[#f8f8f8] dark:text-white dark:hover:bg-[#3a3a3a]"
+              className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-foreground hover:bg-hover"
             >
-              <Apple className="h-4 w-4 text-[#6b6b6b] dark:text-[#a0a0a0] flex-shrink-0" />
+              <Apple className="h-4 w-4 text-muted-foreground flex-shrink-0" />
               <span className="truncate">All {label}s</span>
             </button>
             {options.map((option) => (
@@ -156,7 +156,7 @@ function FilterDropdown({ label, options, value, onChange, className }: FilterDr
                   onChange(option.value);
                   setIsOpen(false);
                 }}
-                className="flex w-full items-center gap-3 px-3 py-2 text-left text-sm text-[#262523] hover:bg-[#f8f8f8] dark:text-white dark:hover:bg-[#3a3a3a]"
+                className="flex w-full items-center gap-3 px-3 py-2 text-left text-sm text-foreground hover:bg-hover"
               >
                 <div className="flex-shrink-0">
                   {label.toLowerCase() === 'ingredient' ? (
@@ -164,13 +164,13 @@ function FilterDropdown({ label, options, value, onChange, className }: FilterDr
                   ) : label.toLowerCase() === 'area' ? (
                     <span className="text-base">{getAreaEmoji(option.value)}</span>
                   ) : (
-                    React.createElement(getIcon(option.value), { className: "h-4 w-4 text-[#6b6b6b] dark:text-[#a0a0a0]" })
+                    React.createElement(getIcon(option.value), { className: "h-4 w-4 text-muted-foreground" })
                   )}
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="font-medium truncate">{option.label}</div>
                   {option.description && label.toLowerCase() !== 'category' && (
-                    <div className="text-xs text-[#6b6b6b] dark:text-[#a0a0a0] truncate">{option.description}</div>
+                    <div className="text-xs text-muted-foreground truncate">{option.description}</div>
                   )}
                 </div>
               </button>
@@ -237,9 +237,9 @@ export function Filters({ onFiltersChange, className }: FiltersProps) {
   if (isLoading) {
     return (
       <div className={cn("flex flex-wrap gap-2 sm:gap-3 justify-center", className)}>
-        <div className="h-10 flex-1 min-w-[120px] sm:min-w-[150px] animate-pulse rounded-lg bg-[#f5f5f5] dark:bg-[#3a3a3a]" />
-        <div className="h-10 flex-1 min-w-[120px] sm:min-w-[150px] animate-pulse rounded-lg bg-[#f5f5f5] dark:bg-[#3a3a3a]" />
-        <div className="h-10 flex-1 min-w-[120px] sm:min-w-[150px] animate-pulse rounded-lg bg-[#f5f5f5] dark:bg-[#3a3a3a]" />
+        <div className="h-10 flex-1 min-w-[120px] sm:min-w-[150px] animate-pulse rounded-lg bg-secondary" />
+        <div className="h-10 flex-1 min-w-[120px] sm:min-w-[150px] animate-pulse rounded-lg bg-secondary" />
+        <div className="h-10 flex-1 min-w-[120px] sm:min-w-[150px] animate-pulse rounded-lg bg-secondary" />
       </div>
     );
   }
@@ -285,7 +285,7 @@ export function Filters({ onFiltersChange, className }: FiltersProps) {
         {hasActiveFilters && (
           <button
             onClick={clearAllFilters}
-            className="flex items-center gap-1 rounded-lg border border-[#e5e5e5] bg-white px-2 sm:px-3 py-2 text-xs sm:text-sm text-[#262523] transition-colors hover:bg-[#f8f8f8] dark:border-[#4a4a4a] dark:bg-[#262523] dark:text-white dark:hover:bg-[#3a3a3a] flex-shrink-0"
+            className="flex items-center gap-1 rounded-lg border border-border bg-background px-2 sm:px-3 py-2 text-xs sm:text-sm text-foreground transition-colors hover:bg-hover flex-shrink-0"
           >
             <X className="h-3 w-3 sm:h-4 sm:w-4" />
             <span className="hidden sm:inline">Clear All</span>

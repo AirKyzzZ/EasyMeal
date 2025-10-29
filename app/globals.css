@@ -1,17 +1,50 @@
 @import 'tailwindcss';
 
 :root {
+  /* Base colors */
   --background: #ffffff;
   --foreground: #262523;
+  
+  /* Primary colors */
   --primary: #262523;
   --primary-foreground: #ffffff;
+  
+  /* Secondary colors */
   --secondary: #f5f5f5;
   --secondary-foreground: #262523;
+  
+  /* Muted colors */
   --muted: #f8f8f8;
   --muted-foreground: #6b6b6b;
+  
+  /* Border colors */
   --border: #e5e5e5;
+  
+  /* Accent colors */
   --accent: #262523;
   --accent-foreground: #ffffff;
+  
+  /* Additional semantic colors */
+  --card: #ffffff;
+  --card-foreground: #262523;
+  --popover: #ffffff;
+  --popover-foreground: #262523;
+  --destructive: #ef4444;
+  --destructive-foreground: #ffffff;
+  --success: #22c55e;
+  --success-foreground: #ffffff;
+  --warning: #f59e0b;
+  --warning-foreground: #ffffff;
+  
+  /* Interactive states */
+  --hover: #f8f8f8;
+  --active: #e5e5e5;
+  --focus: #262523;
+  --focus-ring: rgba(38, 37, 35, 0.2);
+  
+  /* Loading spinner */
+  --spinner-border: #e5e5e5;
+  --spinner-border-active: #262523;
 }
 
 @theme inline {
@@ -26,23 +59,72 @@
   --color-border: var(--border);
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-hover: var(--hover);
+  --color-active: var(--active);
+  --color-focus: var(--focus);
+  --color-focus-ring: var(--focus-ring);
+  --color-spinner-border: var(--spinner-border);
+  --color-spinner-border-active: var(--spinner-border-active);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
+    /* Base colors */
     --background: #262523;
     --foreground: #ffffff;
+    
+    /* Primary colors */
     --primary: #ffffff;
     --primary-foreground: #262523;
+    
+    /* Secondary colors */
     --secondary: #3a3a3a;
     --secondary-foreground: #ffffff;
+    
+    /* Muted colors */
     --muted: #404040;
     --muted-foreground: #a0a0a0;
+    
+    /* Border colors */
     --border: #4a4a4a;
+    
+    /* Accent colors */
     --accent: #ffffff;
     --accent-foreground: #262523;
+    
+    /* Additional semantic colors */
+    --card: #262523;
+    --card-foreground: #ffffff;
+    --popover: #262523;
+    --popover-foreground: #ffffff;
+    --destructive: #ef4444;
+    --destructive-foreground: #ffffff;
+    --success: #22c55e;
+    --success-foreground: #ffffff;
+    --warning: #f59e0b;
+    --warning-foreground: #ffffff;
+    
+    /* Interactive states */
+    --hover: #3a3a3a;
+    --active: #4a4a4a;
+    --focus: #ffffff;
+    --focus-ring: rgba(255, 255, 255, 0.2);
+    
+    /* Loading spinner */
+    --spinner-border: #4a4a4a;
+    --spinner-border-active: #ffffff;
   }
 }
 

@@ -64,10 +64,10 @@ export function IngredientList({ onIngredientsChange, className }: IngredientLis
   if (isLoading) {
     return (
       <div className={cn("space-y-4", className)}>
-        <div className="h-10 w-full animate-pulse rounded-lg bg-[#f5f5f5] dark:bg-[#3a3a3a]" />
+        <div className="h-10 w-full animate-pulse rounded-lg bg-secondary" />
         <div className="flex flex-wrap gap-2">
           {Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} className="h-8 w-24 animate-pulse rounded-full bg-[#f5f5f5] dark:bg-[#3a3a3a]" />
+            <div key={i} className="h-8 w-24 animate-pulse rounded-full bg-secondary" />
           ))}
         </div>
       </div>
@@ -77,34 +77,34 @@ export function IngredientList({ onIngredientsChange, className }: IngredientLis
   return (
     <div className={cn("space-y-4", className)}>
       <div className="space-y-2">
-        <label className="text-sm font-medium text-[#262523] dark:text-white">
+        <label className="text-sm font-medium text-foreground">
           What ingredients do you have?
         </label>
         <div className="relative">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#6b6b6b] dark:text-[#a0a0a0]" />
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <input
               type="text"
               placeholder="Search for ingredients..."
               value={searchQuery}
               onChange={handleSearchChange}
               onFocus={() => setShowDropdown(searchQuery.length > 0)}
-              className="w-full rounded-lg border border-[#e5e5e5] bg-white pl-10 pr-4 py-2 text-sm transition-colors focus:border-[#262523] focus:outline-none focus:ring-2 focus:ring-[#262523]/20 dark:border-[#4a4a4a] dark:bg-[#262523] dark:text-white"
+              className="w-full rounded-lg border border-border bg-background pl-10 pr-4 py-2 text-sm transition-colors focus:border-focus focus:outline-none focus:ring-2 focus:ring-focus-ring text-foreground"
             />
           </div>
 
           {showDropdown && filteredIngredients.length > 0 && (
-            <div className="absolute z-10 mt-1 w-full rounded-lg border border-[#e5e5e5] bg-white shadow-lg dark:border-[#4a4a4a] dark:bg-[#262523]">
+            <div className="absolute z-10 mt-1 w-full rounded-lg border border-border bg-popover shadow-lg">
               <div className="max-h-60 overflow-y-auto">
                 {filteredIngredients.slice(0, 20).map((ingredient) => (
                   <button
                     key={ingredient.strIngredient}
                     onClick={() => addIngredient(ingredient.strIngredient)}
-                    className="flex w-full items-center gap-3 px-3 py-2 text-left text-sm text-[#262523] hover:bg-[#f8f8f8] dark:text-white dark:hover:bg-[#3a3a3a]"
+                    className="flex w-full items-center gap-3 px-3 py-2 text-left text-sm text-popover-foreground hover:bg-hover"
                   >
                     <IngredientImage ingredient={ingredient.strIngredient} size="small" />
                     <span className="flex-1">{ingredient.strIngredient}</span>
-                    <Plus className="h-4 w-4 text-[#6b6b6b] dark:text-[#a0a0a0]" />
+                    <Plus className="h-4 w-4 text-muted-foreground" />
                   </button>
                 ))}
               </div>
@@ -116,8 +116,8 @@ export function IngredientList({ onIngredientsChange, className }: IngredientLis
       {selectedIngredients.length > 0 && (
         <div className="space-y-2">
           <div className="flex items-center gap-2">
-            <Apple className="h-4 w-4 text-[#262523] dark:text-white" />
-            <span className="text-sm font-medium text-[#262523] dark:text-white">
+            <Apple className="h-4 w-4 text-foreground" />
+            <span className="text-sm font-medium text-foreground">
               Your Ingredients ({selectedIngredients.length})
             </span>
           </div>
@@ -125,13 +125,13 @@ export function IngredientList({ onIngredientsChange, className }: IngredientLis
             {selectedIngredients.map((ingredient) => (
               <div
                 key={ingredient}
-                className="flex items-center gap-2 rounded-full bg-[#f5f5f5] px-3 py-1 text-sm text-[#262523] dark:bg-[#3a3a3a] dark:text-white"
+                className="flex items-center gap-2 rounded-full bg-secondary px-3 py-1 text-sm text-secondary-foreground"
               >
                 <IngredientImage ingredient={ingredient} size="small" />
                 <span>{ingredient}</span>
                 <button
                   onClick={() => removeIngredient(ingredient)}
-                  className="ml-1 rounded-full p-0.5 hover:bg-[#e5e5e5] dark:hover:bg-[#4a4a4a]"
+                  className="ml-1 rounded-full p-0.5 hover:bg-active"
                 >
                   <X className="h-3 w-3" />
                 </button>

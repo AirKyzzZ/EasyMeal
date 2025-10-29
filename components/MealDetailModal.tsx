@@ -72,7 +72,7 @@ export function MealDetailModal({ meal, isOpen, onClose }: MealDetailModalProps)
       />
       
       {/* Modal */}
-      <div className="relative w-full max-w-4xl max-h-[90vh] overflow-hidden rounded-lg bg-white shadow-2xl dark:bg-[#262523]">
+      <div className="relative w-full max-w-4xl max-h-[90vh] overflow-hidden rounded-lg bg-card shadow-2xl">
         {/* Header */}
         <div className="relative h-64 overflow-hidden">
           <Image
@@ -122,7 +122,7 @@ export function MealDetailModal({ meal, isOpen, onClose }: MealDetailModalProps)
               {tags.map((tag, index) => (
                 <span
                   key={index}
-                  className="rounded-full bg-[#f5f5f5] px-3 py-1 text-sm text-[#262523] dark:bg-[#3a3a3a] dark:text-white"
+                  className="rounded-full bg-secondary px-3 py-1 text-sm text-secondary-foreground"
                 >
                   {tag}
                 </span>
@@ -134,21 +134,21 @@ export function MealDetailModal({ meal, isOpen, onClose }: MealDetailModalProps)
           {isLoadingDetails ? (
             <div className="flex items-center justify-center py-8">
               <div className="flex items-center gap-3">
-                <div className="h-6 w-6 animate-spin rounded-full border-2 border-[#e5e5e5] border-t-[#262523] dark:border-[#4a4a4a] dark:border-t-white"></div>
-                <span className="text-[#6b6b6b] dark:text-[#a0a0a0]">Loading full recipe details...</span>
+                <div className="h-6 w-6 animate-spin rounded-full border-2 border-spinner-border border-t-spinner-border-active"></div>
+                <span className="text-muted-foreground">Loading full recipe details...</span>
               </div>
             </div>
           ) : (
             <>
               {/* Tabs */}
-              <div className="mb-6 flex gap-1 rounded-lg bg-[#f5f5f5] p-1 dark:bg-[#3a3a3a]">
+              <div className="mb-6 flex gap-1 rounded-lg bg-secondary p-1">
             <button
               onClick={() => setActiveTab('ingredients')}
               className={cn(
                 "flex-1 rounded-md px-4 py-2 text-sm font-medium transition-colors",
                 activeTab === 'ingredients'
-                  ? "bg-white text-[#262523] shadow-sm dark:bg-[#262523] dark:text-white"
-                  : "text-[#6b6b6b] hover:text-[#262523] dark:text-[#a0a0a0] dark:hover:text-white"
+                  ? "bg-background text-foreground shadow-sm"
+                  : "text-muted-foreground hover:text-foreground"
               )}
             >
               Ingredients
@@ -158,8 +158,8 @@ export function MealDetailModal({ meal, isOpen, onClose }: MealDetailModalProps)
               className={cn(
                 "flex-1 rounded-md px-4 py-2 text-sm font-medium transition-colors",
                 activeTab === 'instructions'
-                  ? "bg-white text-[#262523] shadow-sm dark:bg-[#262523] dark:text-white"
-                  : "text-[#6b6b6b] hover:text-[#262523] dark:text-[#a0a0a0] dark:hover:text-white"
+                  ? "bg-background text-foreground shadow-sm"
+                  : "text-muted-foreground hover:text-foreground"
               )}
             >
               Instructions
@@ -170,14 +170,14 @@ export function MealDetailModal({ meal, isOpen, onClose }: MealDetailModalProps)
           <div className="max-h-96 overflow-y-auto">
             {activeTab === 'ingredients' && (
               <div className="space-y-3">
-                <h3 className="text-lg font-semibold text-[#262523] dark:text-white">
+                <h3 className="text-lg font-semibold text-card-foreground">
                   Ingredients
                 </h3>
                 <div className="grid gap-3">
                   {ingredients.map((item, index) => (
                     <div
                       key={index}
-                      className="flex items-center gap-3 rounded-lg bg-[#f8f8f8] p-3 dark:bg-[#404040]"
+                      className="flex items-center gap-3 rounded-lg bg-muted p-3"
                     >
                       <img
                         src={mealApiService.getIngredientThumbnailUrl(item.ingredient, 'small')}
@@ -188,11 +188,11 @@ export function MealDetailModal({ meal, isOpen, onClose }: MealDetailModalProps)
                         }}
                       />
                       <div className="flex-1">
-                        <span className="font-medium text-[#262523] dark:text-white">
+                        <span className="font-medium text-card-foreground">
                           {item.ingredient}
                         </span>
                         {item.measure && (
-                          <span className="ml-2 text-sm text-[#6b6b6b] dark:text-[#a0a0a0]">
+                          <span className="ml-2 text-sm text-muted-foreground">
                             {item.measure}
                           </span>
                         )}
@@ -205,11 +205,11 @@ export function MealDetailModal({ meal, isOpen, onClose }: MealDetailModalProps)
 
             {activeTab === 'instructions' && (
               <div className="space-y-3">
-                <h3 className="text-lg font-semibold text-[#262523] dark:text-white">
+                <h3 className="text-lg font-semibold text-card-foreground">
                   Instructions
                 </h3>
                 <div className="prose prose-sm max-w-none dark:prose-invert">
-                  <p className="whitespace-pre-wrap text-[#262523] dark:text-white">
+                  <p className="whitespace-pre-wrap text-card-foreground">
                     {displayMeal.strInstructions}
                   </p>
                 </div>
@@ -237,7 +237,7 @@ export function MealDetailModal({ meal, isOpen, onClose }: MealDetailModalProps)
                 href={displayMeal.strSource}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-2 rounded-lg bg-[#f5f5f5] px-4 py-2 text-sm font-medium text-[#262523] transition-colors hover:bg-[#e5e5e5] dark:bg-[#3a3a3a] dark:text-white dark:hover:bg-[#4a4a4a]"
+                className="flex items-center gap-2 rounded-lg bg-secondary px-4 py-2 text-sm font-medium text-secondary-foreground transition-colors hover:bg-active"
               >
                 <ExternalLink className="h-4 w-4" />
                 View Source

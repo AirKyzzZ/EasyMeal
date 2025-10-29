@@ -8,7 +8,7 @@ export function Skeleton({ className }: SkeletonProps) {
   return (
     <div
       className={cn(
-        "animate-pulse rounded-md bg-[#f5f5f5] dark:bg-[#3a3a3a]",
+        "animate-pulse rounded-md bg-secondary",
         className
       )}
     />
@@ -17,7 +17,7 @@ export function Skeleton({ className }: SkeletonProps) {
 
 export function MealCardSkeleton() {
   return (
-    <div className="rounded-lg border border-[#e5e5e5] bg-white shadow-sm dark:border-[#4a4a4a] dark:bg-[#262523]">
+    <div className="rounded-lg border border-border bg-card shadow-sm">
       {/* Image skeleton */}
       <div className="aspect-[4/3] rounded-t-lg">
         <Skeleton className="h-full w-full" />

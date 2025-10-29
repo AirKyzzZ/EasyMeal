@@ -39,7 +39,7 @@ export function MealCard({ meal, onClick, className, availableIngredients = [], 
     <div
       onClick={handleClick}
       className={cn(
-        "group cursor-pointer rounded-lg border border-[#e5e5e5] bg-white shadow-sm transition-all hover:shadow-md hover:scale-[1.02] dark:border-[#4a4a4a] dark:bg-[#262523]",
+        "group cursor-pointer rounded-lg border border-border bg-card shadow-sm transition-all hover:shadow-md hover:scale-[1.02]",
         className
       )}
     >
@@ -56,21 +56,21 @@ export function MealCard({ meal, onClick, className, availableIngredients = [], 
         
         {/* Category Badge */}
         <div className="absolute top-3 left-3">
-          <span className="rounded-full bg-white/90 px-2 py-1 text-xs font-medium text-[#262523] backdrop-blur-sm">
+          <span className="rounded-full bg-white/90 px-2 py-1 text-xs font-medium text-card-foreground backdrop-blur-sm">
             {meal.strCategory}
           </span>
         </div>
 
         {/* Area Badge */}
         <div className="absolute top-3 right-3">
-          <span className="rounded-full bg-white/90 px-2 py-1 text-xs font-medium text-[#262523] backdrop-blur-sm">
+          <span className="rounded-full bg-white/90 px-2 py-1 text-xs font-medium text-card-foreground backdrop-blur-sm">
             {meal.strArea}
           </span>
         </div>
       </div>
 
       <div className="p-4">
-        <h3 className="mb-2 text-lg font-semibold text-[#262523] dark:text-white line-clamp-2">
+        <h3 className="mb-2 text-lg font-semibold text-card-foreground line-clamp-2">
           {meal.strMeal}
         </h3>
 
@@ -80,13 +80,13 @@ export function MealCard({ meal, onClick, className, availableIngredients = [], 
             {tags.slice(0, 3).map((tag, index) => (
               <span
                 key={index}
-                className="rounded-full bg-[#f5f5f5] px-2 py-1 text-xs text-[#262523] dark:bg-[#3a3a3a] dark:text-white"
+                className="rounded-full bg-secondary px-2 py-1 text-xs text-secondary-foreground"
               >
                 {tag}
               </span>
             ))}
             {tags.length > 3 && (
-              <span className="rounded-full bg-[#f5f5f5] px-2 py-1 text-xs text-[#262523] dark:bg-[#3a3a3a] dark:text-white">
+              <span className="rounded-full bg-secondary px-2 py-1 text-xs text-secondary-foreground">
                 +{tags.length - 3}
               </span>
             )}
@@ -96,7 +96,7 @@ export function MealCard({ meal, onClick, className, availableIngredients = [], 
         {/* Ingredients Preview */}
         <div className="mb-3">
           <div className="flex items-center justify-between mb-2">
-            <div className="flex items-center gap-1 text-sm text-[#6b6b6b] dark:text-[#a0a0a0]">
+            <div className="flex items-center gap-1 text-sm text-muted-foreground">
               <ChefHat className="h-4 w-4" />
               <span className="font-medium">Ingredients:</span>
             </div>
@@ -114,20 +114,20 @@ export function MealCard({ meal, onClick, className, availableIngredients = [], 
                   <span className={cn(
                     "flex-1",
                     isMatched && showMatchPercentage 
-                      ? "text-[#262523] dark:text-white font-medium" 
-                      : "text-[#6b6b6b] dark:text-[#a0a0a0]"
+                      ? "text-card-foreground font-medium" 
+                      : "text-muted-foreground"
                   )}>
                     {ingredient.ingredient}
                     {ingredient.measure && ` (${ingredient.measure})`}
                   </span>
                   {isMatched && showMatchPercentage && (
-                    <CheckCircle className="h-3 w-3 text-[#262523] dark:text-white" />
+                    <CheckCircle className="h-3 w-3 text-card-foreground" />
                   )}
                 </div>
               );
             })}
             {ingredients.length > 4 && (
-              <div className="text-xs text-[#6b6b6b] dark:text-[#a0a0a0]">
+              <div className="text-xs text-muted-foreground">
                 +{ingredients.length - 4} more ingredients
               </div>
             )}
@@ -135,13 +135,13 @@ export function MealCard({ meal, onClick, className, availableIngredients = [], 
         </div>
 
         {/* Instructions Preview */}
-        <p className="text-sm text-[#6b6b6b] dark:text-[#a0a0a0] line-clamp-3">
+        <p className="text-sm text-muted-foreground line-clamp-3">
           {meal.strInstructions}
         </p>
 
         {/* Action Button */}
         <div className="mt-4 flex items-center justify-between">
-          <div className="flex items-center gap-4 text-xs text-[#6b6b6b] dark:text-[#a0a0a0]">
+          <div className="flex items-center gap-4 text-xs text-muted-foreground">
             <div className="flex items-center gap-1">
               <Clock className="h-3 w-3" />
               <span>Recipe</span>
@@ -152,7 +152,7 @@ export function MealCard({ meal, onClick, className, availableIngredients = [], 
             </div>
           </div>
           
-          <button className="rounded-full bg-[#262523] px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-[#3a3a3a] dark:bg-white dark:text-[#262523] dark:hover:bg-[#f5f5f5]">
+          <button className="rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-hover">
             View Recipe
           </button>
         </div>

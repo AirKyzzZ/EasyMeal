@@ -124,7 +124,7 @@ export function SearchBar({ onSearch, onMealSelect, placeholder = "Search for me
   return (
     <div ref={searchRef} className={cn("relative w-full max-w-2xl", className)}>
       <div className="relative">
-        <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#6b6b6b] dark:text-[#a0a0a0]" />
+        <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
         <input
           ref={inputRef}
           type="text"
@@ -133,33 +133,33 @@ export function SearchBar({ onSearch, onMealSelect, placeholder = "Search for me
           onKeyDown={handleKeyDown}
           onFocus={() => setShowSuggestions(true)}
           placeholder={placeholder}
-          className="w-full rounded-lg border border-[#e5e5e5] bg-white px-10 py-3 text-sm shadow-sm transition-colors focus:border-[#262523] focus:outline-none focus:ring-2 focus:ring-[#262523]/20 dark:border-[#4a4a4a] dark:bg-[#262523] dark:text-white dark:focus:border-white"
+          className="w-full rounded-lg border border-border bg-background px-10 py-3 text-sm shadow-sm transition-colors focus:border-focus focus:outline-none focus:ring-2 focus:ring-focus-ring text-foreground"
         />
         {query && (
           <button
             onClick={clearSearch}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-[#6b6b6b] hover:text-[#262523] dark:text-[#a0a0a0] dark:hover:text-white"
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
           >
             <X className="h-4 w-4" />
           </button>
         )}
         {isLoading && (
           <div className="absolute right-10 top-1/2 -translate-y-1/2">
-            <div className="h-4 w-4 animate-spin rounded-full border-2 border-[#e5e5e5] border-t-[#262523] dark:border-[#4a4a4a] dark:border-t-white"></div>
+            <div className="h-4 w-4 animate-spin rounded-full border-2 border-spinner-border border-t-spinner-border-active"></div>
           </div>
         )}
       </div>
 
       {/* Suggestions Dropdown */}
       {showSuggestions && suggestions.length > 0 && (
-        <div className="absolute z-50 mt-1 w-full rounded-lg border border-[#e5e5e5] bg-white shadow-lg dark:border-[#4a4a4a] dark:bg-[#262523]">
+        <div className="absolute z-50 mt-1 w-full rounded-lg border border-border bg-popover shadow-lg">
           {suggestions.map((meal, index) => (
             <button
               key={meal.idMeal}
               onClick={() => handleMealSelect(meal)}
               className={cn(
-                "flex w-full items-center gap-3 px-4 py-3 text-left text-sm transition-colors hover:bg-[#f8f8f8] dark:hover:bg-[#3a3a3a]",
-                index === selectedIndex && "bg-[#f8f8f8] dark:bg-[#3a3a3a]"
+                "flex w-full items-center gap-3 px-4 py-3 text-left text-sm transition-colors hover:bg-hover",
+                index === selectedIndex && "bg-hover"
               )}
             >
               <img
@@ -168,10 +168,10 @@ export function SearchBar({ onSearch, onMealSelect, placeholder = "Search for me
                 className="h-8 w-8 rounded object-cover"
               />
               <div className="flex-1">
-                <div className="font-medium text-[#262523] dark:text-white">
+                <div className="font-medium text-popover-foreground">
                   {meal.strMeal}
                 </div>
-                <div className="text-xs text-[#6b6b6b] dark:text-[#a0a0a0]">
+                <div className="text-xs text-muted-foreground">
                   {meal.strCategory} • {meal.strArea}
                 </div>
               </div>

@@ -14,8 +14,7 @@ import {
   Carrot,
   Utensils,
 } from 'lucide-react';
-import type React from 'react';
-import { useState, useEffect, memo } from 'react';
+import React, { useState, useEffect, memo } from 'react';
 
 import { mealApiService } from '@/lib/api';
 import { IngredientImage } from '@/lib/ingredientImages';

@@ -448,7 +448,6 @@ class MealApiService {
             await this.fetchData<ApiResponse<Ingredient>>('/list.php?i=list');
           return data.meals || [];
         } catch {
-          // eslint-disable-next-line no-console
           console.warn('API unavailable, using fallback ingredients');
           return this.getFallbackIngredients();
         }

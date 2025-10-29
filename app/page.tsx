@@ -471,9 +471,9 @@ export default function Home(): React.JSX.Element {
         <div className="mb-12">
           {searchMode === 'search' ? (
             <>
-              <div className="mb-8 flex justify-center px-4">
+              <div className="mb-3 sm:mb-8 flex justify-center px-4">
                 <div className="w-full max-w-5xl mx-auto">
-                  <div className="text-center mb-6">
+                  <div className="text-center mb-4 sm:mb-6">
                     <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-foreground mb-2">
                       Find Your Perfect Recipe
                     </h2>

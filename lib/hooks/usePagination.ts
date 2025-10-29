@@ -35,7 +35,7 @@ export function usePagination(options: UsePaginationOptions = {}): {
   const {
     initialPageSize = 6, // Load 6 items initially for fast first paint
     loadMoreSize = 6, // Load 6 more items on scroll
-    maxItems = 50, // Maximum items to prevent memory issues
+    maxItems = 100, // Maximum items to prevent memory issues
   } = options;
 
   const [state, setState] = useState<PaginationState>({

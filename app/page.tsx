@@ -365,26 +365,50 @@ export default function Home() {
         </div>
 
         {/* Search Section */}
-        <div className="mb-8">
+        <div className="mb-12">
           {searchMode === 'search' ? (
             <>
-              <div className="mb-6 flex justify-center px-2">
-                <SearchBar
-                  onSearch={handleSearch}
-                  onMealSelect={handleMealSelect}
-                  placeholder="Search for meals, ingredients, or cuisines..."
-                  className="w-full max-w-2xl"
-                />
+              <div className="mb-8 flex justify-center px-4">
+                <div className="w-full max-w-5xl mx-auto">
+                  <div className="text-center mb-6">
+                    <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-foreground mb-2">
+                      Find Your Perfect Recipe
+                    </h2>
+                    <p className="text-sm sm:text-base lg:text-lg text-muted-foreground">
+                      Search from thousands of delicious recipes
+                    </p>
+                  </div>
+                  <div className="flex justify-center">
+                    <SearchBar
+                      onSearch={handleSearch}
+                      onMealSelect={handleMealSelect}
+                      placeholder="Search for meals, ingredients, or cuisines..."
+                      className="w-full max-w-4xl"
+                    />
+                  </div>
+                </div>
               </div>
               
-              <div className="flex justify-center px-2">
+              <div className="flex justify-center px-4">
                 <Filters onFiltersChange={handleFiltersChange} className="w-full max-w-4xl" />
               </div>
             </>
           ) : (
-            <div className="mb-6 px-2">
-              <div className="mx-auto max-w-2xl">
-                <IngredientList onIngredientsChange={handleIngredientsChange} />
+            <div className="mb-8 px-4">
+              <div className="mx-auto max-w-5xl">
+                <div className="text-center mb-6">
+                  <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-foreground mb-2">
+                    Find Recipes by Ingredients
+                  </h2>
+                  <p className="text-sm sm:text-base lg:text-lg text-muted-foreground">
+                    Tell us what you have and we'll find the perfect recipes
+                  </p>
+                </div>
+                <div className="flex justify-center">
+                  <div className="w-full max-w-4xl">
+                    <IngredientList onIngredientsChange={handleIngredientsChange} />
+                  </div>
+                </div>
               </div>
             </div>
           )}

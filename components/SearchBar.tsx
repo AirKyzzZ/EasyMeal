@@ -122,9 +122,9 @@ export function SearchBar({ onSearch, onMealSelect, placeholder = "Search for me
   };
 
   return (
-    <div ref={searchRef} className={cn("relative w-full max-w-2xl", className)}>
+    <div ref={searchRef} className={cn("relative w-full max-w-4xl", className)}>
       <div className="relative">
-        <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+        <Search className="absolute left-4 sm:left-6 top-1/2 h-5 w-5 sm:h-6 sm:w-6 -translate-y-1/2 text-muted-foreground" />
         <input
           ref={inputRef}
           type="text"
@@ -133,45 +133,45 @@ export function SearchBar({ onSearch, onMealSelect, placeholder = "Search for me
           onKeyDown={handleKeyDown}
           onFocus={() => setShowSuggestions(true)}
           placeholder={placeholder}
-          className="w-full rounded-lg border border-border bg-background px-10 py-3 text-sm shadow-sm transition-colors focus:border-focus focus:outline-none focus:ring-2 focus:ring-focus-ring text-foreground"
+          className="w-full rounded-xl sm:rounded-2xl border-2 border-border bg-background px-12 sm:px-16 py-4 sm:py-6 text-base sm:text-lg lg:text-xl shadow-lg transition-all duration-200 focus:border-primary focus:outline-none focus:ring-4 focus:ring-primary/20 text-foreground placeholder:text-muted-foreground hover:border-primary/50"
         />
         {query && (
           <button
             onClick={clearSearch}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+            className="absolute right-4 sm:right-6 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
           >
-            <X className="h-4 w-4" />
+            <X className="h-5 w-5 sm:h-6 sm:w-6" />
           </button>
         )}
         {isLoading && (
-          <div className="absolute right-10 top-1/2 -translate-y-1/2">
-            <div className="h-4 w-4 animate-spin rounded-full border-2 border-spinner-border border-t-spinner-border-active"></div>
+          <div className="absolute right-12 sm:right-16 top-1/2 -translate-y-1/2">
+            <div className="h-5 w-5 sm:h-6 sm:w-6 animate-spin rounded-full border-2 border-spinner-border border-t-spinner-border-active"></div>
           </div>
         )}
       </div>
 
       {/* Suggestions Dropdown */}
       {showSuggestions && suggestions.length > 0 && (
-        <div className="absolute z-50 mt-1 w-full rounded-lg border border-border bg-popover shadow-lg">
+        <div className="absolute z-50 mt-2 w-full rounded-xl sm:rounded-2xl border-2 border-border bg-popover shadow-xl">
           {suggestions.map((meal, index) => (
             <button
               key={meal.idMeal}
               onClick={() => handleMealSelect(meal)}
               className={cn(
-                "flex w-full items-center gap-3 px-4 py-3 text-left text-sm transition-colors hover:bg-hover",
+                "flex w-full items-center gap-4 px-4 sm:px-6 py-3 sm:py-4 text-left text-sm sm:text-base transition-colors hover:bg-hover first:rounded-t-xl sm:first:rounded-t-2xl last:rounded-b-xl sm:last:rounded-b-2xl",
                 index === selectedIndex && "bg-hover"
               )}
             >
               <img
                 src={mealApiService.getMealThumbnailUrl(meal, 'small')}
                 alt={meal.strMeal}
-                className="h-8 w-8 rounded object-cover"
+                className="h-10 w-10 sm:h-12 sm:w-12 rounded-lg object-cover flex-shrink-0"
               />
-              <div className="flex-1">
-                <div className="font-medium text-popover-foreground">
+              <div className="flex-1 min-w-0">
+                <div className="font-medium text-popover-foreground truncate">
                   {meal.strMeal}
                 </div>
-                <div className="text-xs text-muted-foreground">
+                <div className="text-xs sm:text-sm text-muted-foreground truncate">
                   {meal.strCategory} • {meal.strArea}
                 </div>
               </div>

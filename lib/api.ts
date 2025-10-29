@@ -99,7 +99,7 @@ class MealApiService {
     return promise;
   }
 
-  private async processQueue() {
+  private async processQueue(): Promise<void> {
     if (this.isProcessingQueue || this.requestQueue.length === 0) {
       return;
     }
@@ -121,6 +121,7 @@ class MealApiService {
         try {
           await request();
         } catch (error) {
+          // eslint-disable-next-line no-console
           console.error('Queue request failed:', error);
         }
         this.lastRequestTime = Date.now();
@@ -132,7 +133,7 @@ class MealApiService {
 
   private fetchData<T>(endpoint: string, retries: number = 3): Promise<T> {
     return new Promise<T>((resolve, reject) => {
-      const makeRequest = async () => {
+      const makeRequest = async (): Promise<void> => {
         for (let attempt = 1; attempt <= retries; attempt++) {
           try {
             // Create AbortController for timeout
@@ -154,6 +155,7 @@ class MealApiService {
               if (response.status === 429) {
                 const retryAfter = response.headers.get('retry-after');
                 const delay = retryAfter ? parseInt(retryAfter) * 1000 : 10000; // Default 10 seconds
+                // eslint-disable-next-line no-console
                 console.warn(
                   `Rate limited. Waiting ${delay}ms before retry...`
                 );
@@ -163,10 +165,11 @@ class MealApiService {
               throw new Error(`HTTP error! status: ${response.status}`);
             }
 
-            const data = await response.json();
+            const data = (await response.json()) as T;
             resolve(data);
             return;
           } catch (error) {
+            // eslint-disable-next-line no-console
             console.error(`API Error (attempt ${attempt}/${retries}):`, error);
 
             // If this is the last attempt, throw the error
@@ -314,6 +317,7 @@ class MealApiService {
                 const fullMeal = await this.getMealById(meal.idMeal);
                 return fullMeal || meal; // Fallback to basic meal if full details fail
               } catch (err) {
+                // eslint-disable-next-line no-console
                 console.warn(`Failed to enrich meal ${meal.idMeal}:`, err);
                 return meal; // Fallback to basic meal
               }
@@ -357,6 +361,7 @@ class MealApiService {
       const data = await this.fetchData<ApiResponse<Meal>>('/random.php');
       return data.meals?.[0] || null;
     } catch {
+      // eslint-disable-next-line no-console
       console.warn('API unavailable, using fallback data');
       const fallbackMeals = this.getFallbackMeals();
       return fallbackMeals[Math.floor(Math.random() * fallbackMeals.length)];
@@ -382,6 +387,7 @@ class MealApiService {
             await this.fetchData<ApiResponse<Category>>('/categories.php');
           return data.categories || [];
         } catch {
+          // eslint-disable-next-line no-console
           console.warn('API unavailable, using fallback categories');
           return this.getFallbackCategories();
         }
@@ -411,6 +417,7 @@ class MealApiService {
           await this.fetchData<ApiResponse<Area>>('/list.php?a=list');
         return data.meals || [];
       } catch {
+        // eslint-disable-next-line no-console
         console.warn('API unavailable, using fallback areas');
         return this.getFallbackAreas();
       }
@@ -441,6 +448,7 @@ class MealApiService {
             await this.fetchData<ApiResponse<Ingredient>>('/list.php?i=list');
           return data.meals || [];
         } catch {
+          // eslint-disable-next-line no-console
           console.warn('API unavailable, using fallback ingredients');
           return this.getFallbackIngredients();
         }
@@ -850,11 +858,14 @@ class MealApiService {
     data?: ApiResponse<Meal>;
   }> {
     try {
+      // eslint-disable-next-line no-console
       console.log('Testing API connection...');
       const data = await this.fetchData<ApiResponse<Meal>>('/random.php');
+      // eslint-disable-next-line no-console
       console.log('API test successful:', data);
       return { success: true, data };
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error('API test failed:', error);
       return {
         success: false,

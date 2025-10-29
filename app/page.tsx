@@ -52,8 +52,8 @@ export default function Home(): React.JSX.Element {
 
   // Monitor network status
   useEffect(() => {
-    const handleOnline = () => setIsOnline(true);
-    const handleOffline = () => setIsOnline(false);
+    const handleOnline = (): void => setIsOnline(true);
+    const handleOffline = (): void => setIsOnline(false);
 
     window.addEventListener('online', handleOnline);
     window.addEventListener('offline', handleOffline);
@@ -61,7 +61,7 @@ export default function Home(): React.JSX.Element {
     // Check initial status
     setIsOnline(navigator.onLine);
 
-    return () => {
+    return (): void => {
       window.removeEventListener('online', handleOnline);
       window.removeEventListener('offline', handleOffline);
 
@@ -145,6 +145,7 @@ export default function Home(): React.JSX.Element {
             ? err.message
             : 'Failed to load meals. Please try again.';
         pagination.setError(errorMessage);
+        // eslint-disable-next-line no-console
         console.error('Error loading random meals:', err);
       } finally {
         if (isInitialLoad) {
@@ -164,6 +165,7 @@ export default function Home(): React.JSX.Element {
         setSelectedMeal(randomMeal);
       }
     } catch (err) {
+      // eslint-disable-next-line no-console
       console.error('Error loading random meal:', err);
     }
   };
@@ -191,6 +193,7 @@ export default function Home(): React.JSX.Element {
         pagination.setItems(results);
       } catch (err) {
         pagination.setError('Search failed. Please try again.');
+        // eslint-disable-next-line no-console
         console.error('Search error:', err);
       } finally {
         pagination.setLoading(false);
@@ -238,6 +241,7 @@ export default function Home(): React.JSX.Element {
         pagination.setItems(results);
       } catch (err) {
         pagination.setError('Failed to apply filters. Please try again.');
+        // eslint-disable-next-line no-console
         console.error('Filter error:', err);
       } finally {
         pagination.setLoading(false);
@@ -316,15 +320,18 @@ export default function Home(): React.JSX.Element {
               pagination.setError(errorMessage);
             }
 
+            // eslint-disable-next-line no-console
             console.error('Ingredient search error:', err);
 
             // Fallback to showing some random meals if ingredient search fails
             try {
+              // eslint-disable-next-line no-console
               console.log(
                 'Falling back to random meals due to ingredient search failure'
               );
               await loadRandomMeals(true);
             } catch (fallbackErr) {
+              // eslint-disable-next-line no-console
               console.error('Fallback also failed:', fallbackErr);
             }
           } finally {

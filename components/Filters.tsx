@@ -262,6 +262,7 @@ export const Filters = memo(function Filters({
         setAreas(areasData);
         setIngredients(ingredientsData.slice(0, 50)); // Limit ingredients for performance
       } catch (error) {
+        // eslint-disable-next-line no-console
         console.error('Error loading filters:', error);
       } finally {
         setIsLoading(false);

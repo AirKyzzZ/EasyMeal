@@ -36,7 +36,7 @@ export function MealDetailModal({
       document.body.style.overflow = 'hidden';
 
       // Cleanup function to restore scrolling
-      return () => {
+      return (): void => {
         document.body.style.overflow = originalStyle;
       };
     }
@@ -60,7 +60,7 @@ export function MealDetailModal({
       // Check if meal already has complete data
       if (isMealComplete(meal)) {
         // Use setTimeout to avoid synchronous setState in effect
-        setTimeout(() => {
+        setTimeout((): void => {
           setFullMeal(meal);
           setIsLoadingDetails(false);
         }, 0);
@@ -68,7 +68,7 @@ export function MealDetailModal({
       }
 
       // Only fetch if meal is incomplete
-      setTimeout(() => {
+      setTimeout((): void => {
         setIsLoadingDetails(true);
       }, 0);
       void mealApiService
@@ -77,6 +77,7 @@ export function MealDetailModal({
           setFullMeal(fullMealData || meal); // Fallback to original if null
         })
         .catch(err => {
+          // eslint-disable-next-line no-console
           console.error('Failed to fetch full meal details:', err);
           // Fallback to the original meal data
           setFullMeal(meal);
@@ -86,7 +87,7 @@ export function MealDetailModal({
         });
     } else if (!isOpen) {
       // Reset when modal closes
-      setTimeout(() => {
+      setTimeout((): void => {
         setFullMeal(null);
       }, 0);
     }
@@ -220,17 +221,15 @@ export function MealDetailModal({
                           key={index}
                           className="flex items-center gap-3 rounded-lg bg-muted p-3"
                         >
-                          <img
+                          <Image
                             src={mealApiService.getIngredientThumbnailUrl(
                               item.ingredient,
                               'small'
                             )}
                             alt={item.ingredient}
+                            width={32}
+                            height={32}
                             className="h-8 w-8 rounded object-cover"
-                            onError={e => {
-                              (e.target as HTMLImageElement).style.display =
-                                'none';
-                            }}
                           />
                           <div className="flex-1">
                             <span className="font-medium text-card-foreground">

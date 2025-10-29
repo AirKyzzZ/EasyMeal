@@ -31,6 +31,7 @@ export function IngredientList({
         const ingredients = await mealApiService.getIngredients();
         setAvailableIngredients(ingredients);
       } catch (error) {
+        // eslint-disable-next-line no-console
         console.error('Error loading ingredients:', error);
       } finally {
         setIsLoading(false);

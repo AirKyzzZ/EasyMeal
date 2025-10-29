@@ -1,6 +1,7 @@
 'use client';
 
 import { Search, X } from 'lucide-react';
+import Image from 'next/image';
 import React, { useState, useEffect, useRef } from 'react';
 
 import { mealApiService } from '@/lib/api';
@@ -39,8 +40,8 @@ export function SearchBar({
 
     let cancelled = false;
 
-    const timeoutId = setTimeout(() => {
-      void (async () => {
+    const timeoutId = setTimeout((): void => {
+      void (async (): Promise<void> => {
         setIsLoading(true);
         try {
           const results = await mealApiService.searchMeals(query);
@@ -50,6 +51,7 @@ export function SearchBar({
           }
         } catch (error) {
           if (!cancelled) {
+            // eslint-disable-next-line no-console
             console.error('Search error:', error);
             setSuggestions([]);
           }
@@ -61,7 +63,7 @@ export function SearchBar({
       })();
     }, 300);
 
-    return () => {
+    return (): void => {
       cancelled = true;
       clearTimeout(timeoutId);
     };
@@ -69,7 +71,7 @@ export function SearchBar({
 
   // Handle click outside to close suggestions
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
+    const handleClickOutside = (event: MouseEvent): void => {
       if (
         searchRef.current &&
         !searchRef.current.contains(event.target as Node)
@@ -79,7 +81,9 @@ export function SearchBar({
     };
 
     document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    return (): void => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
   }, []);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
@@ -186,9 +190,11 @@ export function SearchBar({
                 index === selectedIndex && 'bg-hover'
               )}
             >
-              <img
+              <Image
                 src={mealApiService.getMealThumbnailUrl(meal, 'small')}
                 alt={meal.strMeal}
+                width={48}
+                height={48}
                 className="h-10 w-10 sm:h-12 sm:w-12 rounded-lg object-cover flex-shrink-0"
               />
               <div className="flex-1 min-w-0">

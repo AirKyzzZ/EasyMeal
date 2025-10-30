@@ -1,31 +1,35 @@
 import { ApiResponse, Meal } from '@/types/meal';
+
+import type { InternalMealApi } from '../internalTypes';
 import type { MealApiService } from '../mealApiService';
 
 export async function getMealById(service: MealApiService, id: string): Promise<Meal | null> {
+  const svc = service as unknown as InternalMealApi;
   const cacheKey = `meal:${id}`;
-  const cached = (service as any)['getCached']?.<Meal>(cacheKey) ?? (service as any)['getCached'](cacheKey);
-  if (cached) return cached as Meal;
+  const cached = svc.getCached<Meal>(cacheKey);
+  if (cached) return cached;
 
-  const meal = await (service as any)['getDeduplicatedRequest'](
+  const meal = await svc.getDeduplicatedRequest(
     `getMealById:${id}`,
     async () => {
-      const data = await (service as any)['fetchData']<ApiResponse<Meal>>(`/lookup.php?i=${id}`);
-      return (data as ApiResponse<Meal>).meals?.[0] || null;
+      const data = await svc.fetchData<ApiResponse<Meal>>(`/lookup.php?i=${id}`);
+      return data.meals?.[0] || null;
     }
   );
 
   if (meal) {
-    (service as any)['setCached'](cacheKey, meal, (service as any)['CACHE_TTL'].meal);
+    svc.setCached(cacheKey, meal, svc.CACHE_TTL.meal);
   }
-  return meal as Meal | null;
+  return meal;
 }
 
 export async function getRandomMeal(service: MealApiService): Promise<Meal | null> {
+  const svc = service as unknown as InternalMealApi;
   try {
-    const data = await (service as any)['fetchData']<ApiResponse<Meal>>('/random.php');
-    return (data as ApiResponse<Meal>).meals?.[0] || null;
+    const data = await svc.fetchData<ApiResponse<Meal>>('/random.php');
+    return data.meals?.[0] || null;
   } catch {
-    const fallbackMeals = (service as any)['getFallbackMeals']();
+    const fallbackMeals = svc.getFallbackMeals();
     return fallbackMeals[Math.floor(Math.random() * fallbackMeals.length)];
   }
 }
@@ -46,7 +50,7 @@ export async function getRandomMeals(
       await new Promise(resolve => setTimeout(resolve, 200));
     }
   }
-  return randomMeals.filter(m => m !== null) as Meal[];
+  return (randomMeals.filter((m): m is Meal => m !== null));
 }
 
 export function getMealThumbnailUrl(_service: MealApiService, meal: Meal, _size: 'small' | 'medium' | 'large' = 'medium'): string {
@@ -61,8 +65,8 @@ export function getIngredientThumbnailUrl(_service: MealApiService, ingredient: 
 export function getMealIngredients(_service: MealApiService, meal: Meal): Array<{ ingredient: string; measure: string }> {
   const ingredients: Array<{ ingredient: string; measure: string }> = [];
   for (let i = 1; i <= 20; i++) {
-    const ingredient = (meal as any)[`strIngredient${i}`] as string;
-    const measure = (meal as any)[`strMeasure${i}`] as string;
+    const ingredient = (meal as unknown as Record<string, string>)[`strIngredient${i}`];
+    const measure = (meal as unknown as Record<string, string>)[`strMeasure${i}`];
     if (ingredient && ingredient.trim()) {
       ingredients.push({ ingredient: ingredient.trim(), measure: measure?.trim() || '' });
     }

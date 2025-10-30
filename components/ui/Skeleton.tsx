@@ -76,7 +76,7 @@ export function MealGridSkeleton({
     };
     update();
     window.addEventListener('resize', update);
-    return () => window.removeEventListener('resize', update);
+    return (): void => window.removeEventListener('resize', update);
   }, []);
 
   const effectiveCount = typeof count === 'number' ? count : cols;

@@ -1,12 +1,18 @@
 import { Meal, Category, Area, Ingredient, ApiResponse } from '@/types/meal';
+
 import {
   BASE_URL,
   RATE_LIMIT_DELAY as CONFIG_RATE_LIMIT_DELAY,
   REQUEST_DEDUP_TTL as CONFIG_REQUEST_DEDUP_TTL,
   CACHE_TTL as CACHE_TTL_CONFIG,
 } from './config';
-import { CacheEntry, PendingRequest } from './types';
-import { searchMeals as searchMealsHelper, searchMealsByLetter as searchMealsByLetterHelper } from './endpoints/search';
+import {
+  filterByArea as filterByAreaHelper,
+  filterByCategory as filterByCategoryHelper,
+  filterByIngredient as filterByIngredientHelper,
+  filterByMultipleIngredients as filterByMultipleIngredientsHelper,
+  findMealsWithAvailableIngredients as findMealsWithAvailableIngredientsHelper,
+} from './endpoints/filters';
 import {
   getMealById as getMealByIdHelper,
   getRandomMeal as getRandomMealHelper,
@@ -16,21 +22,11 @@ import {
   getMealIngredients as getMealIngredientsHelper,
   getIngredientDetails as getIngredientDetailsHelper,
 } from './endpoints/meals';
-import {
-  filterByArea as filterByAreaHelper,
-  filterByCategory as filterByCategoryHelper,
-  filterByIngredient as filterByIngredientHelper,
-  filterByMultipleIngredients as filterByMultipleIngredientsHelper,
-  findMealsWithAvailableIngredients as findMealsWithAvailableIngredientsHelper,
-} from './endpoints/filters';
 import { getAreas as getAreasHelper, getCategories as getCategoriesHelper, getIngredients as getIngredientsHelper } from './endpoints/metadata';
+import { searchMeals as searchMealsHelper, searchMealsByLetter as searchMealsByLetterHelper } from './endpoints/search';
+import { getFallbackAreas, getFallbackCategories, getFallbackIngredients, getFallbackMeals } from './fallbacks';
 import { enrichMealsWithDetails as enrichMealsWithDetailsHelper, isMealComplete as isMealCompleteHelper } from './internals/enrichment';
-import {
-  getFallbackMeals,
-  getFallbackCategories,
-  getFallbackAreas,
-  getFallbackIngredients,
-} from './fallbacks';
+import { CacheEntry, PendingRequest } from './types';
 
 export class MealApiService {
   private requestQueue: Array<() => Promise<unknown>> = [];
@@ -227,73 +223,73 @@ export class MealApiService {
   }
 
   // Search meals by name
-  async searchMeals(query: string): Promise<Meal[]> {
+  searchMeals(query: string): Promise<Meal[]> {
     return searchMealsHelper(this, query);
   }
 
   // Search meals by first letter
-  async searchMealsByLetter(letter: string): Promise<Meal[]> {
+  searchMealsByLetter(letter: string): Promise<Meal[]> {
     return searchMealsByLetterHelper(this, letter);
   }
 
   // Get meal details by ID
-  async getMealById(id: string): Promise<Meal | null> {
+  getMealById(id: string): Promise<Meal | null> {
     return getMealByIdHelper(this, id);
   }
 
   // Helper method to enrich basic meal data with full details
   // Only enriches meals that need enrichment (incomplete data)
-  private async enrichMealsWithDetails(basicMeals: Meal[]): Promise<Meal[]> {
+  private enrichMealsWithDetails(basicMeals: Meal[]): Promise<Meal[]> {
     return enrichMealsWithDetailsHelper(this, basicMeals);
   }
 
   // Get random meals with pagination support
-  async getRandomMeals(_page: number = 0, pageSize: number = 6): Promise<Meal[]> {
+  getRandomMeals(_page: number = 0, pageSize: number = 6): Promise<Meal[]> {
     return getRandomMealsHelper(this, _page, pageSize);
   }
 
   // Get random meal
-  async getRandomMeal(): Promise<Meal | null> {
+  getRandomMeal(): Promise<Meal | null> {
     return getRandomMealHelper(this);
   }
 
   // Get all categories
-  async getCategories(): Promise<Category[]> {
+  getCategories(): Promise<Category[]> {
     return getCategoriesHelper(this);
   }
 
   // Get all areas
-  async getAreas(): Promise<Area[]> {
+  getAreas(): Promise<Area[]> {
     return getAreasHelper(this);
   }
 
   // Get all ingredients
-  async getIngredients(): Promise<Ingredient[]> {
+  getIngredients(): Promise<Ingredient[]> {
     return getIngredientsHelper(this);
   }
 
   // Filter meals by category
-  async filterByCategory(category: string): Promise<Meal[]> {
+  filterByCategory(category: string): Promise<Meal[]> {
     return filterByCategoryHelper(this, category);
   }
 
   // Filter meals by area
-  async filterByArea(area: string): Promise<Meal[]> {
+  filterByArea(area: string): Promise<Meal[]> {
     return filterByAreaHelper(this, area);
   }
 
   // Filter meals by ingredient
-  async filterByIngredient(ingredient: string): Promise<Meal[]> {
+  filterByIngredient(ingredient: string): Promise<Meal[]> {
     return filterByIngredientHelper(this, ingredient);
   }
 
   // Filter meals by multiple ingredients (find meals that contain any of the provided ingredients)
-  async filterByMultipleIngredients(ingredients: string[]): Promise<Meal[]> {
+  filterByMultipleIngredients(ingredients: string[]): Promise<Meal[]> {
     return filterByMultipleIngredientsHelper(this, ingredients);
   }
 
   // Find meals that can be made with available ingredients (meals that contain any of the available ingredients)
-  async findMealsWithAvailableIngredients(availableIngredients: string[]): Promise<Meal[]> {
+  findMealsWithAvailableIngredients(availableIngredients: string[]): Promise<Meal[]> {
     return findMealsWithAvailableIngredientsHelper(this, availableIngredients);
   }
 

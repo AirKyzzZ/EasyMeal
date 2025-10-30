@@ -1,4 +1,6 @@
 import { Meal } from '@/types/meal';
+
+import type { InternalMealApi } from '../internalTypes';
 import type { MealApiService } from '../mealApiService';
 
 export function isMealComplete(_service: MealApiService, meal: Meal): boolean {
@@ -6,6 +8,7 @@ export function isMealComplete(_service: MealApiService, meal: Meal): boolean {
 }
 
 export async function enrichMealsWithDetails(service: MealApiService, basicMeals: Meal[]): Promise<Meal[]> {
+  const svc = service as unknown as InternalMealApi;
   if (basicMeals.length === 0) return [];
 
   const completeMeals: Meal[] = [];
@@ -25,9 +28,9 @@ export async function enrichMealsWithDetails(service: MealApiService, basicMeals
           incompleteMeals.map(async meal => {
             try {
               const cacheKey = `meal:${meal.idMeal}`;
-              const cached = (service as any)['getCached']?.<Meal>(cacheKey) ?? (service as any)['getCached'](cacheKey);
-              if (cached) return cached as Meal;
-              const fullMeal = await (service as any)['getMealById'](meal.idMeal);
+              const cached = svc.getCached<Meal>(cacheKey);
+              if (cached) return cached;
+              const fullMeal = await svc.getMealById(meal.idMeal);
               return fullMeal || meal;
             } catch (err) {
               // eslint-disable-next-line no-console

@@ -406,7 +406,8 @@ export default function Home(): React.JSX.Element {
               </div>
               <div className="min-w-0 flex-1">
                 <h1 className="text-xl sm:text-2xl font-bold text-foreground truncate">
-                  EasyMeal - Discover Amazing Recipes
+                  EasyMeal
+                  <span className="hidden sm:inline"> - Discover Amazing Recipes</span>
                 </h1>
                 <p className="text-xs sm:text-sm text-muted-foreground truncate">
                   Search thousands of free recipes from around the world

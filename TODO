@@ -24,9 +24,10 @@
 ✔ Recheck linter errors and warnings @done(25-10-30 22:58)
 ✔ Can you make a final check for the code quality and performance ? @done(25-10-30 23:02)
 ✔ Pull request to dev @done(25-10-30 23:03)
-☐ Pull request from dev to main
-☐ Upload on netlify, main branch
-☐ Change the url of the website from easymeal.app to the new netlify url
+✔ Pull request from dev to main @done(25-10-30 23:24)
+✔ Upload on netlify, main branch @done(25-10-30 23:24)
+✔ Change the url of the website from easymealapp.netlify.app to the new netlify url @done(25-10-30 23:24)
+☐ On mobile repalce "EasyMeal - Discover Amazing Recipes" with just "EasyMeal" for responsive design purposes
 ☐ Update the readme with the new informations
 ☐ Write the final email
 

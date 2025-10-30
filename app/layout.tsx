@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://easymeal.app'),
+  metadataBase: new URL('https://easymealapp.netlify.app'),
   title: {
     default: 'EasyMeal - Discover Amazing Recipes | Free Recipe Finder',
     template: '%s | EasyMeal',
@@ -68,7 +68,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: 'website',
     locale: 'en_US',
-    url: 'https://easymeal.app',
+    url: 'https://easymealapp.netlify.app',
     siteName: 'EasyMeal',
     title: 'EasyMeal - Discover Amazing Recipes | Free Recipe Finder',
     description:
@@ -130,7 +130,7 @@ export default function RootLayout({
               '@context': 'https://schema.org',
               '@type': 'WebSite',
               name: 'EasyMeal',
-              url: 'https://easymeal.app',
+              url: 'https://easymealapp.netlify.app',
               description:
                 'Search and discover thousands of delicious recipes from around the world. Find meals by ingredients, cuisine, or category with our powerful search and filter system.',
               potentialAction: {
@@ -138,7 +138,7 @@ export default function RootLayout({
                 target: {
                   '@type': 'EntryPoint',
                   urlTemplate:
-                    'https://easymeal.app/?search={search_term_string}',
+                    'https://easymealapp.netlify.app/?search={search_term_string}',
                 },
                 'query-input': 'required name=search_term_string',
               },
@@ -147,7 +147,7 @@ export default function RootLayout({
                 name: 'EasyMeal',
                 logo: {
                   '@type': 'ImageObject',
-                  url: 'https://easymeal.app/logo.png',
+                  url: 'https://easymealapp.netlify.app/logo.png',
                 },
               },
             }),
@@ -160,7 +160,7 @@ export default function RootLayout({
               '@context': 'https://schema.org',
               '@type': 'WebApplication',
               name: 'EasyMeal',
-              url: 'https://easymeal.app',
+              url: 'https://easymealapp.netlify.app',
               description:
                 'Free recipe finder with step-by-step instructions, cooking videos, and ingredient lists.',
               applicationCategory: 'Food & Drink',

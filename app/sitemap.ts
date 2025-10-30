@@ -1,7 +1,7 @@
 import { MetadataRoute } from 'next';
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = 'https://easymeal.app';
+  const baseUrl = 'https://easymealapp.netlify.app';
 
   return [
     {

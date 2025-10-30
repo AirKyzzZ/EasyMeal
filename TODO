@@ -20,10 +20,12 @@
 ✔ Fix all linter errors and warnings @done(25-10-30 22:24)
 ✔ Implement a CI/CD github actions to check everything best practices @done(25-10-30)
 ✔ Optimize SEO for the website to be the best in google search results @done(25-10-30 22:45)
-☐ Make a full complete and detailed readme of the project include graphs the screenshots i'll take and design items like badges and stat cards etc to prepare for the assignmement IN FRENCH and check the code to make sure everything meet the requirements of the projetcts assignement, here are the instructions in french : 
+✔ Make a full complete and detailed readme of the project include graphs the screenshots i'll take and design items like badges and stat cards etc to prepare for the assignmement IN FRENCH and check the code to make sure everything meet the requirements of the projetcts assignement, here are the instructions in french : @done(25-10-30 22:57)
 ☐ Recheck linter errors and warnings
+☐ Check code qual.
 ☐ Pull request to dev
 ☐ Pull request from dev to main
 ☐ Upload on netlify, main branch
 ☐ Change the url of the website from easymeal.app to the new netlify url
+☐ Update the readme with the new informations
 ☐ Write the final email

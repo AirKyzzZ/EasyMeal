@@ -16,11 +16,43 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://easymeal.app'),
-  title: 'EasyMeal - Discover Amazing Recipes',
+  title: {
+    default: 'EasyMeal - Discover Amazing Recipes | Free Recipe Finder',
+    template: '%s | EasyMeal',
+  },
   description:
-    'Search and discover delicious recipes from around the world. Find meals by ingredients, cuisine, or category with our powerful search and filter system.',
-  keywords: ['recipes', 'cooking', 'meals', 'food', 'cuisine', 'ingredients'],
+    'Search and discover thousands of delicious recipes from around the world. Find meals by ingredients, cuisine, or category with our powerful search and filter system. Free recipe finder with step-by-step instructions, cooking videos, and ingredient lists.',
+  keywords: [
+    'recipes',
+    'recipe finder',
+    'cooking',
+    'meals',
+    'food recipes',
+    'cuisine',
+    'ingredients',
+    'cooking recipes',
+    'free recipes',
+    'recipe search',
+    'meal planning',
+    'home cooking',
+    'recipe ideas',
+    'cooking inspiration',
+    'recipe collection',
+    'international recipes',
+    'world cuisine',
+    'recipe database',
+  ],
   authors: [{ name: 'EasyMeal Team' }],
+  creator: 'EasyMeal',
+  publisher: 'EasyMeal',
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
+  },
+  alternates: {
+    canonical: '/',
+  },
   icons: {
     icon: [
       { url: '/favicon.ico', sizes: 'any' },
@@ -34,24 +66,49 @@ export const metadata: Metadata = {
     shortcut: '/favicon.ico',
   },
   openGraph: {
-    title: 'EasyMeal - Discover Amazing Recipes',
-    description: 'Search and discover delicious recipes from around the world.',
     type: 'website',
+    locale: 'en_US',
+    url: 'https://easymeal.app',
+    siteName: 'EasyMeal',
+    title: 'EasyMeal - Discover Amazing Recipes | Free Recipe Finder',
+    description:
+      'Search and discover thousands of delicious recipes from around the world. Find meals by ingredients, cuisine, or category with our powerful search and filter system.',
     images: [
       {
         url: '/logo.png',
-        width: 500,
-        height: 500,
-        alt: 'EasyMeal Logo',
+        width: 1200,
+        height: 630,
+        alt: 'EasyMeal - Free Recipe Finder and Cooking Inspiration',
       },
     ],
   },
   twitter: {
-    card: 'summary',
+    card: 'summary_large_image',
     title: 'EasyMeal - Discover Amazing Recipes',
-    description: 'Search and discover delicious recipes from around the world.',
+    description:
+      'Search and discover thousands of delicious recipes from around the world. Find meals by ingredients, cuisine, or category.',
     images: ['/logo.png'],
+    creator: '@easymeal',
+    site: '@easymeal',
   },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+  verification: {
+    // Add these when you have verification codes
+    // google: 'your-google-verification-code',
+    // yandex: 'your-yandex-verification-code',
+    // yahoo: 'your-yahoo-verification-code',
+  },
+  category: 'Food & Cooking',
 };
 
 export default function RootLayout({
@@ -65,6 +122,56 @@ export default function RootLayout({
         {/* Preload critical resources */}
         <link rel="dns-prefetch" href="//www.themealdb.com" />
         <link rel="preconnect" href="https://www.themealdb.com" />
+        {/* Structured Data for SEO */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              '@context': 'https://schema.org',
+              '@type': 'WebSite',
+              name: 'EasyMeal',
+              url: 'https://easymeal.app',
+              description:
+                'Search and discover thousands of delicious recipes from around the world. Find meals by ingredients, cuisine, or category with our powerful search and filter system.',
+              potentialAction: {
+                '@type': 'SearchAction',
+                target: {
+                  '@type': 'EntryPoint',
+                  urlTemplate: 'https://easymeal.app/?search={search_term_string}',
+                },
+                'query-input': 'required name=search_term_string',
+              },
+              publisher: {
+                '@type': 'Organization',
+                name: 'EasyMeal',
+                logo: {
+                  '@type': 'ImageObject',
+                  url: 'https://easymeal.app/logo.png',
+                },
+              },
+            }),
+          }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              '@context': 'https://schema.org',
+              '@type': 'WebApplication',
+              name: 'EasyMeal',
+              url: 'https://easymeal.app',
+              description:
+                'Free recipe finder with step-by-step instructions, cooking videos, and ingredient lists.',
+              applicationCategory: 'Food & Drink',
+              operatingSystem: 'Any',
+              offers: {
+                '@type': 'Offer',
+                price: '0',
+                priceCurrency: 'USD',
+              },
+            }),
+          }}
+        />
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}

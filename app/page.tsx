@@ -399,10 +399,10 @@ export default function Home(): React.JSX.Element {
               </div>
               <div className="min-w-0 flex-1">
                 <h1 className="text-xl sm:text-2xl font-bold text-foreground truncate">
-                  EasyMeal
+                  EasyMeal - Discover Amazing Recipes
                 </h1>
                 <p className="text-xs sm:text-sm text-muted-foreground truncate">
-                  Discover amazing recipes
+                  Search thousands of free recipes from around the world
                   {!isOnline && (
                     <span className="ml-2 text-foreground">(Offline Mode)</span>
                   )}
@@ -468,7 +468,7 @@ export default function Home(): React.JSX.Element {
         </div>
 
         {/* Search Section */}
-        <div className="mb-12">
+        <section className="mb-12" aria-label="Recipe search">
           {searchMode === 'search' ? (
             <>
               <div className="mb-3 sm:mb-8 flex justify-center px-4">
@@ -511,8 +511,7 @@ export default function Home(): React.JSX.Element {
                     Find Recipes by Ingredients
                   </h2>
                   <p className="text-sm sm:text-base lg:text-lg text-muted-foreground">
-                    Tell us what you have and we&apos;ll find the perfect
-                    recipes
+                    Tell us what ingredients you have available and we&apos;ll find the perfect recipes you can make right now. No more wasted groceries!
                   </p>
                 </div>
                 <div className="flex justify-center">
@@ -527,15 +526,15 @@ export default function Home(): React.JSX.Element {
               </div>
             </div>
           )}
-        </div>
+        </section>
 
         {/* Results Section */}
-        <div className="mb-6">
+        <section className="mb-6" aria-label="Search results">
           {searchMode === 'ingredients' && availableIngredients.length > 0 && (
             <div className="mb-4 text-center">
-              <h2 className="text-lg font-semibold text-foreground">
+              <h3 className="text-lg font-semibold text-foreground">
                 Recipes containing your ingredients
-              </h2>
+              </h3>
               <p className="text-sm text-muted-foreground">
                 {pagination.items.length} recipe
                 {pagination.items.length !== 1 ? 's' : ''} found containing your{' '}
@@ -547,9 +546,9 @@ export default function Home(): React.JSX.Element {
 
           {searchMode === 'search' && searchQuery && (
             <div className="mb-4 text-center">
-              <h2 className="text-lg font-semibold text-foreground">
+              <h3 className="text-lg font-semibold text-foreground">
                 Search results for &quot;{searchQuery}&quot;
-              </h2>
+              </h3>
               <p className="text-sm text-muted-foreground">
                 {pagination.items.length} meal
                 {pagination.items.length !== 1 ? 's' : ''} found
@@ -560,16 +559,16 @@ export default function Home(): React.JSX.Element {
           {searchMode === 'search' &&
             Object.values(filters).some(filter => filter) && (
               <div className="mb-4 text-center">
-                <h2 className="text-lg font-semibold text-foreground">
+                <h3 className="text-lg font-semibold text-foreground">
                   Filtered Results
-                </h2>
+                </h3>
                 <p className="text-sm text-muted-foreground">
                   {pagination.items.length} meal
                   {pagination.items.length !== 1 ? 's' : ''} found
                 </p>
               </div>
             )}
-        </div>
+        </section>
 
         {/* Loading State */}
         {pagination.isLoading && pagination.items.length === 0 && (
@@ -630,7 +629,10 @@ export default function Home(): React.JSX.Element {
         {/* Meals Grid - Always show when we have items */}
         {pagination.items.length > 0 && (
           <>
-            <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-3">
+            <section 
+              className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-3"
+              aria-label="Recipe cards"
+            >
               {pagination.items.map((meal, index) => (
                 <MealCard
                   key={`${meal.idMeal}-${index}`}
@@ -641,7 +643,7 @@ export default function Home(): React.JSX.Element {
                   isFirstImage={index === 0}
                 />
               ))}
-            </div>
+            </section>
 
             {/* Infinite scroll trigger */}
             {pagination.hasMore &&

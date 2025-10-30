@@ -278,12 +278,11 @@ EasyMeal utilise l'API publique [TheMealDB](https://www.themealdb.com/api.php). 
 
 ### 💻 Vue Desktop
 
-<!-- TODO: Ajouter capture d'écran desktop de la page d'accueil -->
 <div align="center">
 
 **Page d'accueil - Mode Recherche (Desktop)**
 
-![Desktop Homepage](./docs/screenshots/desktop-homepage.png)
+![Desktop Homepage](/screenshots/desktop-homepage.jpeg)
 
 _Capture d'écran de la page d'accueil en mode recherche sur desktop_
 
@@ -293,7 +292,7 @@ _Capture d'écran de la page d'accueil en mode recherche sur desktop_
 
 **Modal de détails d'une recette (Desktop)**
 
-![Desktop Modal](./docs/screenshots/desktop-modal.png)
+![Desktop Modal](/screenshots/desktop-modal.jpeg)
 
 _Capture d'écran de la modal de détails d'une recette sur desktop_
 
@@ -303,7 +302,7 @@ _Capture d'écran de la modal de détails d'une recette sur desktop_
 
 **Mode Ingrédients (Desktop)**
 
-![Desktop Ingredients](./docs/screenshots/desktop-ingredients.png)
+![Desktop Ingredients](/screenshots/desktop-ingredients.jpeg)
 
 _Capture d'écran du mode recherche par ingrédients sur desktop_
 
@@ -311,34 +310,13 @@ _Capture d'écran du mode recherche par ingrédients sur desktop_
 
 ### 📱 Vue Mobile
 
-<!-- TODO: Ajouter capture d'écran mobile de la page d'accueil -->
 <div align="center">
 
 **Page d'accueil - Mode Recherche (Mobile)**
 
-![Mobile Homepage](./docs/screenshots/mobile-homepage.png)
+![Mobile Homepage](/screenshots/mobile-homepage.jpeg)
 
 _Capture d'écran de la page d'accueil en mode recherche sur mobile_
-
-</div>
-
-<div align="center">
-
-**Modal de détails (Mobile)**
-
-![Mobile Modal](./docs/screenshots/mobile-modal.png)
-
-_Capture d'écran de la modal de détails d'une recette sur mobile_
-
-</div>
-
-<div align="center">
-
-**Mode Ingrédients (Mobile)**
-
-![Mobile Ingredients](./docs/screenshots/mobile-ingredients.png)
-
-_Capture d'écran du mode recherche par ingrédients sur mobile_
 
 </div>
 
@@ -365,18 +343,17 @@ _Capture d'écran du mode recherche par ingrédients sur mobile_
 
 ### 🎯 Scores Lighthouse
 
-<!-- TODO: Ajouter captures d'écran des scores Lighthouse -->
 <div align="center">
 
 | Métrique           | Score   | État             |
 | ------------------ | ------- | ---------------- |
-| **Performance**    | 95+     | ✅ Excellent     |
-| **Accessibilité**  | 95+     | ✅ Excellent     |
-| **Best Practices** | 95+     | ✅ Excellent     |
-| **SEO**            | 95+     | ✅ Excellent     |
-| **Score global**   | **95+** | ✅ **Excellent** |
+| **Performance**    | 97     | ✅ Excellent     |
+| **Accessibilité**  | 100     | ✅ Excellent     |
+| **Best Practices** | 100     | ✅ Excellent     |
+| **SEO**            | 100     | ✅ Excellent     |
+| **Score global**   | **98** | ✅ **Excellent** |
 
-![Lighthouse Scores](./docs/screenshots/lighthouse-scores.png)
+![Lighthouse Scores](/screenshots/lighthouse-scores.png)
 
 _Scores Lighthouse obtenus sur la version de production_
 
@@ -386,11 +363,11 @@ _Scores Lighthouse obtenus sur la version de production_
 
 | Métrique                           | Valeur  | Objectif |
 | ---------------------------------- | ------- | -------- |
-| **First Contentful Paint (FCP)**   | < 1.5s  | ✅       |
-| **Largest Contentful Paint (LCP)** | < 2.5s  | ✅       |
+| **First Contentful Paint (FCP)**   | < 0.2s  | ✅       |
+| **Largest Contentful Paint (LCP)** | < 0.7s  | ✅       |
 | **Time to Interactive (TTI)**      | < 3.5s  | ✅       |
-| **Cumulative Layout Shift (CLS)**  | < 0.1   | ✅       |
-| **First Input Delay (FID)**        | < 100ms | ✅       |
+| **Total Blocking Time**  | < 60ms   | ✅       |
+| **Speed Index**        | < 1.8s | ✅       |
 
 ### 📈 Optimisations implémentées
 
@@ -402,26 +379,6 @@ _Scores Lighthouse obtenus sur la version de production_
 - ✅ **Rate limiting** : Protection contre la surcharge API
 - ✅ **Font optimization** : Next.js Font Optimization (Geist)
 - ✅ **CSS optimization** : Tailwind CSS purgé en production
-
-### 🌱 Score Eco-Index
-
-<!-- TODO: Ajouter capture d'écran du score Eco-Index -->
-<div align="center">
-
-| Critère                   | Score   | Note  |
-| ------------------------- | ------- | ----- |
-| **Performance**           | 95+     | A     |
-| **Complexité DOM**        | 85+     | B     |
-| **Taille des ressources** | 90+     | A     |
-| **Score global**          | **90+** | **A** |
-
-![Eco-Index Score](./docs/screenshots/ecoindex-score.png)
-
-_Score Eco-Index obtenu pour l'application_
-
-</div>
-
-<div align="center">
 
 **Répartition des types de recherche**
 

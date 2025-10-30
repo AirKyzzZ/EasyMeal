@@ -61,13 +61,29 @@ export function MealCardSkeleton(): React.JSX.Element {
 }
 
 export function MealGridSkeleton({
-  count = 6,
+  count,
 }: {
   count?: number;
 }): React.JSX.Element {
+  const [cols, setCols] = React.useState<number>(1);
+
+  React.useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const update = (): void => {
+      const isLg = window.matchMedia('(min-width: 1024px)').matches;
+      const isSm = window.matchMedia('(min-width: 640px)').matches;
+      setCols(isLg ? 3 : isSm ? 2 : 1);
+    };
+    update();
+    window.addEventListener('resize', update);
+    return () => window.removeEventListener('resize', update);
+  }, []);
+
+  const effectiveCount = typeof count === 'number' ? count : cols;
+
   return (
-    <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-      {Array.from({ length: count }).map((_, index) => (
+    <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+      {Array.from({ length: effectiveCount }).map((_, index) => (
         <MealCardSkeleton key={index} />
       ))}
     </div>

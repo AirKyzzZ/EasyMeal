@@ -15,11 +15,10 @@
 ✔ Make sure the code is super clean formated with linter prettier eslint strict config and run @done(25-10-29 11:34)
 ✔ Fix the hover effect of the random meal button and the view recipe button in the meal card so the text is readable and it better handles the hover effect @done(25-10-30 21:33)
 ✔ Fix the responsive of the "Serve" part of the card with the numbers because on big screens it breaks the layout @done(25-10-30 21:47)
-☐ Make the skeleton preload of the meal cards responsive based on the screen size and current layout page of the user
+✔ Make the skeleton preload of the meal cards responsive based on the screen size and current layout page of the user @done(25-10-30 21:50)
 ☐ Refactor the long api.ts file into many smaller files for better maintainability and readability don't change the actual code just the file structure
 ☐ Implement a CI/CD github actions to check everything best practices and deploy on netlify
 ☐ Fix all linter errors and warnings
 ☐ Optimize SEO for the website to be the best in google search results
-☐ Rendu support de projet avec le notion
-☐ Make a full readme of the project IN FRENCH
+☐ Make a full readme of the project to prepare for the assignmement IN FRENCH, here are the instructions in french : 
 ☐ Upload on netlify, branch main

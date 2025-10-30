@@ -9,6 +9,7 @@ import { MealCard } from '@/components/MealCard';
 import { MealGridSkeleton } from '@/components/ui/Skeleton';
 import { mealApiService } from '@/lib/api';
 import { usePagination } from '@/lib/hooks/usePagination';
+import { useResponsiveColumns } from '@/lib/hooks/useResponsiveColumns';
 import { Meal } from '@/types/meal';
 
 // Dynamically import non-critical components to reduce TBT and initial bundle
@@ -67,6 +68,9 @@ export default function Home(): React.JSX.Element {
     'search'
   );
   const [isOnline, setIsOnline] = useState(true);
+
+  // Detect responsive columns for skeleton count calculation
+  const columns = useResponsiveColumns();
 
   // Use pagination hook for meal management - no maxItems limit for infinite scroll
   const pagination = usePagination({
@@ -673,20 +677,17 @@ export default function Home(): React.JSX.Element {
             )}
         </section>
 
-        {/* Loading State - Fixed height to prevent layout shift */}
+        {/* Loading State - Responsive skeleton based on screen size */}
         {pagination.isLoading && pagination.items.length === 0 && (
-          <div
-            className="flex justify-center py-12"
-            style={{ minHeight: '400px' }}
-          >
-            <div className="flex items-center gap-3">
-              <div className="h-6 w-6 animate-spin rounded-full border-2 border-spinner-border border-t-spinner-border-active"></div>
-              <span className="text-muted-foreground">
-                {searchMode === 'ingredients'
-                  ? 'Finding recipes with your ingredients...'
-                  : 'Loading meals...'}
-              </span>
-            </div>
+          <div className="py-12">
+            {/* Calculate skeleton count to match initialPageSize, filling rows based on columns */}
+            {/* Ensure we show at least initialPageSize items, rounded up to fill complete rows */}
+            <MealGridSkeleton
+              count={Math.max(
+                initialPageSize,
+                Math.ceil(initialPageSize / columns) * columns
+              )}
+            />
           </div>
         )}
 
@@ -760,11 +761,15 @@ export default function Home(): React.JSX.Element {
 
         {/* Loading more indicator - show below existing items */}
         {pagination.isLoading && pagination.items.length > 0 && (
-          <div
-            className="mt-8 flex justify-center"
-            style={{ minHeight: '200px' }}
-          >
-            <MealGridSkeleton count={2} />
+          <div className="mt-8">
+            {/* Calculate skeleton count based on columns to fill complete rows */}
+            {/* Ensure we show at least loadMoreSize items, rounded up to fill complete rows */}
+            <MealGridSkeleton
+              count={Math.max(
+                loadMoreSize,
+                Math.ceil(loadMoreSize / columns) * columns
+              )}
+            />
           </div>
         )}
       </main>

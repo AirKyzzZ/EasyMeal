@@ -185,7 +185,7 @@ export const MealCard = memo(
               </div>
             </div>
 
-            <button className="rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-hover">
+            <button className="rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:text-primary-foreground transition-colors hover:bg-primary/90 active:bg-primary/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2 focus-visible:ring-offset-background">
               View Recipe
             </button>
           </div>

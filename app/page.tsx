@@ -423,7 +423,7 @@ export default function Home(): React.JSX.Element {
                 onClick={() => {
                   void loadRandomMeal();
                 }}
-                className="flex items-center gap-1 sm:gap-2 rounded-lg bg-primary px-2 sm:px-4 py-2 text-xs sm:text-sm font-medium text-primary-foreground transition-colors hover:bg-hover"
+                className="flex items-center gap-1 sm:gap-2 rounded-lg bg-primary px-2 sm:px-4 py-2 text-xs sm:text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 active:bg-primary/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
               >
                 <Sparkles className="h-3 w-3 sm:h-4 sm:w-4" />
                 <span className="hidden sm:inline">Random Meal</span>

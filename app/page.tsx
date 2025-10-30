@@ -9,6 +9,7 @@ import { MealCard } from '@/components/MealCard';
 import { MealGridSkeleton } from '@/components/ui/Skeleton';
 import { mealApiService } from '@/lib/api';
 import { usePagination } from '@/lib/hooks/usePagination';
+import { useResponsiveColumns } from '@/lib/hooks/useResponsiveColumns';
 import { Meal } from '@/types/meal';
 
 // Dynamically import non-critical components to reduce TBT and initial bundle
@@ -68,12 +69,18 @@ export default function Home(): React.JSX.Element {
   );
   const [isOnline, setIsOnline] = useState(true);
 
-  // Use pagination hook for meal management
+  // Detect responsive columns for skeleton count calculation
+  const columns = useResponsiveColumns();
+
+  // Use pagination hook for meal management - no maxItems limit for infinite scroll
   const pagination = usePagination({
-    initialPageSize: 3, // Load 3 items initially to reduce DOM complexity and page weight
+    initialPageSize: 6, // Load 6 items initially for fast first paint
     loadMoreSize: 6, // Load 6 more items on scroll
-    maxItems: 30, // Reduced from 50 to limit DOM elements (target: < 600)
+    maxItems: undefined, // No limit for infinite scroll
   });
+
+  // Store all loaded results for client-side pagination (for search/filter/ingredients)
+  const allResultsRef = useRef<Meal[]>([]);
 
   // Extract stable pagination functions and values to avoid recreating loadRandomMeals on every state change
   const {
@@ -181,6 +188,7 @@ export default function Home(): React.JSX.Element {
       // When switching to ingredient mode, clear meals if no ingredients selected
       if (availableIngredients.length === 0) {
         reset();
+        allResultsRef.current = [];
       }
     }
   }, [
@@ -193,7 +201,7 @@ export default function Home(): React.JSX.Element {
   ]);
 
   // Load initial meals on component mount - defer to reduce TBT
-  useEffect(() => {
+  useEffect((): (() => void) | undefined => {
     if (
       searchMode === 'search' &&
       !searchQuery &&
@@ -208,16 +216,48 @@ export default function Home(): React.JSX.Element {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Handle infinite scroll for random meals
+  // Handle infinite scroll for all search types
   useEffect(() => {
-    if (
-      pagination.isLoading &&
-      pagination.hasMore &&
-      currentSearchTypeRef.current === 'random'
-    ) {
-      void loadRandomMeals(false);
+    if (pagination.isLoading && pagination.hasMore) {
+      const searchType = currentSearchTypeRef.current;
+
+      if (searchType === 'random') {
+        // For random meals, load more from API
+        void loadRandomMeals(false);
+      } else {
+        // For search/filter/ingredients, paginate client-side from stored results
+        // Calculate starting index based on currently displayed items
+        const currentDisplayedCount = pagination.items.length;
+        const nextItems = allResultsRef.current.slice(
+          currentDisplayedCount,
+          currentDisplayedCount + pagination.loadMoreSize
+        );
+
+        if (nextItems.length > 0) {
+          appendItems(nextItems);
+          // Check if there are more items to load after this batch
+          const remainingAfterLoad =
+            allResultsRef.current.length -
+            (currentDisplayedCount + nextItems.length);
+          if (remainingAfterLoad <= 0) {
+            // No more items to load, mark as complete
+            markLoadComplete();
+          }
+        } else {
+          // No more items to load
+          markLoadComplete();
+        }
+      }
     }
-  }, [pagination.isLoading, pagination.hasMore, loadRandomMeals]);
+  }, [
+    pagination.isLoading,
+    pagination.hasMore,
+    pagination.loadMoreSize,
+    pagination.items,
+    loadRandomMeals,
+    appendItems,
+    markLoadComplete,
+  ]);
 
   const loadRandomMeal = async (): Promise<void> => {
     try {
@@ -239,6 +279,7 @@ export default function Home(): React.JSX.Element {
           void loadRandomMeals(true);
         } else {
           reset();
+          allResultsRef.current = [];
         }
         return;
       }
@@ -251,7 +292,11 @@ export default function Home(): React.JSX.Element {
       try {
         // This is now cached, so repeated searches are instant
         const results = await mealApiService.searchMeals(query);
-        setItems(results);
+        // Store all results for client-side pagination
+        allResultsRef.current = results;
+        // Display initial page - pass total count for proper hasMore calculation
+        const initialItems = results.slice(0, initialPageSize);
+        setItems(initialItems, results.length);
       } catch (err) {
         setError('Search failed. Please try again.');
         // eslint-disable-next-line no-console
@@ -260,7 +305,15 @@ export default function Home(): React.JSX.Element {
         setLoading(false);
       }
     },
-    [searchMode, setLoading, setError, setItems, loadRandomMeals, reset]
+    [
+      searchMode,
+      setLoading,
+      setError,
+      setItems,
+      initialPageSize,
+      loadRandomMeals,
+      reset,
+    ]
   );
 
   const handleFiltersChange = useCallback(
@@ -277,6 +330,7 @@ export default function Home(): React.JSX.Element {
           void loadRandomMeals(true);
         } else if (searchMode === 'ingredients') {
           reset();
+          allResultsRef.current = [];
         }
         return;
       }
@@ -299,7 +353,11 @@ export default function Home(): React.JSX.Element {
           );
         }
 
-        setItems(results);
+        // Store all results for client-side pagination
+        allResultsRef.current = results;
+        // Display initial page - pass total count for proper hasMore calculation
+        const initialItems = results.slice(0, initialPageSize);
+        setItems(initialItems, results.length);
       } catch (err) {
         setError('Failed to apply filters. Please try again.');
         // eslint-disable-next-line no-console
@@ -314,6 +372,7 @@ export default function Home(): React.JSX.Element {
       setLoading,
       setError,
       setItems,
+      initialPageSize,
       loadRandomMeals,
       reset,
     ]
@@ -334,6 +393,7 @@ export default function Home(): React.JSX.Element {
       if (ingredients.length === 0) {
         // Clear meals when no ingredients are selected
         reset();
+        allResultsRef.current = [];
         currentSearchRef.current = '';
         return;
       }
@@ -370,7 +430,11 @@ export default function Home(): React.JSX.Element {
               await mealApiService.findMealsWithAvailableIngredients(
                 ingredients
               );
-            setItems(results);
+            // Store all results for client-side pagination
+            allResultsRef.current = results;
+            // Display initial page - pass total count for proper hasMore calculation
+            const initialItems = results.slice(0, initialPageSize);
+            setItems(initialItems, results.length);
           } catch (err) {
             const errorMessage =
               err instanceof Error
@@ -409,7 +473,7 @@ export default function Home(): React.JSX.Element {
         })();
       }, 500); // 500ms debounce delay
     },
-    [setLoading, setError, setItems, loadRandomMeals, reset]
+    [setLoading, setError, setItems, initialPageSize, loadRandomMeals, reset]
   );
 
   return (
@@ -613,20 +677,17 @@ export default function Home(): React.JSX.Element {
             )}
         </section>
 
-        {/* Loading State - Fixed height to prevent layout shift */}
+        {/* Loading State - Responsive skeleton based on screen size */}
         {pagination.isLoading && pagination.items.length === 0 && (
-          <div
-            className="flex justify-center py-12"
-            style={{ minHeight: '400px' }}
-          >
-            <div className="flex items-center gap-3">
-              <div className="h-6 w-6 animate-spin rounded-full border-2 border-spinner-border border-t-spinner-border-active"></div>
-              <span className="text-muted-foreground">
-                {searchMode === 'ingredients'
-                  ? 'Finding recipes with your ingredients...'
-                  : 'Loading meals...'}
-              </span>
-            </div>
+          <div className="py-12">
+            {/* Calculate skeleton count to match initialPageSize, filling rows based on columns */}
+            {/* Ensure we show at least initialPageSize items, rounded up to fill complete rows */}
+            <MealGridSkeleton
+              count={Math.max(
+                initialPageSize,
+                Math.ceil(initialPageSize / columns) * columns
+              )}
+            />
           </div>
         )}
 
@@ -691,21 +752,24 @@ export default function Home(): React.JSX.Element {
               ))}
             </section>
 
-            {/* Infinite scroll trigger */}
-            {pagination.hasMore &&
-              currentSearchTypeRef.current === 'random' && (
-                <div ref={pagination.lastItemElementRef} className="h-1" />
-              )}
+            {/* Infinite scroll trigger - works for all search types */}
+            {pagination.hasMore && (
+              <div ref={pagination.lastItemElementRef} className="h-1" />
+            )}
           </>
         )}
 
         {/* Loading more indicator - show below existing items */}
         {pagination.isLoading && pagination.items.length > 0 && (
-          <div
-            className="mt-8 flex justify-center"
-            style={{ minHeight: '200px' }}
-          >
-            <MealGridSkeleton count={2} />
+          <div className="mt-8">
+            {/* Calculate skeleton count based on columns to fill complete rows */}
+            {/* Ensure we show at least loadMoreSize items, rounded up to fill complete rows */}
+            <MealGridSkeleton
+              count={Math.max(
+                loadMoreSize,
+                Math.ceil(loadMoreSize / columns) * columns
+              )}
+            />
           </div>
         )}
       </main>

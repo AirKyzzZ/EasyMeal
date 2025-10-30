@@ -13,7 +13,7 @@ interface PaginationState {
 interface UsePaginationOptions {
   initialPageSize?: number;
   loadMoreSize?: number;
-  maxItems?: number;
+  maxItems?: number; // Set to undefined or very high number for infinite scroll
 }
 
 export function usePagination(options: UsePaginationOptions = {}): {
@@ -22,7 +22,7 @@ export function usePagination(options: UsePaginationOptions = {}): {
   hasMore: boolean;
   error: string | null;
   page: number;
-  setItems: (items: Meal[]) => void;
+  setItems: (items: Meal[], totalAvailable?: number) => void;
   appendItems: (newItems: Meal[]) => void;
   setLoading: (isLoading: boolean) => void;
   setError: (error: string | null) => void;
@@ -35,7 +35,7 @@ export function usePagination(options: UsePaginationOptions = {}): {
   const {
     initialPageSize = 6, // Load 6 items initially for fast first paint
     loadMoreSize = 6, // Load 6 more items on scroll
-    maxItems = 100, // Maximum items to prevent memory issues
+    maxItems = undefined, // No limit for infinite scroll (can be set to a high number like 10000 if needed)
   } = options;
 
   const [state, setState] = useState<PaginationState>({
@@ -52,28 +52,51 @@ export function usePagination(options: UsePaginationOptions = {}): {
   const loadingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const setItems = useCallback(
-    (items: Meal[]) => {
-      setState(prev => ({
-        ...prev,
-        items: items.slice(0, maxItems), // Limit total items
-        hasMore: items.length < maxItems,
-        page: 0,
-      }));
+    (items: Meal[], totalAvailable?: number) => {
+      setState(prev => {
+        const limitedItems = maxItems
+          ? items.slice(0, Math.min(maxItems, initialPageSize))
+          : items.slice(0, initialPageSize);
+        // Use totalAvailable if provided (for client-side pagination), otherwise use items.length
+        const totalItems = totalAvailable
+          ? maxItems
+            ? Math.min(totalAvailable, maxItems)
+            : totalAvailable
+          : maxItems
+            ? Math.min(items.length, maxItems)
+            : items.length;
+
+        return {
+          ...prev,
+          items: limitedItems,
+          hasMore: totalItems > limitedItems.length,
+          page: 0,
+        };
+      });
     },
-    [maxItems]
+    [maxItems, initialPageSize]
   );
 
   const appendItems = useCallback(
     (newItems: Meal[]) => {
       setState(prev => {
         const combinedItems = [...prev.items, ...newItems];
-        const limitedItems = combinedItems.slice(0, maxItems);
+        const limitedItems = maxItems
+          ? combinedItems.slice(0, maxItems)
+          : combinedItems;
+
+        // For infinite scroll: hasMore is true if we received a full page of items
+        // (meaning there might be more), or if we haven't reached maxItems
+        const hasMoreItems =
+          maxItems !== undefined
+            ? combinedItems.length < maxItems &&
+              newItems.length === loadMoreSize
+            : newItems.length === loadMoreSize;
 
         return {
           ...prev,
           items: limitedItems,
-          hasMore:
-            combinedItems.length < maxItems && newItems.length === loadMoreSize,
+          hasMore: hasMoreItems,
           page: prev.page + 1,
           isLoading: false,
           error: null,

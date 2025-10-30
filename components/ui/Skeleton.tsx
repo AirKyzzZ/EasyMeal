@@ -79,10 +79,12 @@ export function MealGridSkeleton({
     return (): void => window.removeEventListener('resize', update);
   }, []);
 
-  const effectiveCount = typeof count === 'number' ? count : cols;
+  // If count is provided, use it directly
+  // Otherwise, calculate based on columns to fill at least 2 rows
+  const effectiveCount = typeof count === 'number' ? count : cols * 2;
 
   return (
-    <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+    <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-3">
       {Array.from({ length: effectiveCount }).map((_, index) => (
         <MealCardSkeleton key={index} />
       ))}

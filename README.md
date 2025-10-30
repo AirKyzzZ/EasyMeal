@@ -282,7 +282,7 @@ EasyMeal utilise l'API publique [TheMealDB](https://www.themealdb.com/api.php). 
 
 **Page d'accueil - Mode Recherche (Desktop)**
 
-![Desktop Homepage](/screenshots/desktop-homepage.jpeg)
+![Desktop Homepage](./public/screenshots/desktop-homepage.jpeg)
 
 _Capture d'écran de la page d'accueil en mode recherche sur desktop_
 
@@ -292,7 +292,7 @@ _Capture d'écran de la page d'accueil en mode recherche sur desktop_
 
 **Modal de détails d'une recette (Desktop)**
 
-![Desktop Modal](/screenshots/desktop-modal.jpeg)
+![Desktop Modal](./public/screenshots/desktop-modal.jpeg)
 
 _Capture d'écran de la modal de détails d'une recette sur desktop_
 
@@ -302,7 +302,7 @@ _Capture d'écran de la modal de détails d'une recette sur desktop_
 
 **Mode Ingrédients (Desktop)**
 
-![Desktop Ingredients](/screenshots/desktop-ingredients.jpeg)
+![Desktop Ingredients](./public/screenshots/desktop-ingredients.jpeg)
 
 _Capture d'écran du mode recherche par ingrédients sur desktop_
 
@@ -314,7 +314,7 @@ _Capture d'écran du mode recherche par ingrédients sur desktop_
 
 **Page d'accueil - Mode Recherche (Mobile)**
 
-![Mobile Homepage](/screenshots/mobile-homepage.jpeg)
+![Mobile Homepage](./public/screenshots/mobile-homepage.jpeg)
 
 _Capture d'écran de la page d'accueil en mode recherche sur mobile_
 
@@ -353,7 +353,7 @@ _Capture d'écran de la page d'accueil en mode recherche sur mobile_
 | **SEO**            | 100     | ✅ Excellent     |
 | **Score global**   | **98** | ✅ **Excellent** |
 
-![Lighthouse Scores](/screenshots/lighthouse-scores.png)
+![Lighthouse Scores](./public/screenshots/lighthouse-scores.png)
 
 _Scores Lighthouse obtenus sur la version de production_
 

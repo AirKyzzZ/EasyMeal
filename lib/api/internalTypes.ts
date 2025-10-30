@@ -29,5 +29,3 @@ export interface InternalMealApi {
   // public helpers referenced by internals
   getMealById(id: string): Promise<Meal | null>;
 }
-
-

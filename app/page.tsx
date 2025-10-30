@@ -511,7 +511,9 @@ export default function Home(): React.JSX.Element {
                     Find Recipes by Ingredients
                   </h2>
                   <p className="text-sm sm:text-base lg:text-lg text-muted-foreground">
-                    Tell us what ingredients you have available and we&apos;ll find the perfect recipes you can make right now. No more wasted groceries!
+                    Tell us what ingredients you have available and we&apos;ll
+                    find the perfect recipes you can make right now. No more
+                    wasted groceries!
                   </p>
                 </div>
                 <div className="flex justify-center">
@@ -629,7 +631,7 @@ export default function Home(): React.JSX.Element {
         {/* Meals Grid - Always show when we have items */}
         {pagination.items.length > 0 && (
           <>
-            <section 
+            <section
               className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-3"
               aria-label="Recipe cards"
             >

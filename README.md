@@ -36,14 +36,18 @@
 ## 🎯 Pitch du projet
 
 ### Quoi ?
+
 **EasyMeal** est une application web moderne et responsive permettant de rechercher et découvrir des milliers de recettes culinaires du monde entier. L'application offre deux modes de recherche distincts :
+
 - **Mode Recherche** : Recherche par nom de plat, catégorie, ou région
 - **Mode Ingrédients** : Trouvez des recettes basées sur les ingrédients que vous avez déjà dans votre frigo
 
 ### Pourquoi ?
+
 EasyMeal résout un problème courant : **que cuisiner avec ce que j'ai déjà ?** L'application permet de réduire le gaspillage alimentaire en proposant des recettes adaptées aux ingrédients disponibles, tout en offrant une expérience utilisateur fluide et intuitive.
 
 ### Pour qui ?
+
 - 👨‍🍳 **Les cuisiniers amateurs** qui cherchent de l'inspiration
 - 🏠 **Les particuliers** qui veulent utiliser les ingrédients de leur frigo
 - 🌍 **Les explorateurs culinaires** curieux de découvrir de nouvelles cuisines
@@ -54,6 +58,7 @@ EasyMeal résout un problème courant : **que cuisiner avec ce que j'ai déjà ?
 ## ⚙️ Stack technique
 
 ### Frontend
+
 - **Framework** : [Next.js 16.0](https://nextjs.org/) (App Router)
 - **Bibliothèque UI** : [React 19.2](https://react.dev/)
 - **Langage** : [TypeScript 5.0](https://www.typescriptlang.org/)
@@ -62,12 +67,14 @@ EasyMeal résout un problème courant : **que cuisiner avec ce que j'ai déjà ?
 - **Optimisation d'images** : Next.js Image Component
 
 ### Outils de développement
+
 - **Linting** : ESLint avec config Next.js
 - **Formatage** : Prettier
 - **CI/CD** : GitHub Actions
 - **Build** : Next.js Production Build
 
 ### API externe
+
 - **Source de données** : [TheMealDB API](https://www.themealdb.com/api.php)
   - API publique et gratuite
   - Plus de 300 recettes de différentes cuisines
@@ -78,18 +85,21 @@ EasyMeal résout un problème courant : **que cuisiner avec ce que j'ai déjà ?
 ## 🚀 Installation et lancement
 
 ### Prérequis
+
 - **Node.js** : version 18.0 ou supérieure
 - **npm** ou **yarn** ou **pnpm**
 
 ### Étapes d'installation
 
 1. **Cloner le dépôt**
+
 ```bash
 git clone https://github.com/votre-username/EasyMeal.git
 cd EasyMeal
 ```
 
 2. **Installer les dépendances**
+
 ```bash
 npm install
 # ou
@@ -99,6 +109,7 @@ pnpm install
 ```
 
 3. **Lancer le serveur de développement**
+
 ```bash
 npm run dev
 # ou
@@ -108,21 +119,22 @@ pnpm dev
 ```
 
 4. **Ouvrir dans le navigateur**
+
 ```
 http://localhost:3000
 ```
 
 ### Scripts disponibles
 
-| Commande | Description |
-|----------|-------------|
-| `npm run dev` | Lance le serveur de développement |
-| `npm run build` | Compile l'application pour la production |
-| `npm run start` | Lance le serveur de production |
-| `npm run lint` | Vérifie le code avec ESLint |
-| `npm run lint:fix` | Corrige automatiquement les erreurs ESLint |
-| `npm run format` | Formate le code avec Prettier |
-| `npm run format:check` | Vérifie le formatage du code |
+| Commande               | Description                                |
+| ---------------------- | ------------------------------------------ |
+| `npm run dev`          | Lance le serveur de développement          |
+| `npm run build`        | Compile l'application pour la production   |
+| `npm run start`        | Lance le serveur de production             |
+| `npm run lint`         | Vérifie le code avec ESLint                |
+| `npm run lint:fix`     | Corrige automatiquement les erreurs ESLint |
+| `npm run format`       | Formate le code avec Prettier              |
+| `npm run format:check` | Vérifie le formatage du code               |
 
 ---
 
@@ -180,11 +192,13 @@ lib/
 ### Fonctionnalités techniques
 
 #### 🎯 Gestion d'état
+
 - **React Hooks** : useState, useEffect, useCallback, useMemo
 - **Pagination infinie** : Hook personnalisé `usePagination`
 - **Débouncing** : Pour les recherches d'ingrédients (500ms)
 
 #### ⚡ Optimisations de performance
+
 - **Cache en mémoire** : TTL configurable par type de données
 - **Déduplication de requêtes** : Évite les appels API dupliqués
 - **Rate limiting** : 200ms entre les requêtes (5 req/s max)
@@ -193,6 +207,7 @@ lib/
 - **Memoization** : React.memo et useMemo pour éviter les re-renders
 
 #### 🔄 Gestion des erreurs
+
 - **Retry logic** : 3 tentatives avec backoff exponentiel
 - **Fallback data** : Données de secours si l'API est indisponible
 - **Error boundaries** : Gestion gracieuse des erreurs
@@ -205,25 +220,27 @@ lib/
 EasyMeal utilise l'API publique [TheMealDB](https://www.themealdb.com/api.php). Tous les endpoints sont appelés via `GET` sur la base URL : `https://www.themealdb.com/api/json/v1/1`
 
 ### 📚 Documentation de l'API
+
 **Lien vers la documentation** : [https://www.themealdb.com/api.php](https://www.themealdb.com/api.php)
 
 ### Liste des endpoints utilisés
 
-| Endpoint | Méthode | Description | Utilisation dans l'app |
-|----------|---------|-------------|------------------------|
-| `/search.php?s={nom}` | GET | Recherche de recettes par nom | Recherche principale |
-| `/filter.php?c={catégorie}` | GET | Filtrage par catégorie | Filtre "Catégorie" |
-| `/filter.php?a={region}` | GET | Filtrage par région/cuisine | Filtre "Région" |
-| `/filter.php?i={ingredient}` | GET | Filtrage par ingrédient | Filtre "Ingrédient" et mode ingrédients |
-| `/random.php` | GET | Obtient une recette aléatoire | Bouton "Random Meal" et chargement initial |
-| `/lookup.php?i={id}` | GET | Détails complets d'une recette par ID | Enrichissement des données et modal de détails |
-| `/categories.php` | GET | Liste de toutes les catégories | Populate le filtre "Catégorie" |
-| `/list.php?a=list` | GET | Liste de toutes les régions | Populate le filtre "Région" |
-| `/list.php?i=list` | GET | Liste de tous les ingrédients | Populate le filtre "Ingrédient" et la liste d'ingrédients |
+| Endpoint                     | Méthode | Description                           | Utilisation dans l'app                                    |
+| ---------------------------- | ------- | ------------------------------------- | --------------------------------------------------------- |
+| `/search.php?s={nom}`        | GET     | Recherche de recettes par nom         | Recherche principale                                      |
+| `/filter.php?c={catégorie}`  | GET     | Filtrage par catégorie                | Filtre "Catégorie"                                        |
+| `/filter.php?a={region}`     | GET     | Filtrage par région/cuisine           | Filtre "Région"                                           |
+| `/filter.php?i={ingredient}` | GET     | Filtrage par ingrédient               | Filtre "Ingrédient" et mode ingrédients                   |
+| `/random.php`                | GET     | Obtient une recette aléatoire         | Bouton "Random Meal" et chargement initial                |
+| `/lookup.php?i={id}`         | GET     | Détails complets d'une recette par ID | Enrichissement des données et modal de détails            |
+| `/categories.php`            | GET     | Liste de toutes les catégories        | Populate le filtre "Catégorie"                            |
+| `/list.php?a=list`           | GET     | Liste de toutes les régions           | Populate le filtre "Région"                               |
+| `/list.php?i=list`           | GET     | Liste de tous les ingrédients         | Populate le filtre "Ingrédient" et la liste d'ingrédients |
 
 ### Exemple de réponses
 
 **Recherche de recettes** :
+
 ```json
 {
   "meals": [
@@ -241,6 +258,7 @@ EasyMeal utilise l'API publique [TheMealDB](https://www.themealdb.com/api.php). 
 ```
 
 **Liste des catégories** :
+
 ```json
 {
   "categories": [
@@ -267,7 +285,7 @@ EasyMeal utilise l'API publique [TheMealDB](https://www.themealdb.com/api.php). 
 
 ![Desktop Homepage](./docs/screenshots/desktop-homepage.png)
 
-*Capture d'écran de la page d'accueil en mode recherche sur desktop*
+_Capture d'écran de la page d'accueil en mode recherche sur desktop_
 
 </div>
 
@@ -277,7 +295,7 @@ EasyMeal utilise l'API publique [TheMealDB](https://www.themealdb.com/api.php). 
 
 ![Desktop Modal](./docs/screenshots/desktop-modal.png)
 
-*Capture d'écran de la modal de détails d'une recette sur desktop*
+_Capture d'écran de la modal de détails d'une recette sur desktop_
 
 </div>
 
@@ -287,7 +305,7 @@ EasyMeal utilise l'API publique [TheMealDB](https://www.themealdb.com/api.php). 
 
 ![Desktop Ingredients](./docs/screenshots/desktop-ingredients.png)
 
-*Capture d'écran du mode recherche par ingrédients sur desktop*
+_Capture d'écran du mode recherche par ingrédients sur desktop_
 
 </div>
 
@@ -300,7 +318,7 @@ EasyMeal utilise l'API publique [TheMealDB](https://www.themealdb.com/api.php). 
 
 ![Mobile Homepage](./docs/screenshots/mobile-homepage.png)
 
-*Capture d'écran de la page d'accueil en mode recherche sur mobile*
+_Capture d'écran de la page d'accueil en mode recherche sur mobile_
 
 </div>
 
@@ -310,7 +328,7 @@ EasyMeal utilise l'API publique [TheMealDB](https://www.themealdb.com/api.php). 
 
 ![Mobile Modal](./docs/screenshots/mobile-modal.png)
 
-*Capture d'écran de la modal de détails d'une recette sur mobile*
+_Capture d'écran de la modal de détails d'une recette sur mobile_
 
 </div>
 
@@ -320,21 +338,22 @@ EasyMeal utilise l'API publique [TheMealDB](https://www.themealdb.com/api.php). 
 
 ![Mobile Ingredients](./docs/screenshots/mobile-ingredients.png)
 
-*Capture d'écran du mode recherche par ingrédients sur mobile*
+_Capture d'écran du mode recherche par ingrédients sur mobile_
 
 </div>
 
 ### 📊 Responsive Breakpoints
 
-| Breakpoint | Largeur | Utilisation |
-|------------|---------|-------------|
-| `sm` | ≥ 640px | Tablettes en mode portrait |
-| `md` | ≥ 768px | Tablettes en mode paysage |
-| `lg` | ≥ 1024px | Desktop |
-| `xl` | ≥ 1280px | Large desktop |
-| `2xl` | ≥ 1536px | Très large desktop |
+| Breakpoint | Largeur  | Utilisation                |
+| ---------- | -------- | -------------------------- |
+| `sm`       | ≥ 640px  | Tablettes en mode portrait |
+| `md`       | ≥ 768px  | Tablettes en mode paysage  |
+| `lg`       | ≥ 1024px | Desktop                    |
+| `xl`       | ≥ 1280px | Large desktop              |
+| `2xl`      | ≥ 1536px | Très large desktop         |
 
 **Exemples d'adaptation responsive** :
+
 - **Grille de recettes** : 1 colonne (mobile) → 2 colonnes (tablette) → 3 colonnes (desktop)
 - **Barre de recherche** : Pleine largeur avec padding réduit (mobile) → Largeur max limitée (desktop)
 - **Header** : Texte tronqué (mobile) → Texte complet (desktop)
@@ -349,29 +368,29 @@ EasyMeal utilise l'API publique [TheMealDB](https://www.themealdb.com/api.php). 
 <!-- TODO: Ajouter captures d'écran des scores Lighthouse -->
 <div align="center">
 
-| Métrique | Score | État |
-|----------|-------|------|
-| **Performance** | 95+ | ✅ Excellent |
-| **Accessibilité** | 95+ | ✅ Excellent |
-| **Best Practices** | 95+ | ✅ Excellent |
-| **SEO** | 95+ | ✅ Excellent |
-| **Score global** | **95+** | ✅ **Excellent** |
+| Métrique           | Score   | État             |
+| ------------------ | ------- | ---------------- |
+| **Performance**    | 95+     | ✅ Excellent     |
+| **Accessibilité**  | 95+     | ✅ Excellent     |
+| **Best Practices** | 95+     | ✅ Excellent     |
+| **SEO**            | 95+     | ✅ Excellent     |
+| **Score global**   | **95+** | ✅ **Excellent** |
 
 ![Lighthouse Scores](./docs/screenshots/lighthouse-scores.png)
 
-*Scores Lighthouse obtenus sur la version de production*
+_Scores Lighthouse obtenus sur la version de production_
 
 </div>
 
 ### ⚡ Métriques de performance
 
-| Métrique | Valeur | Objectif |
-|----------|--------|----------|
-| **First Contentful Paint (FCP)** | < 1.5s | ✅ |
-| **Largest Contentful Paint (LCP)** | < 2.5s | ✅ |
-| **Time to Interactive (TTI)** | < 3.5s | ✅ |
-| **Cumulative Layout Shift (CLS)** | < 0.1 | ✅ |
-| **First Input Delay (FID)** | < 100ms | ✅ |
+| Métrique                           | Valeur  | Objectif |
+| ---------------------------------- | ------- | -------- |
+| **First Contentful Paint (FCP)**   | < 1.5s  | ✅       |
+| **Largest Contentful Paint (LCP)** | < 2.5s  | ✅       |
+| **Time to Interactive (TTI)**      | < 3.5s  | ✅       |
+| **Cumulative Layout Shift (CLS)**  | < 0.1   | ✅       |
+| **First Input Delay (FID)**        | < 100ms | ✅       |
 
 ### 📈 Optimisations implémentées
 
@@ -389,16 +408,16 @@ EasyMeal utilise l'API publique [TheMealDB](https://www.themealdb.com/api.php). 
 <!-- TODO: Ajouter capture d'écran du score Eco-Index -->
 <div align="center">
 
-| Critère | Score | Note |
-|---------|-------|------|
-| **Performance** | 95+ | A |
-| **Complexité DOM** | 85+ | B |
-| **Taille des ressources** | 90+ | A |
-| **Score global** | **90+** | **A** |
+| Critère                   | Score   | Note  |
+| ------------------------- | ------- | ----- |
+| **Performance**           | 95+     | A     |
+| **Complexité DOM**        | 85+     | B     |
+| **Taille des ressources** | 90+     | A     |
+| **Score global**          | **90+** | **A** |
 
 ![Eco-Index Score](./docs/screenshots/ecoindex-score.png)
 
-*Score Eco-Index obtenu pour l'application*
+_Score Eco-Index obtenu pour l'application_
 
 </div>
 
@@ -418,12 +437,12 @@ pie title Types de recherche utilisés
 
 **Temps de chargement moyen par type de requête**
 
-| Type de requête | Temps moyen | Cache hit rate |
-|-----------------|-------------|----------------|
-| Recherche par nom | 200ms | 65% |
-| Filtres | 150ms | 80% |
-| Recette aléatoire | 300ms | 40% |
-| Détails d'une recette | 180ms | 70% |
+| Type de requête       | Temps moyen | Cache hit rate |
+| --------------------- | ----------- | -------------- |
+| Recherche par nom     | 200ms       | 65%            |
+| Filtres               | 150ms       | 80%            |
+| Recette aléatoire     | 300ms       | 40%            |
+| Détails d'une recette | 180ms       | 70%            |
 
 </div>
 
@@ -432,6 +451,7 @@ pie title Types de recherche utilisés
 ## ♿ Accessibilité
 
 ### Standards respectés
+
 - ✅ **WCAG 2.1 Level AA** : Conformité avec les standards d'accessibilité
 - ✅ **ARIA labels** : Attributs ARIA pour les éléments interactifs
 - ✅ **Navigation au clavier** : Support complet de la navigation clavier
@@ -440,16 +460,17 @@ pie title Types de recherche utilisés
 
 ### Améliorations d'accessibilité
 
-| Élément | Amélioration |
-|---------|--------------|
-| **Images** | Attributs `alt` descriptifs pour toutes les images |
-| **Boutons** | Labels textuels clairs et descriptifs |
-| **Formulaires** | Labels associés et messages d'erreur |
-| **Navigation** | Structure sémantique HTML5 (header, main, section) |
-| **Modals** | Focus trap et fermeture avec Escape |
-| **États de chargement** | Messages textuels et indicateurs visuels |
+| Élément                 | Amélioration                                       |
+| ----------------------- | -------------------------------------------------- |
+| **Images**              | Attributs `alt` descriptifs pour toutes les images |
+| **Boutons**             | Labels textuels clairs et descriptifs              |
+| **Formulaires**         | Labels associés et messages d'erreur               |
+| **Navigation**          | Structure sémantique HTML5 (header, main, section) |
+| **Modals**              | Focus trap et fermeture avec Escape                |
+| **États de chargement** | Messages textuels et indicateurs visuels           |
 
 ### Tests d'accessibilité
+
 - ✅ Tests automatisés avec eslint-plugin-jsx-a11y
 - ✅ Tests manuels avec lecteurs d'écran (NVDA, JAWS)
 - ✅ Vérification des contrastes avec WebAIM Contrast Checker
@@ -460,6 +481,7 @@ pie title Types de recherche utilisés
 ## 🌐 Déploiement
 
 ### Prérequis de déploiement
+
 - Compte **Netlify** ou **Vercel**
 - Dépôt GitHub configuré
 
@@ -471,6 +493,7 @@ pie title Types de recherche utilisés
    - Sélectionner le dépôt EasyMeal
 
 2. **Configuration du build**
+
    ```
    Build command: npm run build
    Publish directory: .next
@@ -491,6 +514,7 @@ vercel
 ```
 
 Ou via l'interface Vercel :
+
 1. Connecter le dépôt GitHub
 2. Vercel détecte automatiquement Next.js
 3. Déploiement automatique activé
@@ -499,7 +523,7 @@ Ou via l'interface Vercel :
 
 🔗 **Application en ligne** : [https://easymeal-app.netlify.app](https://easymeal-app.netlify.app)
 
-*(URL à mettre à jour avec votre URL de déploiement réel)*
+_(URL à mettre à jour avec votre URL de déploiement réel)_
 
 ---
 
@@ -567,29 +591,29 @@ EasyMeal/
 
 ### ✅ Sprint 2 - Fonctionnalités de base
 
-| Exigence | Statut | Détails |
-|----------|--------|---------|
-| **Intégration API et données dynamiques** | ✅ | Utilisation de TheMealDB API avec 9 endpoints différents |
-| **Mise en page responsive mobile-first** | ✅ | Breakpoints sm/md/lg/xl/2xl, design mobile-first |
-| **Framework CSS (Tailwind CSS)** | ✅ | Tailwind CSS 4.0 utilisé |
-| **Navigation entre 2 vues** | ✅ | Mode Recherche ↔ Mode Ingrédients |
+| Exigence                                  | Statut | Détails                                                  |
+| ----------------------------------------- | ------ | -------------------------------------------------------- |
+| **Intégration API et données dynamiques** | ✅     | Utilisation de TheMealDB API avec 9 endpoints différents |
+| **Mise en page responsive mobile-first**  | ✅     | Breakpoints sm/md/lg/xl/2xl, design mobile-first         |
+| **Framework CSS (Tailwind CSS)**          | ✅     | Tailwind CSS 4.0 utilisé                                 |
+| **Navigation entre 2 vues**               | ✅     | Mode Recherche ↔ Mode Ingrédients                       |
 
 ### ✅ Sprint 3 - Finalisation
 
-| Exigence | Statut | Détails |
-|----------|--------|---------|
-| **Améliorations UX et responsive** | ✅ | Animations, transitions, breakpoints multiples |
-| **Accessibilité** | ✅ | WCAG AA, contrastes, alt text, structure sémantique |
-| **Audit Lighthouse > 85** | ✅ | Score global > 95 |
-| **Déploiement Netlify/GitHub Pages** | ✅ | Prêt pour déploiement Netlify |
+| Exigence                             | Statut | Détails                                             |
+| ------------------------------------ | ------ | --------------------------------------------------- |
+| **Améliorations UX et responsive**   | ✅     | Animations, transitions, breakpoints multiples      |
+| **Accessibilité**                    | ✅     | WCAG AA, contrastes, alt text, structure sémantique |
+| **Audit Lighthouse > 85**            | ✅     | Score global > 95                                   |
+| **Déploiement Netlify/GitHub Pages** | ✅     | Prêt pour déploiement Netlify                       |
 
 ### 📋 Requis techniques
 
-| Requis | Statut | Détails |
-|--------|--------|---------|
-| **Responsive conditionnel 2+ supports** | ✅ | Mobile (sm), Tablette (md), Desktop (lg+) |
-| **3+ routes API appelées** | ✅ | 9 endpoints différents utilisés |
-| **Pas d'infos sensibles** | ✅ | API publique, pas de clé API, .gitignore configuré |
+| Requis                                  | Statut | Détails                                            |
+| --------------------------------------- | ------ | -------------------------------------------------- |
+| **Responsive conditionnel 2+ supports** | ✅     | Mobile (sm), Tablette (md), Desktop (lg+)          |
+| **3+ routes API appelées**              | ✅     | 9 endpoints différents utilisés                    |
+| **Pas d'infos sensibles**               | ✅     | API publique, pas de clé API, .gitignore configuré |
 
 ---
 
@@ -607,12 +631,14 @@ EasyMeal/
 ## 👨‍💻 Développement
 
 ### Conventions de code
+
 - **TypeScript strict mode** : Types stricts activés
 - **ESLint + Prettier** : Formatage automatique
 - **Component structure** : Composants fonctionnels avec hooks
 - **Naming conventions** : camelCase pour variables, PascalCase pour composants
 
 ### Tests
+
 - Linting : `npm run lint`
 - Formatage : `npm run format:check`
 - Build : `npm run build`

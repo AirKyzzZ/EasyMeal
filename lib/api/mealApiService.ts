@@ -22,10 +22,25 @@ import {
   getMealIngredients as getMealIngredientsHelper,
   getIngredientDetails as getIngredientDetailsHelper,
 } from './endpoints/meals';
-import { getAreas as getAreasHelper, getCategories as getCategoriesHelper, getIngredients as getIngredientsHelper } from './endpoints/metadata';
-import { searchMeals as searchMealsHelper, searchMealsByLetter as searchMealsByLetterHelper } from './endpoints/search';
-import { getFallbackAreas, getFallbackCategories, getFallbackIngredients, getFallbackMeals } from './fallbacks';
-import { enrichMealsWithDetails as enrichMealsWithDetailsHelper, isMealComplete as isMealCompleteHelper } from './internals/enrichment';
+import {
+  getAreas as getAreasHelper,
+  getCategories as getCategoriesHelper,
+  getIngredients as getIngredientsHelper,
+} from './endpoints/metadata';
+import {
+  searchMeals as searchMealsHelper,
+  searchMealsByLetter as searchMealsByLetterHelper,
+} from './endpoints/search';
+import {
+  getFallbackAreas,
+  getFallbackCategories,
+  getFallbackIngredients,
+  getFallbackMeals,
+} from './fallbacks';
+import {
+  enrichMealsWithDetails as enrichMealsWithDetailsHelper,
+  isMealComplete as isMealCompleteHelper,
+} from './internals/enrichment';
 import { CacheEntry, PendingRequest } from './types';
 
 export class MealApiService {
@@ -289,12 +304,18 @@ export class MealApiService {
   }
 
   // Find meals that can be made with available ingredients (meals that contain any of the available ingredients)
-  findMealsWithAvailableIngredients(availableIngredients: string[]): Promise<Meal[]> {
+  findMealsWithAvailableIngredients(
+    availableIngredients: string[]
+  ): Promise<Meal[]> {
     return findMealsWithAvailableIngredientsHelper(this, availableIngredients);
   }
 
   // Get ingredient details with thumbnail
-  getIngredientDetails(ingredient: string): { name: string; thumbnail: string; description?: string } {
+  getIngredientDetails(ingredient: string): {
+    name: string;
+    thumbnail: string;
+    description?: string;
+  } {
     return getIngredientDetailsHelper(this, ingredient);
   }
 
@@ -316,17 +337,25 @@ export class MealApiService {
   }
 
   // Get meal thumbnail URL
-  getMealThumbnailUrl(meal: Meal, _size: 'small' | 'medium' | 'large' = 'medium'): string {
+  getMealThumbnailUrl(
+    meal: Meal,
+    _size: 'small' | 'medium' | 'large' = 'medium'
+  ): string {
     return getMealThumbnailUrlHelper(this, meal, _size);
   }
 
   // Get ingredient thumbnail URL
-  getIngredientThumbnailUrl(ingredient: string, size: 'small' | 'medium' | 'large' = 'medium'): string {
+  getIngredientThumbnailUrl(
+    ingredient: string,
+    size: 'small' | 'medium' | 'large' = 'medium'
+  ): string {
     return getIngredientThumbnailUrlHelper(this, ingredient, size);
   }
 
   // Extract ingredients and measures from meal
-  getMealIngredients(meal: Meal): Array<{ ingredient: string; measure: string }> {
+  getMealIngredients(
+    meal: Meal
+  ): Array<{ ingredient: string; measure: string }> {
     return getMealIngredientsHelper(this, meal);
   }
 
@@ -353,5 +382,3 @@ export class MealApiService {
     }
   }
 }
-
-

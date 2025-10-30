@@ -8,5 +8,3 @@ export interface PendingRequest {
   promise: Promise<unknown>;
   timestamp: number;
 }
-
-

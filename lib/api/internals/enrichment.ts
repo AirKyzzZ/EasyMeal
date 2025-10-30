@@ -7,7 +7,10 @@ export function isMealComplete(_service: MealApiService, meal: Meal): boolean {
   return !!(meal.strInstructions && meal.strInstructions.trim());
 }
 
-export async function enrichMealsWithDetails(service: MealApiService, basicMeals: Meal[]): Promise<Meal[]> {
+export async function enrichMealsWithDetails(
+  service: MealApiService,
+  basicMeals: Meal[]
+): Promise<Meal[]> {
   const svc = service as unknown as InternalMealApi;
   if (basicMeals.length === 0) return [];
 
@@ -43,5 +46,3 @@ export async function enrichMealsWithDetails(service: MealApiService, basicMeals
 
   return [...completeMeals, ...enrichedIncomplete];
 }
-
-

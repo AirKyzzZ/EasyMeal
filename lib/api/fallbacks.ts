@@ -203,5 +203,3 @@ export function getFallbackIngredients(): Ingredient[] {
     { strIngredient: 'Flour' },
   ];
 }
-
-

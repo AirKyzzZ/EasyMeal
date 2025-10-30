@@ -43,4 +43,3 @@ export default function manifest(): MetadataRoute.Manifest {
     orientation: 'portrait-primary',
   };
 }
-

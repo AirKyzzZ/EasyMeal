@@ -27,19 +27,27 @@ export function MealDetailModal({
   const [fullMeal, setFullMeal] = useState<Meal | null>(null);
   const [isLoadingDetails, setIsLoadingDetails] = useState(false);
 
-  // Prevent body scroll when modal is open
+  // Prevent body scroll when modal is open (robust, including iOS)
   useEffect(() => {
-    if (isOpen) {
-      // Store the original overflow style
-      const originalStyle = window.getComputedStyle(document.body).overflow;
-      // Disable scrolling
-      document.body.style.overflow = 'hidden';
+    if (!isOpen) return;
 
-      // Cleanup function to restore scrolling
-      return (): void => {
-        document.body.style.overflow = originalStyle;
-      };
-    }
+    const { overflow, position, top, width } = document.body.style;
+    const scrollY = window.scrollY || window.pageYOffset;
+
+    // Lock body scroll by fixing body position and preserving scroll position
+    document.body.style.overflow = 'hidden';
+    document.body.style.position = 'fixed';
+    document.body.style.top = `-${scrollY}px`;
+    document.body.style.width = '100%';
+
+    // Cleanup: restore styles and scroll position
+    return (): void => {
+      document.body.style.overflow = overflow;
+      document.body.style.position = position;
+      document.body.style.top = top;
+      document.body.style.width = width;
+      window.scrollTo(0, scrollY);
+    };
   }, [isOpen]);
 
   // Helper to check if meal data is complete (has instructions and ingredients)

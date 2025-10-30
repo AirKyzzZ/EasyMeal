@@ -174,18 +174,18 @@ export const MealCard = memo(
 
           {/* Action Button */}
           <div className="mt-4 flex items-center justify-between">
-            <div className="flex items-center gap-4 text-xs text-muted-foreground">
+            <div className="flex items-center gap-4 text-xs text-muted-foreground flex-1 min-w-0">
               <div className="flex items-center gap-1">
                 <Clock className="h-3 w-3" />
-                <span>Recipe</span>
+                <span className="truncate">Recipe</span>
               </div>
               <div className="flex items-center gap-1">
                 <Users className="h-3 w-3" />
-                <span>Serves 4-6</span>
+                <span className="truncate">Serves 4-6</span>
               </div>
             </div>
 
-            <button className="rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:text-primary-foreground transition-colors hover:bg-primary/90 active:bg-primary/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2 focus-visible:ring-offset-background">
+            <button className="shrink-0 rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:text-primary-foreground transition-colors hover:bg-primary/90 active:bg-primary/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2 focus-visible:ring-offset-background">
               View Recipe
             </button>
           </div>

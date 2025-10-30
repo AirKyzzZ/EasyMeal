@@ -1,18 +1,29 @@
 'use client';
 
 import { ChefHat, Sparkles, Apple } from 'lucide-react';
+import dynamic from 'next/dynamic';
 import Image from 'next/image';
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 
 import { Filters } from '@/components/Filters';
 import { IngredientList } from '@/components/IngredientList';
 import { MealCard } from '@/components/MealCard';
-import { MealDetailModal } from '@/components/MealDetailModal';
 import { SearchBar } from '@/components/SearchBar';
 import { MealGridSkeleton } from '@/components/ui/Skeleton';
 import { mealApiService } from '@/lib/api';
 import { usePagination } from '@/lib/hooks/usePagination';
 import { Meal } from '@/types/meal';
+
+// Dynamically import modal since it's only shown on user interaction
+const MealDetailModal = dynamic(
+  () =>
+    import('@/components/MealDetailModal').then(mod => ({
+      default: mod.MealDetailModal,
+    })),
+  {
+    ssr: false, // Modal doesn't need SSR
+  }
+);
 
 // Extend Window interface to include our timeout property
 declare global {
@@ -39,9 +50,9 @@ export default function Home(): React.JSX.Element {
 
   // Use pagination hook for meal management
   const pagination = usePagination({
-    initialPageSize: 6, // Load 6 items initially for fast first paint
+    initialPageSize: 3, // Load 3 items initially to reduce DOM complexity and page weight
     loadMoreSize: 6, // Load 6 more items on scroll
-    maxItems: 50, // Maximum items to prevent memory issues
+    maxItems: 30, // Reduced from 50 to limit DOM elements (target: < 600)
   });
 
   // Extract stable pagination functions and values to avoid recreating loadRandomMeals on every state change
@@ -392,14 +403,19 @@ export default function Home(): React.JSX.Element {
                   height={40}
                   className="object-contain"
                   priority
-                  quality={85}
+                  quality={75}
                   placeholder="blur"
+                  fetchPriority="high"
                   blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k="
                 />
               </div>
               <div className="min-w-0 flex-1">
                 <h1 className="text-xl sm:text-2xl font-bold text-foreground truncate">
-                  EasyMeal - Discover Amazing Recipes
+                  EasyMeal
+                  <span className="hidden sm:inline">
+                    {' '}
+                    - Discover Amazing Recipes
+                  </span>
                 </h1>
                 <p className="text-xs sm:text-sm text-muted-foreground truncate">
                   Search thousands of free recipes from around the world
@@ -661,7 +677,7 @@ export default function Home(): React.JSX.Element {
             className="mt-8 flex justify-center"
             style={{ minHeight: '200px' }}
           >
-            <MealGridSkeleton count={3} />
+            <MealGridSkeleton count={2} />
           </div>
         )}
       </main>

@@ -480,12 +480,29 @@ pie title Types de recherche utilisés
 
 ## 🌐 Déploiement
 
-### Prérequis de déploiement
+### Application en production
+
+Le projet est déployé sur **Netlify** depuis la branche `main`. Chaque push sur la branche `main` déclenche automatiquement un nouveau déploiement.
+
+🔗 **Application en ligne** : [https://easymealapp.netlify.app/](https://easymealapp.netlify.app/)
+
+### Configuration Netlify
+
+- **Branche de déploiement** : `main`
+- **Build command** : `npm run build`
+- **Publish directory** : `.next`
+- **Déploiement automatique** : Activé (déploiement à chaque push sur `main`)
+
+### Déploiement local (pour développement)
+
+Si vous souhaitez déployer localement ou sur un autre environnement :
+
+#### Prérequis de déploiement
 
 - Compte **Netlify** ou **Vercel**
 - Dépôt GitHub configuré
 
-### Déploiement sur Netlify
+#### Déploiement sur Netlify
 
 1. **Connecter le dépôt GitHub à Netlify**
    - Aller sur [Netlify](https://app.netlify.com/)
@@ -501,29 +518,6 @@ pie title Types de recherche utilisés
 
 3. **Déploiement**
    - Netlify déploie automatiquement à chaque push sur `main`
-   - URL fournie : `https://easymeal-[hash].netlify.app`
-
-### Déploiement sur Vercel
-
-```bash
-# Installation de Vercel CLI
-npm i -g vercel
-
-# Déploiement
-vercel
-```
-
-Ou via l'interface Vercel :
-
-1. Connecter le dépôt GitHub
-2. Vercel détecte automatiquement Next.js
-3. Déploiement automatique activé
-
-### Lien de l'application en production
-
-🔗 **Application en ligne** : [https://easymeal-app.netlify.app](https://easymeal-app.netlify.app)
-
-_(URL à mettre à jour avec votre URL de déploiement réel)_
 
 ---
 

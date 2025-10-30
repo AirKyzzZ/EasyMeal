@@ -4,18 +4,27 @@ import React from 'react';
 
 import './globals.css';
 
+// Optimized font loading - only load main font, mono font as fallback
 const geistSans = Geist({
   variable: '--font-geist-sans',
   subsets: ['latin'],
+  display: 'swap',
+  preload: true,
+  // Reduce font file size by limiting subsets
+  weight: ['400', '500', '600', '700'], // Only load needed weights
 });
 
+// Removed geistMono preload to reduce requests - using system fallback
 const geistMono = Geist_Mono({
   variable: '--font-geist-mono',
   subsets: ['latin'],
+  display: 'swap',
+  preload: false,
+  fallback: ['monospace'], // System font fallback
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://easymeal.app'),
+  metadataBase: new URL('https://easymealapp.netlify.app'),
   title: {
     default: 'EasyMeal - Discover Amazing Recipes | Free Recipe Finder',
     template: '%s | EasyMeal',
@@ -68,7 +77,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: 'website',
     locale: 'en_US',
-    url: 'https://easymeal.app',
+    url: 'https://easymealapp.netlify.app',
     siteName: 'EasyMeal',
     title: 'EasyMeal - Discover Amazing Recipes | Free Recipe Finder',
     description:
@@ -120,8 +129,13 @@ export default function RootLayout({
     <html lang="en">
       <head>
         {/* Preload critical resources */}
-        <link rel="dns-prefetch" href="//www.themealdb.com" />
-        <link rel="preconnect" href="https://www.themealdb.com" />
+        <link rel="dns-prefetch" href="https://www.themealdb.com" />
+        <link
+          rel="preconnect"
+          href="https://www.themealdb.com"
+          crossOrigin="anonymous"
+        />
+        <link rel="preload" as="image" href="/logo.png" />
         {/* Structured Data for SEO */}
         <script
           type="application/ld+json"
@@ -130,7 +144,7 @@ export default function RootLayout({
               '@context': 'https://schema.org',
               '@type': 'WebSite',
               name: 'EasyMeal',
-              url: 'https://easymeal.app',
+              url: 'https://easymealapp.netlify.app',
               description:
                 'Search and discover thousands of delicious recipes from around the world. Find meals by ingredients, cuisine, or category with our powerful search and filter system.',
               potentialAction: {
@@ -138,7 +152,7 @@ export default function RootLayout({
                 target: {
                   '@type': 'EntryPoint',
                   urlTemplate:
-                    'https://easymeal.app/?search={search_term_string}',
+                    'https://easymealapp.netlify.app/?search={search_term_string}',
                 },
                 'query-input': 'required name=search_term_string',
               },
@@ -147,7 +161,7 @@ export default function RootLayout({
                 name: 'EasyMeal',
                 logo: {
                   '@type': 'ImageObject',
-                  url: 'https://easymeal.app/logo.png',
+                  url: 'https://easymealapp.netlify.app/logo.png',
                 },
               },
             }),
@@ -160,7 +174,7 @@ export default function RootLayout({
               '@context': 'https://schema.org',
               '@type': 'WebApplication',
               name: 'EasyMeal',
-              url: 'https://easymeal.app',
+              url: 'https://easymealapp.netlify.app',
               description:
                 'Free recipe finder with step-by-step instructions, cooking videos, and ingredient lists.',
               applicationCategory: 'Food & Drink',

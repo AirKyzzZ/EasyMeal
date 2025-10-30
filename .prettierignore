@@ -1,0 +1,45 @@
+# Dependencies
+node_modules
+.pnp
+.pnp.*
+
+# Build outputs
+.next
+out
+build
+dist
+
+# Coverage
+coverage
+
+# Logs
+*.log
+
+# Environment files
+.env*
+
+# Cache
+.turbo
+.vercel
+.tsbuildinfo
+
+# Lock files
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Public assets (optional, depends on preference)
+public
+
+# Git
+.git
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db

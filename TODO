@@ -21,11 +21,75 @@
 ✔ Implement a CI/CD github actions to check everything best practices @done(25-10-30)
 ✔ Optimize SEO for the website to be the best in google search results @done(25-10-30 22:45)
 ✔ Make a full complete and detailed readme of the project include graphs the screenshots i'll take and design items like badges and stat cards etc to prepare for the assignmement IN FRENCH and check the code to make sure everything meet the requirements of the projetcts assignement, here are the instructions in french : @done(25-10-30 22:57)
-☐ Recheck linter errors and warnings
-☐ Check code qual.
-☐ Pull request to dev
+✔ Recheck linter errors and warnings @done(25-10-30 22:58)
+✔ Can you make a final check for the code quality and performance ? @done(25-10-30 23:02)
+✔ Pull request to dev @done(25-10-30 23:03)
 ☐ Pull request from dev to main
 ☐ Upload on netlify, main branch
 ☐ Change the url of the website from easymeal.app to the new netlify url
 ☐ Update the readme with the new informations
 ☐ Write the final email
+
+
+Context : 
+
+    - Intégration API et affichage de données dynamiques.
+    - Mise en page responsive **mobile-first**.
+    - Utilisation d’un framework CSS (Bootstrap ou Tailwind).
+    - Navigation entre deux vues (par exemple : liste / détails, ou statistiques / favoris).
+    
+    ---
+    
+    ### **Sprint 3 — Finalisation & hébergement**
+    
+    - Améliorations UX et responsive (breakpoints, animations, transitions).
+    - Accessibilité : contrastes, alt text, structure sémantique.
+    - Audit Lighthouse (> 85 recommandé).
+    - Déploiement sur Netlify ou GitHub Pages.
+    
+    ---
+    
+    ## Barème de notation
+    
+    | Critère | Points | Détails |
+    | --- | --- | --- |
+    | **Responsive Design & ergonomie** | 6 | Fluidité, cohérence visuelle, adaptation mobile/tablette/desktop |
+    | **Intégration API & logique React** | 5 | Appel API, affichage dynamique, gestion d’état |
+    | **Qualité du code & structure** | 3 | Lisibilité, modularité, propreté du code |
+    | **Design & UX générale** | 3 | Clarté, hiérarchie, lisibilité des données |
+    | **Performance, Accessibilité et Eco-responsabilité** | 3 | Score Lighthouse, Score Eco-Index, sémantique, optimisation |
+    
+    **Total : 20 points**
+    
+    ---
+    
+    ## 🏅 Distinctions spéciales (bonus)
+    
+    Ces prix apportent jusqu’à **+3 points bonus** maximum au total.
+    
+    | Distinction | Bonus | Description |
+    | --- | --- | --- |
+    | **Best UI/UX** | +1 | Interface la plus agréable et cohérente |
+    | **Best API Integration** | +0.5 | Données les mieux exploitées |
+    | **Clean Code Award** | +0.5 | Code clair, bien organisé, commenté |
+    
+    ## Modalités de rendu:
+    
+    - A rendre:
+        - avant le 7 Novembre à minuit (début correction le 8 Novembre au matin)
+        - contact: [julien.couraud@reseau-cd.net](mailto:julien.couraud@reseau-cd.net)
+        - en tête du mail: **[B2DEV - RWD] NOM Prénom**
+        - 📘 **Livrables finaux :**
+            - Lien du dépôt GitHub
+            - Lien de l’app en ligne
+            - README avec :
+                - pitch de votre projet (quoi ? pourquoi ? pour qui ?)
+                - explication de la stack technique (React / Javascript / Bootstrap ou Tailwind)
+                - comment lancer le projet (démarche pour obtenir la clé API puis pour lancer le projet) —> .env.example
+                - architecture technique (sitemap routing, composants principaux, services, etc..)
+                - listes des endpoints appelés sur l’API publique + Lien vers leur documentation
+                - captures d’écran (mobile / desktop)
+        - 📘 **Requis techniques :**
+            - Responsive conditionnel pour au moins 2 types de supports ( SM / MD / LG )
+            - Au moins 3 routes API sont appelés depuis une API publique et traités dans le code (peu importe le verbe HTTP, elles peuvent par exemple être les 3 sur un appel GET)
+            - Pas d’informations sensibles ou inutiles disponibles en ligne (API_KEY, node_modules, etc..)

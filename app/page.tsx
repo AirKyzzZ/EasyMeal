@@ -45,9 +45,9 @@ export default function Home(): React.JSX.Element {
 
   // Use pagination hook for meal management
   const pagination = usePagination({
-    initialPageSize: 6, // Load 6 items initially for fast first paint
+    initialPageSize: 3, // Load 3 items initially to reduce DOM complexity and page weight
     loadMoreSize: 6, // Load 6 more items on scroll
-    maxItems: 50, // Maximum items to prevent memory issues
+    maxItems: 30, // Reduced from 50 to limit DOM elements (target: < 600)
   });
 
   // Extract stable pagination functions and values to avoid recreating loadRandomMeals on every state change
@@ -398,7 +398,7 @@ export default function Home(): React.JSX.Element {
                   height={40}
                   className="object-contain"
                   priority
-                  quality={85}
+                  quality={75}
                   placeholder="blur"
                   fetchPriority="high"
                   blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k="
@@ -669,7 +669,7 @@ export default function Home(): React.JSX.Element {
             className="mt-8 flex justify-center"
             style={{ minHeight: '200px' }}
           >
-            <MealGridSkeleton count={3} />
+            <MealGridSkeleton count={2} />
           </div>
         )}
       </main>

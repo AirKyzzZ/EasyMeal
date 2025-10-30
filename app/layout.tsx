@@ -4,18 +4,23 @@ import React from 'react';
 
 import './globals.css';
 
+// Optimized font loading - only load main font, mono font as fallback
 const geistSans = Geist({
   variable: '--font-geist-sans',
   subsets: ['latin'],
   display: 'swap',
   preload: true,
+  // Reduce font file size by limiting subsets
+  weight: ['400', '500', '600', '700'], // Only load needed weights
 });
 
+// Removed geistMono preload to reduce requests - using system fallback
 const geistMono = Geist_Mono({
   variable: '--font-geist-mono',
   subsets: ['latin'],
   display: 'swap',
   preload: false,
+  fallback: ['monospace'], // System font fallback
 });
 
 export const metadata: Metadata = {

@@ -15,9 +15,9 @@ const nextConfig: NextConfig = {
     dangerouslyAllowSVG: false,
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
     // Optimize image quality for better compression while maintaining visual quality
-    // Responsive sizes to match actual display dimensions
-    deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
-    imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
+    // Reduced sizes to minimize requests and page weight
+    deviceSizes: [640, 828, 1200, 1920], // Reduced from 8 to 4 sizes
+    imageSizes: [16, 32, 64, 128, 256, 384], // Reduced sizes
     // Enable image optimization
     unoptimized: false,
   },

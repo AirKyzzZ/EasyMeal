@@ -4,11 +4,17 @@ import { ChefHat, Sparkles, Apple } from 'lucide-react';
 import Image from 'next/image';
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 
+import dynamic from 'next/dynamic';
+
 import { Filters } from '@/components/Filters';
 import { IngredientList } from '@/components/IngredientList';
 import { MealCard } from '@/components/MealCard';
-import { MealDetailModal } from '@/components/MealDetailModal';
 import { SearchBar } from '@/components/SearchBar';
+
+// Dynamically import modal since it's only shown on user interaction
+const MealDetailModal = dynamic(() => import('@/components/MealDetailModal').then(mod => ({ default: mod.MealDetailModal })), {
+  ssr: false, // Modal doesn't need SSR
+});
 import { MealGridSkeleton } from '@/components/ui/Skeleton';
 import { mealApiService } from '@/lib/api';
 import { usePagination } from '@/lib/hooks/usePagination';
@@ -394,6 +400,7 @@ export default function Home(): React.JSX.Element {
                   priority
                   quality={85}
                   placeholder="blur"
+                  fetchPriority="high"
                   blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k="
                 />
               </div>

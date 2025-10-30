@@ -7,11 +7,15 @@ import './globals.css';
 const geistSans = Geist({
   variable: '--font-geist-sans',
   subsets: ['latin'],
+  display: 'swap',
+  preload: true,
 });
 
 const geistMono = Geist_Mono({
   variable: '--font-geist-mono',
   subsets: ['latin'],
+  display: 'swap',
+  preload: false,
 });
 
 export const metadata: Metadata = {
@@ -120,8 +124,9 @@ export default function RootLayout({
     <html lang="en">
       <head>
         {/* Preload critical resources */}
-        <link rel="dns-prefetch" href="//www.themealdb.com" />
-        <link rel="preconnect" href="https://www.themealdb.com" />
+        <link rel="dns-prefetch" href="https://www.themealdb.com" />
+        <link rel="preconnect" href="https://www.themealdb.com" crossOrigin="anonymous" />
+        <link rel="preload" as="image" href="/logo.png" />
         {/* Structured Data for SEO */}
         <script
           type="application/ld+json"

@@ -14,7 +14,12 @@ const nextConfig: NextConfig = {
     minimumCacheTTL: 60,
     dangerouslyAllowSVG: false,
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
-    qualities: [75, 85],
+    // Optimize image quality for better compression while maintaining visual quality
+    // Responsive sizes to match actual display dimensions
+    deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
+    imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
+    // Enable image optimization
+    unoptimized: false,
   },
   // Performance optimizations
   experimental: {
@@ -22,6 +27,12 @@ const nextConfig: NextConfig = {
   },
   // Enable compression
   compress: true,
+  // Target modern browsers to reduce legacy JavaScript polyfills
+  compiler: {
+    removeConsole: process.env.NODE_ENV === 'production',
+  },
+  // Optimize output for modern browsers
+  swcMinify: true,
 };
 
 export default nextConfig;

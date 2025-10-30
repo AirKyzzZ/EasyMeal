@@ -345,12 +345,12 @@ _Capture d'écran de la page d'accueil en mode recherche sur mobile_
 
 <div align="center">
 
-| Métrique           | Score   | État             |
-| ------------------ | ------- | ---------------- |
+| Métrique           | Score  | État             |
+| ------------------ | ------ | ---------------- |
 | **Performance**    | 97     | ✅ Excellent     |
-| **Accessibilité**  | 100     | ✅ Excellent     |
-| **Best Practices** | 100     | ✅ Excellent     |
-| **SEO**            | 100     | ✅ Excellent     |
+| **Accessibilité**  | 100    | ✅ Excellent     |
+| **Best Practices** | 100    | ✅ Excellent     |
+| **SEO**            | 100    | ✅ Excellent     |
 | **Score global**   | **98** | ✅ **Excellent** |
 
 ![Lighthouse Scores](./public/screenshots/lighthouse-scores.png)
@@ -361,13 +361,13 @@ _Scores Lighthouse obtenus sur la version de production_
 
 ### ⚡ Métriques de performance
 
-| Métrique                           | Valeur  | Objectif |
-| ---------------------------------- | ------- | -------- |
-| **First Contentful Paint (FCP)**   | < 0.2s  | ✅       |
-| **Largest Contentful Paint (LCP)** | < 0.7s  | ✅       |
-| **Time to Interactive (TTI)**      | < 3.5s  | ✅       |
-| **Total Blocking Time**  | < 60ms   | ✅       |
-| **Speed Index**        | < 1.8s | ✅       |
+| Métrique                           | Valeur | Objectif |
+| ---------------------------------- | ------ | -------- |
+| **First Contentful Paint (FCP)**   | < 0.2s | ✅       |
+| **Largest Contentful Paint (LCP)** | < 0.7s | ✅       |
+| **Time to Interactive (TTI)**      | < 3.5s | ✅       |
+| **Total Blocking Time**            | < 60ms | ✅       |
+| **Speed Index**                    | < 1.8s | ✅       |
 
 ### 📈 Optimisations implémentées
 

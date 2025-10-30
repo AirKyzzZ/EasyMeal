@@ -95,3 +95,5 @@ Context :
             - Responsive conditionnel pour au moins 2 types de supports ( SM / MD / LG )
             - Au moins 3 routes API sont appelés depuis une API publique et traités dans le code (peu importe le verbe HTTP, elles peuvent par exemple être les 3 sur un appel GET)
             - Pas d’informations sensibles ou inutiles disponibles en ligne (API_KEY, node_modules, etc..)
+
+        LIEN DU REPO POUR LE RENDU : https://github.com/airkyzzz/EasyMeal

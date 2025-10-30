@@ -12,6 +12,14 @@ const geistSans = Geist({
   preload: true,
   // Reduce font file size by limiting subsets
   weight: ['400', '500', '600', '700'], // Only load needed weights
+  fallback: [
+    'system-ui',
+    '-apple-system',
+    'BlinkMacSystemFont',
+    'Segoe UI',
+    'Arial',
+    'sans-serif',
+  ], // System font fallback for faster FCP
 });
 
 // Removed geistMono preload to reduce requests - using system fallback
@@ -128,13 +136,15 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        {/* Preload critical resources */}
+        {/* Preload critical resources - optimize for LCP */}
         <link rel="dns-prefetch" href="https://www.themealdb.com" />
         <link
           rel="preconnect"
           href="https://www.themealdb.com"
           crossOrigin="anonymous"
         />
+        {/* Preload first meal image domain */}
+        <link rel="dns-prefetch" href="https://www.themealdb.com/images" />
         <link rel="preload" as="image" href="/logo.png" />
         {/* Structured Data for SEO */}
         <script

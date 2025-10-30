@@ -77,8 +77,8 @@ export const MealCard = memo(
             priority={isFirstImage}
             loading={isFirstImage ? 'eager' : 'lazy'}
             fetchPriority={isFirstImage ? 'high' : 'auto'}
-            quality={isFirstImage ? 85 : 70}
-            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, (max-width: 1280px) 33vw, 384px"
+            quality={isFirstImage ? 80 : 65}
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 384px"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
 

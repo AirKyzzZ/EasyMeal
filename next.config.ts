@@ -14,10 +14,10 @@ const nextConfig: NextConfig = {
     minimumCacheTTL: 60,
     dangerouslyAllowSVG: false,
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
-    // Optimize image quality for better compression while maintaining visual quality
-    // Reduced sizes to minimize requests and page weight
-    deviceSizes: [640, 828, 1200, 1920], // Reduced from 8 to 4 sizes
-    imageSizes: [16, 32, 64, 128, 256, 384], // Reduced sizes
+    // Optimize image quality for better compression - mobile-first approach
+    // Match actual display sizes: mobile 100vw (max ~400px), tablet 50vw (max ~500px), desktop 384px
+    deviceSizes: [400, 500, 640, 828, 1200, 1920],
+    imageSizes: [16, 32, 64, 128, 256, 384, 400], // Include 400px for mobile cards
     // Enable image optimization
     unoptimized: false,
   },

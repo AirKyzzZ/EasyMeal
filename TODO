@@ -18,8 +18,12 @@
 ✔ Make the skeleton preload of the meal cards responsive based on the screen size and current layout page of the user @done(25-10-30 21:50)
 ✔ Refactor the long api.ts file into many smaller files for better maintainability and readability don't change the actual code just the file structure @done(25-10-30 22:20)
 ✔ Fix all linter errors and warnings @done(25-10-30 22:24)
-☐ Implement a CI/CD github actions to check everything best practices
+✔ Implement a CI/CD github actions to check everything best practices @done(25-10-30)
 ☐ Optimize SEO for the website to be the best in google search results
-☐ Make a full readme of the project to prepare for the assignmement IN FRENCH and check the code to make sure everything meet the requirements of the projetcts assignement, here are the instructions in french : 
+☐ Make a full complete and detailed readme of the project include graphs the screenshots i'll take and design items like badges and stat cards etc to prepare for the assignmement IN FRENCH and check the code to make sure everything meet the requirements of the projetcts assignement, here are the instructions in french : 
+☐ Recheck linter errors and warnings
+☐ Include the TODO in the gitignore
+☐ Pull request to dev
+☐ Pull request from dev to main
 ☐ Upload on netlify, main branch
-☐ Write the email 
+☐ Write the final email

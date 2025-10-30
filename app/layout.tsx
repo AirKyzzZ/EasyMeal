@@ -130,7 +130,11 @@ export default function RootLayout({
       <head>
         {/* Preload critical resources */}
         <link rel="dns-prefetch" href="https://www.themealdb.com" />
-        <link rel="preconnect" href="https://www.themealdb.com" crossOrigin="anonymous" />
+        <link
+          rel="preconnect"
+          href="https://www.themealdb.com"
+          crossOrigin="anonymous"
+        />
         <link rel="preload" as="image" href="/logo.png" />
         {/* Structured Data for SEO */}
         <script

@@ -15,9 +15,15 @@ import { usePagination } from '@/lib/hooks/usePagination';
 import { Meal } from '@/types/meal';
 
 // Dynamically import modal since it's only shown on user interaction
-const MealDetailModal = dynamic(() => import('@/components/MealDetailModal').then(mod => ({ default: mod.MealDetailModal })), {
-  ssr: false, // Modal doesn't need SSR
-});
+const MealDetailModal = dynamic(
+  () =>
+    import('@/components/MealDetailModal').then(mod => ({
+      default: mod.MealDetailModal,
+    })),
+  {
+    ssr: false, // Modal doesn't need SSR
+  }
+);
 
 // Extend Window interface to include our timeout property
 declare global {
@@ -406,7 +412,10 @@ export default function Home(): React.JSX.Element {
               <div className="min-w-0 flex-1">
                 <h1 className="text-xl sm:text-2xl font-bold text-foreground truncate">
                   EasyMeal
-                  <span className="hidden sm:inline"> - Discover Amazing Recipes</span>
+                  <span className="hidden sm:inline">
+                    {' '}
+                    - Discover Amazing Recipes
+                  </span>
                 </h1>
                 <p className="text-xs sm:text-sm text-muted-foreground truncate">
                   Search thousands of free recipes from around the world

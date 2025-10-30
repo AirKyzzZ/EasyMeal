@@ -1,24 +1,23 @@
 'use client';
 
 import { ChefHat, Sparkles, Apple } from 'lucide-react';
+import dynamic from 'next/dynamic';
 import Image from 'next/image';
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-
-import dynamic from 'next/dynamic';
 
 import { Filters } from '@/components/Filters';
 import { IngredientList } from '@/components/IngredientList';
 import { MealCard } from '@/components/MealCard';
 import { SearchBar } from '@/components/SearchBar';
+import { MealGridSkeleton } from '@/components/ui/Skeleton';
+import { mealApiService } from '@/lib/api';
+import { usePagination } from '@/lib/hooks/usePagination';
+import { Meal } from '@/types/meal';
 
 // Dynamically import modal since it's only shown on user interaction
 const MealDetailModal = dynamic(() => import('@/components/MealDetailModal').then(mod => ({ default: mod.MealDetailModal })), {
   ssr: false, // Modal doesn't need SSR
 });
-import { MealGridSkeleton } from '@/components/ui/Skeleton';
-import { mealApiService } from '@/lib/api';
-import { usePagination } from '@/lib/hooks/usePagination';
-import { Meal } from '@/types/meal';
 
 // Extend Window interface to include our timeout property
 declare global {

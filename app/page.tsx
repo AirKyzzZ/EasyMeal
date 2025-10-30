@@ -5,15 +5,35 @@ import dynamic from 'next/dynamic';
 import Image from 'next/image';
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 
-import { Filters } from '@/components/Filters';
-import { IngredientList } from '@/components/IngredientList';
 import { MealCard } from '@/components/MealCard';
-import { SearchBar } from '@/components/SearchBar';
 import { MealGridSkeleton } from '@/components/ui/Skeleton';
 import { mealApiService } from '@/lib/api';
 import { usePagination } from '@/lib/hooks/usePagination';
 import { Meal } from '@/types/meal';
 
+// Dynamically import non-critical components to reduce TBT and initial bundle
+const Filters = dynamic(
+  () => import('@/components/Filters').then(mod => ({ default: mod.Filters })),
+  {
+    ssr: true,
+  }
+);
+const IngredientList = dynamic(
+  () =>
+    import('@/components/IngredientList').then(mod => ({
+      default: mod.IngredientList,
+    })),
+  {
+    ssr: true,
+  }
+);
+const SearchBar = dynamic(
+  () =>
+    import('@/components/SearchBar').then(mod => ({ default: mod.SearchBar })),
+  {
+    ssr: true,
+  }
+);
 // Dynamically import modal since it's only shown on user interaction
 const MealDetailModal = dynamic(
   () =>
@@ -172,14 +192,18 @@ export default function Home(): React.JSX.Element {
     reset,
   ]);
 
-  // Load initial meals on component mount
+  // Load initial meals on component mount - defer to reduce TBT
   useEffect(() => {
     if (
       searchMode === 'search' &&
       !searchQuery &&
       !Object.values(filters).some(filter => filter)
     ) {
-      void loadRandomMeals(true);
+      // Defer initial load to break up long tasks and improve TBT
+      const timeoutId = setTimeout(() => {
+        void loadRandomMeals(true);
+      }, 0);
+      return () => clearTimeout(timeoutId);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -406,6 +430,7 @@ export default function Home(): React.JSX.Element {
                   quality={75}
                   placeholder="blur"
                   fetchPriority="high"
+                  sizes="40px"
                   blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k="
                 />
               </div>
@@ -588,9 +613,12 @@ export default function Home(): React.JSX.Element {
             )}
         </section>
 
-        {/* Loading State */}
+        {/* Loading State - Fixed height to prevent layout shift */}
         {pagination.isLoading && pagination.items.length === 0 && (
-          <div className="flex justify-center py-12">
+          <div
+            className="flex justify-center py-12"
+            style={{ minHeight: '400px' }}
+          >
             <div className="flex items-center gap-3">
               <div className="h-6 w-6 animate-spin rounded-full border-2 border-spinner-border border-t-spinner-border-active"></div>
               <span className="text-muted-foreground">

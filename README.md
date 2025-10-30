@@ -421,9 +421,6 @@ _Score Eco-Index obtenu pour l'application_
 
 </div>
 
-### 📊 Statistiques d'utilisation
-
-<!-- TODO: Créer des graphiques avec des données réelles -->
 <div align="center">
 
 **Répartition des types de recherche**

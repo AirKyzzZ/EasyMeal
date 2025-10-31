@@ -1,7 +1,7 @@
 import { MetadataRoute } from 'next';
 
 export default function robots(): MetadataRoute.Robots {
-  const baseUrl = 'https://easymealapp.netlify.app';
+  const baseUrl = 'https://easymeal.maximemansiet.fr';
 
   return {
     rules: [

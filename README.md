@@ -438,7 +438,7 @@ pie title Types de recherche utilisés
 
 Le projet est déployé sur **Netlify** depuis la branche `main`. Chaque push sur la branche `main` déclenche automatiquement un nouveau déploiement.
 
-🔗 **Application en ligne** : [https://easymealapp.netlify.app/](https://easymealapp.netlify.app/)
+🔗 **Application en ligne** : [https://easymeal.maximemansiet.fr/](https://easymeal.maximemansiet.fr/)
 
 ### Configuration Netlify
 
